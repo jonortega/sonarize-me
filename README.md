@@ -15,14 +15,14 @@
 </div>
 
 ## 📋 Índice
-- [📋 Índice](#-índice)
-- [🚀 Tecnologías utilizadas](#-tecnologías-utilizadas)
-- [📂 Estructura del proyecto](#-estructura-del-proyecto)
-- [🛠️ Configuración inicial](#️-configuración-inicial)
-- [📊 Funcionalidades principales](#-funcionalidades-principales)
-- [🧪 Pruebas](#-pruebas)
-- [🚀 Despliegue](#-despliegue)
-- [📚 Recursos](#-recursos)
+0. [📋 Índice](#-índice)
+1. [🚀 Tecnologías utilizadas](#-tecnologías-utilizadas)
+2. [📂 Estructura del proyecto](#-estructura-del-proyecto)
+3. [🛠️ Configuración inicial](#️-configuración-inicial)
+4. [📊 Funcionalidades principales](#-funcionalidades-principales)
+5. [🧪 Pruebas](#-pruebas)
+6. [🚀 Despliegue](#-despliegue)
+7. [📚 Recursos](#-recursos)
 
 ## 🚀 Tecnologías utilizadas
 - **Next.js** 15.1.2
