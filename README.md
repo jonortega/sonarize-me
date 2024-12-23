@@ -4,35 +4,25 @@
   Proyecto del Trabajo de Fin de Grado (TFG): Aplicación web para visualizar estadísticas personalizadas de Spotify usando Next.js. <a href="https://github.com/mi-usuario/TFG-memoria">Memoria del TFG</a>
 </p>
 
-<p align="center">
+<div align="center">
 
-  [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
-
-  ![React](https://img.shields.io/badge/React-19-%2300d8ff?logo=react)
-
-  [![Spotify API](https://img.shields.io/badge/Spotify%20API-v1-%231ED760?logo=spotify)](https://developer.spotify.com/documentation/web-api/)
-
-  ![Version](https://img.shields.io/badge/version-0.1.0-lightgrey)
-
+  [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/) &nbsp;
+  ![React](https://img.shields.io/badge/React-19-%2300d8ff?logo=react) &nbsp;
+  [![Spotify API](https://img.shields.io/badge/Spotify%20API-v1-%231ED760?logo=spotify)](https://developer.spotify.com/documentation/web-api/) &nbsp;
+  ![Version](https://img.shields.io/badge/version-0.1.0-%23ffffff) &nbsp;
   ![Status](https://img.shields.io/badge/status-in%20development-orange)
 
-</p>
+</div>
 
-
-<p align="center">
-  <h2>📋 Índice</h2>
-  <ul style="list-style: none; padding: 0;">
-    <li><a href="#-índice">📋 Índice</a></li>
-    <li><a href="#-tecnologías-utilizadas">🚀 Tecnologías utilizadas</a></li>
-    <li><a href="#-estructura-del-proyecto">📂 Estructura del proyecto</a></li>
-    <li><a href="#️-configuración-inicial">🛠️ Configuración inicial</a></li>
-    <li><a href="#-funcionalidades-principales">📊 Funcionalidades principales</a></li>
-    <li><a href="#-pruebas">🧪 Pruebas</a></li>
-    <li><a href="#-despliegue">🚀 Despliegue</a></li>
-    <li><a href="#-recursos">📚 Recursos</a></li>
-  </ul>
-</p>
-
+## 📋 Índice
+- [📋 Índice](#-índice)
+- [🚀 Tecnologías utilizadas](#-tecnologías-utilizadas)
+- [📂 Estructura del proyecto](#-estructura-del-proyecto)
+- [🛠️ Configuración inicial](#️-configuración-inicial)
+- [📊 Funcionalidades principales](#-funcionalidades-principales)
+- [🧪 Pruebas](#-pruebas)
+- [🚀 Despliegue](#-despliegue)
+- [📚 Recursos](#-recursos)
 
 ## 🚀 Tecnologías utilizadas
 - **Next.js** 15.1.2
