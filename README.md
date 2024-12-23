@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TFG-app-Spotify
 
-## Getting Started
+Este es el repositorio del proyecto del Trabajo de Fin de Grado (TFG). Es una aplicación web desarrollada con **Next.js**, **TypeScript**, y **Tailwind CSS**, que utiliza la API de Spotify para mostrar estadísticas personalizadas del usuario. La [memoria del TFG](https://github.com/mi-usuario/TFG-memoria) se encuentra en este repositorio separado.
 
-First, run the development server:
+---
 
+## 🚀 Tecnologías utilizadas
+- **Next.js** 15.1.2
+- **TypeScript**
+- **Tailwind CSS** 3.4.1
+- **pnpm**
+- **Jest**
+- **Spotify Web API**
+
+---
+
+## 📂 Estructura del proyecto
+- **`app/`**: Contiene las páginas y rutas principales de la aplicación (usando el App Router).
+- **`components/`**: Componentes reutilizables de la interfaz.
+- **`public/`**: Archivos estáticos (favicon, imágenes, etc.).
+- **`__tests__/`**: Archivos para pruebas unitarias (usando Jest y Testing Library).
+- **`tailwind.config.js`**: Configuración de Tailwind CSS.
+- **`next.config.ts`**: Configuración de Next.js.
+- **`.env.local`**: Variables de entorno para desarrollo (claves API, etc.).
+
+---
+
+## 🛠️ Configuración inicial
+1. Clona este repositorio:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/jonortega/tfg-app-spotify.git
+cd tfg-app-spotify
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Instala las dependencias:
+```bash
+pnpm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Crea un archivo `.env.local` en la raíz con las siguientes variables:
+```bash
+SPOTIFY_CLIENT_ID=tu_cliente_id
+SPOTIFY_CLIENT_SECRET=tu_secreto
+...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Inicia el servidor de desarrollo:
+```bash
+pnpm run dev
+```
 
-## Learn More
+5. Abre [http://localhost:3000](http://localhost:3000) para ver la aplicación.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📊 Funcionalidades principales
+- **Inicio de sesión con Spotify**: Autenticación mediante OAuth 2.0.
+- **Dashboard interactivo**: Gráficos que muestran estadísticas como:
+  - Artistas más escuchados.
+  - Canción del mes.
+  - Horas de más escucha.
+- **Comparación de canciones**: Visualización de características como `danceability`, `energy`, etc.
+- **Tendencias de escucha**: Datos históricos de tus hábitos musicales.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🧪 Pruebas
+1. Ejecuta las pruebas unitarias:
+```bash
+pnpm run test
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. Ejecuta las pruebas en modo watch:
+```bash
+pnpm run test -- --watch
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🚀 Despliegue
+El proyecto está alojado en **Vercel**. Cada push al branch principal (**main**) actualiza automáticamente la aplicación.
+
+1. Configura las variables de entorno en el panel de Vercel:
+   - **SPOTIFY_CLIENT_ID**
+   - **SPOTIFY_CLIENT_SECRET**
+   - ...
+
+2. La URL de producción será generada automáticamente por Vercel.
+
+---
+
+## 📚 Recursos
+- [Documentación de Next.js](https://nextjs.org/docs)
+- [Spotify Web API Reference](https://developer.spotify.com/documentation/web-api/)
+- [Tailwind CSS Docs](https://tailwindcss.com/docs)
+
+---
