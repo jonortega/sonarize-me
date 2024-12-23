@@ -1,18 +1,48 @@
-# TFG-app-Spotify
+<h1 align="center">TFG-app-Spotify</h1>
 
-Este es el repositorio del proyecto del Trabajo de Fin de Grado (TFG). Es una aplicación web desarrollada con **Next.js**, **TypeScript**, y **Tailwind CSS**, que utiliza la API de Spotify para mostrar estadísticas personalizadas del usuario. La [memoria del TFG](https://github.com/mi-usuario/TFG-memoria) se encuentra en este repositorio separado.
+<p align="center">
+  Proyecto del Trabajo de Fin de Grado (TFG): Aplicación web para visualizar estadísticas personalizadas de Spotify usando Next.js. <a href="https://github.com/mi-usuario/TFG-memoria">Memoria del TFG</a>
+</p>
 
----
+<p align="center">
+
+  [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
+
+  ![React](https://img.shields.io/badge/React-19-%2300d8ff?logo=react)
+
+  [![Spotify API](https://img.shields.io/badge/Spotify%20API-v1-%231ED760?logo=spotify)](https://developer.spotify.com/documentation/web-api/)
+
+  ![Version](https://img.shields.io/badge/version-0.1.0-lightgrey)
+
+  ![Status](https://img.shields.io/badge/status-in%20development-orange)
+
+</p>
+
+
+<p align="center">
+  <h2>📋 Índice</h2>
+  <ul style="list-style: none; padding: 0;">
+    <li><a href="#-índice">📋 Índice</a></li>
+    <li><a href="#-tecnologías-utilizadas">🚀 Tecnologías utilizadas</a></li>
+    <li><a href="#-estructura-del-proyecto">📂 Estructura del proyecto</a></li>
+    <li><a href="#️-configuración-inicial">🛠️ Configuración inicial</a></li>
+    <li><a href="#-funcionalidades-principales">📊 Funcionalidades principales</a></li>
+    <li><a href="#-pruebas">🧪 Pruebas</a></li>
+    <li><a href="#-despliegue">🚀 Despliegue</a></li>
+    <li><a href="#-recursos">📚 Recursos</a></li>
+  </ul>
+</p>
+
 
 ## 🚀 Tecnologías utilizadas
 - **Next.js** 15.1.2
-- **TypeScript**
+- **React** 19.0.0
+- **TypeScript** 5.0.0
 - **Tailwind CSS** 3.4.1
-- **pnpm**
-- **Jest**
+- **Node.js** 22.12.0
+- **Jest** 29.7.0
 - **Spotify Web API**
-
----
+- **pnpm**
 
 ## 📂 Estructura del proyecto
 - **`app/`**: Contiene las páginas y rutas principales de la aplicación (usando el App Router).
@@ -22,8 +52,6 @@ Este es el repositorio del proyecto del Trabajo de Fin de Grado (TFG). Es una ap
 - **`tailwind.config.js`**: Configuración de Tailwind CSS.
 - **`next.config.ts`**: Configuración de Next.js.
 - **`.env.local`**: Variables de entorno para desarrollo (claves API, etc.).
-
----
 
 ## 🛠️ Configuración inicial
 1. Clona este repositorio:
@@ -51,8 +79,6 @@ pnpm run dev
 
 5. Abre [http://localhost:3000](http://localhost:3000) para ver la aplicación.
 
----
-
 ## 📊 Funcionalidades principales
 - **Inicio de sesión con Spotify**: Autenticación mediante OAuth 2.0.
 - **Dashboard interactivo**: Gráficos que muestran estadísticas como:
@@ -61,8 +87,6 @@ pnpm run dev
   - Horas de más escucha.
 - **Comparación de canciones**: Visualización de características como `danceability`, `energy`, etc.
 - **Tendencias de escucha**: Datos históricos de tus hábitos musicales.
-
----
 
 ## 🧪 Pruebas
 1. Ejecuta las pruebas unitarias:
@@ -75,8 +99,6 @@ pnpm run test
 pnpm run test -- --watch
 ```
 
----
-
 ## 🚀 Despliegue
 El proyecto está alojado en **Vercel**. Cada push al branch principal (**main**) actualiza automáticamente la aplicación.
 
@@ -87,11 +109,7 @@ El proyecto está alojado en **Vercel**. Cada push al branch principal (**main**
 
 2. La URL de producción será generada automáticamente por Vercel.
 
----
-
 ## 📚 Recursos
 - [Documentación de Next.js](https://nextjs.org/docs)
 - [Spotify Web API Reference](https://developer.spotify.com/documentation/web-api/)
 - [Tailwind CSS Docs](https://tailwindcss.com/docs)
-
----
