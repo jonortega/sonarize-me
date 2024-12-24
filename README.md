@@ -1,7 +1,7 @@
 <h1 align="center">TFG-app-Spotify</h1>
 
 <p align="center">
-  Proyecto del Trabajo de Fin de Grado (TFG): Aplicación web para visualizar estadísticas personalizadas de Spotify usando Next.js. <a href="https://github.com/mi-usuario/TFG-memoria">Memoria del TFG</a>
+  Proyecto del Trabajo de Fin de Grado (TFG): Aplicación web para visualizar estadísticas personalizadas de Spotify usando Next.js. <a href="https://github.com/jonortega/TFG-memoria">Memoria del TFG</a>
 </p>
 
 <div align="center">
