@@ -1,5 +1,4 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { setCookie } from "nookies";
+import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import querystring from "querystring";
 import { SPOTIFY_SCOPES } from "@/utils/constants";
@@ -8,31 +7,38 @@ const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID!;
 const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI!;
 const SCOPES = SPOTIFY_SCOPES;
 
+// For CSRF protection
 function generateRandomState(length = 16): string {
   return crypto.randomBytes(length).toString("hex");
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Step 1: Generate a state parameter for CSRF protection
+export async function GET(req: NextRequest) {
+  void req; // Supress "unused variable" warning from ESLint
+
   const state = generateRandomState(); // ! CRSF protection
 
-  // Step 2: Store the state securely (e.g., HttpOnly cookie)
-  setCookie({ res }, "spotify_auth_state", state, {
+  const response = NextResponse.redirect(
+    `https://accounts.spotify.com/authorize?${querystring.stringify({
+      response_type: "code",
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      redirect_uri: REDIRECT_URI,
+      state: state,
+      show_dialog: true,
+    })}`
+  );
+
+  // Store the state in a cookie
+  response.cookies.set("spotify_auth_state", state, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Set to false in development
+    secure: process.env.NODE_ENV === "production", // "false" in development
     path: "/",
-    maxAge: 300, // 5 minutes
+    maxAge: 300, // 5 mins
   });
 
-  // Step 3: Build the Spotify authorization URL
-  const authorizeUrl = `https://accounts.spotify.com/authorize?${querystring.stringify({
-    response_type: "code",
-    client_id: CLIENT_ID,
-    scope: SCOPES,
-    redirect_uri: REDIRECT_URI,
-    state: state,
-  })}`;
+  console.log(`Stored spotify_auth_state cookie: ${state}`);
 
-  // Step 4: Redirect the user to Spotify's authorization page
-  res.redirect(authorizeUrl);
+  console.log("Redirecting to Spotify auth page...");
+
+  return response;
 }
