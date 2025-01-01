@@ -9,8 +9,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        "spotify-green": "#1ED760",
+        "spotify-black": "#121212",
+        "spotify-white": "#FFFFFF",
+        "spotify-gray": {
+          100: "#B3B3B3",
+          200: "#535353",
+          300: "#212121",
+        },
+        "spotify-blue": "#4687D6",
       },
     },
   },
