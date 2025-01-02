@@ -43,3 +43,8 @@ body {
     border-color: var(--spotify-gray-200);
   }
 }
+
+/* Smooth background transition */
+.bg-spotify-black {
+  transition: background-color 0.3s ease;
+}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { User } from "@/lib/types";
 import { LogOut, Settings, UserIcon } from "lucide-react";
 
@@ -11,12 +12,23 @@ interface UserActionPanelProps {
 
 export default function UserActionPanel({ user }: UserActionPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const togglePanel = () => setIsOpen(!isOpen);
 
-  const handleLogout = () => {
-    // TODO: Implement logout functionality
-    console.log("Logout clicked");
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/auth/logout");
+
+      if (!response.ok) {
+        throw new Error("Error al hacer logout");
+      }
+
+      console.log("Usuario deslogueado correctamente");
+      router.push("/");
+    } catch (error) {
+      console.error("Error al hacer logout:", error);
+    }
   };
 
   return (

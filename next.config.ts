@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/300?img=*", // Permite imágenes con parámetros como "?img=1"
       },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+        port: "",
+        pathname: "/**", // Permite cualquier ruta bajo picsum.photos
+      },
     ],
   },
 };
