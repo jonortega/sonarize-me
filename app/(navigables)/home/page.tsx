@@ -7,7 +7,6 @@ import TopGenres from "@/components/TopGenres";
 import UserProfile from "@/components/UserProfile";
 import RecentlyPlayed from "@/components/RecentlyPlayed";
 import Loading from "@/components/Loading";
-import UserActionPanel from "@/components/UserActionPanel";
 
 export const metadata: Metadata = {
   title: "Home | Spotify Stats",
@@ -21,9 +20,6 @@ export default async function Home() {
     <main className='min-h-screen relative'>
       <section className='bg-spotify-black'>
         <div className='max-w-5xl mx-auto px-4 md:px-8 py-8'>
-          <div className='absolute top-4 right-4 md:right-8'>
-            <UserActionPanel user={stats.user} />
-          </div>
           <h1 className='text-4xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-spotify-green to-spotify-blue bg-clip-text text-transparent'>
             Your Spotify Insights
           </h1>

@@ -35,10 +35,10 @@ export default function UserActionPanel({ user }: UserActionPanelProps) {
     <div className='relative'>
       <button
         onClick={togglePanel}
-        className='rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-spotify-green'
+        className={`rounded-full overflow-hidden focus:outline-none ${isOpen ? "ring-2 ring-spotify-green" : ""}`}
       >
         {user.imageUrl ? (
-          <Image src={user.imageUrl} alt={user.name} width={40} height={40} className='rounded-full' />
+          <Image src={user.imageUrl} alt={user.name} width={42} height={42} className='rounded-full' />
         ) : (
           <div className='w-10 h-10 bg-spotify-green rounded-full flex items-center justify-center'>
             <UserIcon className='text-spotify-black' size={24} />
@@ -46,7 +46,7 @@ export default function UserActionPanel({ user }: UserActionPanelProps) {
         )}
       </button>
       {isOpen && (
-        <div className='absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-spotify-black border border-gray-700'>
+        <div className='absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-spotify-black border border-gray-700 z-10'>
           <div className='py-1'>
             <button
               onClick={() => console.log("Settings clicked")}
