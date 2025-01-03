@@ -45,6 +45,14 @@ body {
 }
 
 /* Smooth background transition */
-.bg-spotify-black {
+.bg-spotify-black,
+.bg-spotify-gray-200,
+.bg-spotify-gray-300 {
   transition: background-color 0.3s ease;
+}
+
+.text-spotify-green,
+.text-spotify-gray-100,
+.text-white {
+  transition: color 0.3s ease;
 }
