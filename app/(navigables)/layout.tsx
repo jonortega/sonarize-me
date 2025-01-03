@@ -5,7 +5,7 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
   const stats = await getUserStats();
 
   return (
-    <div className='min-h-screen flex flex-col'>
+    <div className='flex flex-col min-h-screen'>
       <Navbar user={stats.user} />
       <div className='flex-grow'>{children}</div>
     </div>

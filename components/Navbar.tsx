@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import UserActionPanel from "./UserActionPanel";
 import { User } from "@/lib/types";
+import { ChartColumn } from "lucide-react";
 
 interface NavbarProps {
   user: User;
@@ -18,6 +19,7 @@ export default function Navbar({ user }: NavbarProps) {
         <div className='flex justify-between items-center h-16'>
           <div className='flex-shrink-0'>
             <Link href='/home' className=' flex items-center'>
+              <ChartColumn size={24} className='ml-2 text-spotify-green' />
               <span className='ml-2 text-white font-bold text-xl'>Spotify Stats</span>
             </Link>
           </div>
