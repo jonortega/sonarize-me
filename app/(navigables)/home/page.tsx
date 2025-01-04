@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { getUserStats } from "@/lib/spotify";
 import TopTracks from "@/components/TopTracks";
 import TopArtists from "@/components/TopArtists";
 import TopGenres from "@/components/TopGenres";
@@ -116,11 +115,45 @@ async function fetchTopArtists() {
   }
 }
 
+async function fetchTopGenres() {
+  try {
+    // Obtener las cookies del servidor para acceder al access_token
+    const cookieStore = await cookies();
+    const access_token = cookieStore.get("access_token")?.value;
+
+    console.log("Access token:", access_token);
+
+    if (!access_token) {
+      return { error: "No access token" };
+    }
+
+    // * HAY QUE SUSTITUIR LA URL BASE POR LA QUE SEA EN PRODUCCIÓN
+    const response = await fetch("http://localhost:3000/api/home/top-genres", {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch top genres");
+    }
+
+    return response.json();
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error fetching top genres:", error.message);
+    } else {
+      console.error("Unknown error fetching top genres:", error);
+    }
+    return { error: "Failed to fetch top genres" };
+  }
+}
+
 export default async function Home() {
-  const stats = await getUserStats();
   const userProfile = await fetchUserProfile();
   const topTracks = await fetchTopTracks();
   const topArtists = await fetchTopArtists();
+  const topGenres = await fetchTopGenres();
 
   return (
     <main className='min-h-screen relative'>
@@ -141,7 +174,7 @@ export default async function Home() {
             </Suspense>
             <div className='md:col-span-2'>
               <Suspense fallback={<Loading />}>
-                <TopGenres genres={stats.topGenres} />
+                <TopGenres genres={topGenres} />
               </Suspense>
             </div>
           </div>
