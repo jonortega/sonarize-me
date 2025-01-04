@@ -149,11 +149,46 @@ async function fetchTopGenres() {
   }
 }
 
+async function fetchRecentlyPlayed() {
+  try {
+    // Obtener las cookies del servidor para acceder al access_token
+    const cookieStore = await cookies();
+    const access_token = cookieStore.get("access_token")?.value;
+
+    console.log("Access token:", access_token);
+
+    if (!access_token) {
+      return { error: "No access token" };
+    }
+
+    // * HAY QUE SUSTITUIR LA URL BASE POR LA QUE SEA EN PRODUCCIÓN
+    const response = await fetch("http://localhost:3000/api/home/recently-played", {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch recently played.");
+    }
+
+    return response.json();
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error fetching recently played:", error.message);
+    } else {
+      console.error("Unknown error fetching recently played:", error);
+    }
+    return { error: "Failed to fetch recently played." };
+  }
+}
+
 export default async function Home() {
   const userProfile = await fetchUserProfile();
   const topTracks = await fetchTopTracks();
   const topArtists = await fetchTopArtists();
   const topGenres = await fetchTopGenres();
+  const recentTracks = await fetchRecentlyPlayed();
 
   return (
     <main className='min-h-screen relative'>
@@ -183,7 +218,7 @@ export default async function Home() {
       <section className='bg-[#0A0A0A]'>
         <div className='max-w-5xl mx-auto px-4 md:px-8 py-12'>
           <Suspense fallback={<Loading />}>
-            <RecentlyPlayed />
+            <RecentlyPlayed recentTracks={recentTracks} />
           </Suspense>
         </div>
       </section>

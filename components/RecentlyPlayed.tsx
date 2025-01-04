@@ -13,19 +13,10 @@ interface RecentTrack {
   playedAt: string;
 }
 
-const mockRecentTracks: RecentTrack[] = Array.from({ length: 50 }, (_, i) => ({
-  id: `track-${i + 1}`,
-  name: `Track ${i + 1}`,
-  artist: `Artist ${i + 1}`,
-  album: `Album ${i + 1}`,
-  albumArtUrl: `https://picsum.photos/seed/${i + 1}/300/300`,
-  playedAt: new Date(Date.now() - i * 3600000).toLocaleDateString("en-GB"),
-}));
-
-export default function RecentlyPlayed() {
+export default function RecentlyPlayed({ recentTracks }: { recentTracks: RecentTrack[] }) {
   const [showAll, setShowAll] = useState(false);
 
-  const displayedTracks = showAll ? mockRecentTracks : mockRecentTracks.slice(0, 10);
+  const displayedTracks = showAll ? recentTracks : recentTracks.slice(0, 10);
 
   return (
     <div className='bg-spotify-gray-300 p-6 rounded-lg border border-spotify-gray-200'>
