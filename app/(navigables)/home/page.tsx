@@ -14,6 +14,43 @@ export const metadata: Metadata = {
   description: "Bienvenido a tu Dashboard de Spotify.",
 };
 
+async function fetchUserProfile() {
+  try {
+    // Obtener las cookies del servidor para acceder al access_token
+    const cookieStore = await cookies();
+    const access_token = cookieStore.get("access_token")?.value;
+
+    console.log("Access token:", access_token);
+
+    if (!access_token) {
+      return { error: "No access token" };
+    }
+
+    // * HAY SUSTITUIR LA URL BASE POR LA QUE SEA EN PRODUCCIÓN
+    const response = await fetch("http://localhost:3000/api/home/user-profile", {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch user profile");
+    }
+
+    const userProfile = await response.json();
+    console.log("\nUser Profile:", userProfile);
+
+    return userProfile;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error fetching user profile:", error.message);
+    } else {
+      console.error("Unknown error fetching user profile:", error);
+    }
+    return { error: "Failed to fetch user profile" };
+  }
+}
+
 async function fetchTopTracks() {
   try {
     const cookieStore = await cookies();
@@ -45,9 +82,45 @@ async function fetchTopTracks() {
   }
 }
 
+async function fetchTopArtists() {
+  try {
+    // Obtener las cookies del servidor para acceder al access_token
+    const cookieStore = await cookies();
+    const access_token = cookieStore.get("access_token")?.value;
+
+    console.log("Access token:", access_token);
+
+    if (!access_token) {
+      return { error: "No access token" };
+    }
+
+    // * HAY SUSTITUIR LA URL BASE POR LA QUE SEA EN PRODUCCIÓN
+    const response = await fetch("http://localhost:3000/api/home/top-artists", {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch top artists");
+    }
+
+    return response.json();
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error fetching top artists:", error.message);
+    } else {
+      console.error("Unknown error fetching top artists:", error);
+    }
+    return { error: "Failed to fetch top artists" };
+  }
+}
+
 export default async function Home() {
   const stats = await getUserStats();
+  const userProfile = await fetchUserProfile();
   const topTracks = await fetchTopTracks();
+  const topArtists = await fetchTopArtists();
 
   return (
     <main className='min-h-screen relative'>
@@ -57,14 +130,14 @@ export default async function Home() {
             Your Spotify Insights
           </h1>
           <Suspense fallback={<Loading />}>
-            <UserProfile user={stats.user} />
+            <UserProfile user={userProfile} />
           </Suspense>
           <div className='mt-12 grid grid-cols-1 md:grid-cols-2 gap-6'>
             <Suspense fallback={<Loading />}>
               <TopTracks tracks={topTracks} />
             </Suspense>
             <Suspense fallback={<Loading />}>
-              <TopArtists artists={stats.topArtists} />
+              <TopArtists artists={topArtists} />
             </Suspense>
             <div className='md:col-span-2'>
               <Suspense fallback={<Loading />}>
