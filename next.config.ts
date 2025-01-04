@@ -23,6 +23,13 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**", // Permite cualquier ruta bajo picsum.photos
       },
+      // ! Este sí que hay que dejarlo aquí
+      {
+        protocol: "https",
+        hostname: "i.scdn.co", // Spotify domain
+        port: "",
+        pathname: "/**", // Permite cualquier ruta bajo i.scdn.co
+      },
     ],
   },
 };

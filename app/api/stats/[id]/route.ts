@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+// * THIS IS A MOCK API ROUTE
+
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const id = params.id;
 

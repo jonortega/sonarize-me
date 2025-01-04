@@ -7,14 +7,47 @@ import TopGenres from "@/components/TopGenres";
 import UserProfile from "@/components/UserProfile";
 import RecentlyPlayed from "@/components/RecentlyPlayed";
 import Loading from "@/components/Loading";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Home | Spotify Stats",
   description: "Bienvenido a tu Dashboard de Spotify.",
 };
 
+async function fetchTopTracks() {
+  try {
+    const cookieStore = await cookies();
+    const access_token = cookieStore.get("access_token")?.value;
+
+    console.log("Access token:", access_token);
+
+    if (!access_token) {
+      return <div>Error: No access token</div>;
+    }
+
+    // * HAY SUSTITUIR LA URL BASE POR LA QUE SEA EN PRODUCCIÓN
+    const response = await fetch("http://localhost:3000/api/home/top-tracks", {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch top tracks");
+    }
+
+    console.log("\nTop tracks:", response);
+
+    return response.json();
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
 export default async function Home() {
   const stats = await getUserStats();
+  const topTracks = await fetchTopTracks();
 
   return (
     <main className='min-h-screen relative'>
@@ -28,7 +61,7 @@ export default async function Home() {
           </Suspense>
           <div className='mt-12 grid grid-cols-1 md:grid-cols-2 gap-6'>
             <Suspense fallback={<Loading />}>
-              <TopTracks tracks={stats.topTracks} />
+              <TopTracks tracks={topTracks} />
             </Suspense>
             <Suspense fallback={<Loading />}>
               <TopArtists artists={stats.topArtists} />
