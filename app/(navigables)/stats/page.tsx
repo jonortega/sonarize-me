@@ -1,18 +1,21 @@
-// app/(navigables)/stats/page.tsx
 import { Suspense } from "react";
 import StatSquare from "@/components/StatSquare";
 import StatModalWrapper from "@/components/StatModalWrapper";
-import { Music, Users, Clock, PieChart, BarChart2, Radio, Award } from "lucide-react";
 import Loading from "@/components/Loading";
 
-const stats = [
-  { id: "top-tracks", title: "Top Tracks", icon: Music, className: "md:col-span-2 lg:col-span-2 lg:row-span-2" },
-  { id: "top-artists", title: "Top Artists", icon: Users, className: "md:col-span-1 lg:col-span-2" },
-  { id: "listening-time", title: "Listening Time", icon: Clock },
-  { id: "genre-distribution", title: "Genre Distribution", icon: PieChart },
-  { id: "listening-history", title: "Listening History", icon: BarChart2, className: "md:col-span-2 lg:col-span-2" },
-  { id: "recommendations", title: "Recommendations", icon: Radio },
-  { id: "hall-of-fame", title: "Hall of Fame", icon: Award, className: "md:col-span-2 lg:col-span-2" },
+const stats: Array<{
+  id: string;
+  title: string;
+  icon: keyof typeof import("lucide-react");
+  className?: string;
+}> = [
+  { id: "top-tracks", title: "Top Tracks", icon: "Music", className: "md:col-span-2 lg:col-span-2 lg:row-span-2" },
+  { id: "top-artists", title: "Top Artists", icon: "Users", className: "md:col-span-1 lg:col-span-2" },
+  { id: "listening-time", title: "Listening Time", icon: "Clock" },
+  { id: "genre-distribution", title: "Genre Distribution", icon: "PieChart" },
+  { id: "listening-history", title: "Listening History", icon: "BarChart2", className: "md:col-span-2 lg:col-span-2" },
+  { id: "recommendations", title: "Recommendations", icon: "Radio" },
+  { id: "hall-of-fame", title: "Hall of Fame", icon: "Award", className: "md:col-span-2 lg:col-span-2" },
 ];
 
 export default function Stats() {
@@ -24,7 +27,13 @@ export default function Stats() {
         </h1>
         <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6'>
           {stats.map((stat) => (
-            <StatSquare key={stat.id} title={stat.title} icon={stat.icon} className={stat.className} statId={stat.id} />
+            <StatSquare
+              key={stat.id}
+              title={stat.title}
+              iconName={stat.icon}
+              className={stat.className}
+              statId={stat.id}
+            />
           ))}
         </div>
       </div>

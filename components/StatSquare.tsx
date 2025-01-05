@@ -1,19 +1,19 @@
-// components/StatSquare.tsx
 "use client";
 
-import { ReactNode } from "react";
-import { type LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { type LucideIcon } from "lucide-react";
+import * as Icons from "lucide-react";
 
 interface StatSquareProps {
   title: string;
-  icon: LucideIcon;
+  iconName: keyof typeof Icons;
   className?: string;
   statId: string;
 }
 
-export default function StatSquare({ title, icon: Icon, className = "", statId }: StatSquareProps) {
+export default function StatSquare({ title, iconName, className = "", statId }: StatSquareProps) {
   const router = useRouter();
+  const IconComponent = Icons[iconName] as LucideIcon;
 
   const openStat = () => {
     router.push(`/stats?stat=${statId}`);
@@ -25,7 +25,7 @@ export default function StatSquare({ title, icon: Icon, className = "", statId }
       onClick={openStat}
     >
       <div className='flex items-center mb-4'>
-        <Icon className='w-8 h-8 text-spotify-green mr-3' />
+        <IconComponent className='w-8 h-8 text-spotify-green mr-3' />
         <h3 className='text-xl font-bold text-white'>{title}</h3>
       </div>
     </div>
