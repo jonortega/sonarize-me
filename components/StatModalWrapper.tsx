@@ -4,16 +4,16 @@
 import { X } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { Award } from "lucide-react";
 
 const statComponents = {
-  // "top-tracks": dynamic(() => import("@/components/stats/TopTracks")),
-  // "top-artists": dynamic(() => import("@/components/stats/TopArtists")),
-  // "listening-time": dynamic(() => import("@/components/stats/ListeningTime")),
-  // "genre-distribution": dynamic(() => import("@/components/stats/GenreDistribution")),
-  // "listening-history": dynamic(() => import("@/components/stats/ListeningHistory")),
-  // "hall-of-fame": dynamic(() => import("@/components/stats/HallOfFame")),
-  // recommendations: dynamic(() => import("@/components/stats/Recommendations")),
   "hall-of-fame": dynamic(() => import("@/components/stats/HallOfFame")),
+  // Otros componentes de estadísticas
+};
+
+const statIcons = {
+  "hall-of-fame": Award,
+  // Otros iconos (importar según sea necesario)
 };
 
 export default function StatModalWrapper() {
@@ -28,6 +28,8 @@ export default function StatModalWrapper() {
   if (!statId) return null;
 
   const StatComponent = statComponents[statId as keyof typeof statComponents];
+  const StatIcon = statIcons[statId as keyof typeof statIcons];
+
   const title = statId
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -43,12 +45,16 @@ export default function StatModalWrapper() {
         }}
       >
         <div className='flex justify-between items-center mb-4'>
-          <h2 className='text-2xl font-bold text-white'>{title}</h2>
+          <div className='flex items-center mb-4'>
+            {StatIcon && <StatIcon className='w-8 h-8 text-spotify-green mr-3' />}
+            <h2 className='text-2xl font-bold text-white'>{title}</h2>
+          </div>
+
           <button onClick={closeModal} className='text-spotify-gray-100 hover:text-white'>
             <X size={24} />
           </button>
         </div>
-        <div className='text-spotify-gray-100 grow'>
+        <div className='text-spotify-gray-100 grow m-6'>
           <StatComponent />
         </div>
       </div>
