@@ -1,18 +1,19 @@
 // components/StatModalWrapper.tsx
 "use client";
 
-import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
 const statComponents = {
-  "top-tracks": dynamic(() => import("@/components/stats/TopTracks")),
-  "top-artists": dynamic(() => import("@/components/stats/TopArtists")),
-  "listening-time": dynamic(() => import("@/components/stats/ListeningTime")),
-  "genre-distribution": dynamic(() => import("@/components/stats/GenreDistribution")),
-  "listening-history": dynamic(() => import("@/components/stats/ListeningHistory")),
-  recommendations: dynamic(() => import("@/components/stats/Recommendations")),
+  // "top-tracks": dynamic(() => import("@/components/stats/TopTracks")),
+  // "top-artists": dynamic(() => import("@/components/stats/TopArtists")),
+  // "listening-time": dynamic(() => import("@/components/stats/ListeningTime")),
+  // "genre-distribution": dynamic(() => import("@/components/stats/GenreDistribution")),
+  // "listening-history": dynamic(() => import("@/components/stats/ListeningHistory")),
+  // "hall-of-fame": dynamic(() => import("@/components/stats/HallOfFame")),
+  // recommendations: dynamic(() => import("@/components/stats/Recommendations")),
+  "hall-of-fame": dynamic(() => import("@/components/stats/HallOfFame")),
 };
 
 export default function StatModalWrapper() {

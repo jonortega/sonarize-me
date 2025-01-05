@@ -2,7 +2,7 @@
 import { Suspense } from "react";
 import StatSquare from "@/components/StatSquare";
 import StatModalWrapper from "@/components/StatModalWrapper";
-import { Music, Users, Clock, PieChart, BarChart2, Radio } from "lucide-react";
+import { Music, Users, Clock, PieChart, BarChart2, Radio, Award } from "lucide-react";
 import Loading from "@/components/Loading";
 
 const stats = [
@@ -12,6 +12,7 @@ const stats = [
   { id: "genre-distribution", title: "Genre Distribution", icon: PieChart },
   { id: "listening-history", title: "Listening History", icon: BarChart2, className: "md:col-span-2 lg:col-span-2" },
   { id: "recommendations", title: "Recommendations", icon: Radio },
+  { id: "hall-of-fame", title: "Hall of Fame", icon: Award, className: "md:col-span-2 lg:col-span-2" },
 ];
 
 export default function Stats() {

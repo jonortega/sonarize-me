@@ -21,3 +21,14 @@ export interface Artist {
 export interface Genre {
   name: string;
 }
+
+export interface Album {
+  albumArtUrl: string;
+  track: string;
+  artist: string;
+}
+
+export interface HallOfFameData {
+  title: string;
+  albums: Album[];
+}
