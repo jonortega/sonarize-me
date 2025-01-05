@@ -1,4 +1,3 @@
-// components/StatModalWrapper.tsx
 "use client";
 
 import { X } from "lucide-react";
@@ -16,7 +15,7 @@ const statIcons = {
   // Otros iconos (importar según sea necesario)
 };
 
-export default function StatModalWrapper() {
+export default function StatWrapper() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const statId = searchParams.get("stat");

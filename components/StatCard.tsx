@@ -4,14 +4,14 @@ import { useRouter } from "next/navigation";
 import { type LucideIcon } from "lucide-react";
 import * as Icons from "lucide-react";
 
-interface StatSquareProps {
+interface StatCardProps {
   title: string;
   iconName: keyof typeof Icons;
   className?: string;
   statId: string;
 }
 
-export default function StatSquare({ title, iconName, className = "", statId }: StatSquareProps) {
+export default function StatCard({ title, iconName, className = "", statId }: StatCardProps) {
   const router = useRouter();
   const IconComponent = Icons[iconName] as LucideIcon;
 

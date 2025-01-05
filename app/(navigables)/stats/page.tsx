@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import StatSquare from "@/components/StatSquare";
-import StatModalWrapper from "@/components/StatModalWrapper";
+import StatCard from "@/components/StatCard";
+import StatWrapper from "@/components/StatWrapper";
 import Loading from "@/components/Loading";
 
 const stats: Array<{
@@ -27,7 +27,7 @@ export default function Stats() {
         </h1>
         <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6'>
           {stats.map((stat) => (
-            <StatSquare
+            <StatCard
               key={stat.id}
               title={stat.title}
               iconName={stat.icon}
@@ -38,7 +38,7 @@ export default function Stats() {
         </div>
       </div>
       <Suspense fallback={<Loading />}>
-        <StatModalWrapper />
+        <StatWrapper />
       </Suspense>
     </main>
   );
