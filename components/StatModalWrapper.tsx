@@ -39,6 +39,7 @@ export default function StatModalWrapper() {
         className='bg-spotify-gray-300 rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto shadow-lg animate-popup'
         style={{
           boxShadow: "0 10px 25px rgba(0, 0, 0, 0.5)",
+          overflow: "hidden",
         }}
       >
         <div className='flex justify-between items-center mb-4'>
@@ -47,7 +48,7 @@ export default function StatModalWrapper() {
             <X size={24} />
           </button>
         </div>
-        <div className='text-spotify-gray-100'>
+        <div className='text-spotify-gray-100 grow'>
           <StatComponent />
         </div>
       </div>
