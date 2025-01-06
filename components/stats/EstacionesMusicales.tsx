@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
+import { Sun, Snowflake, Flower, Leaf } from "lucide-react";
 
 // Datos del gráfico
 const COLORS = ["#1dafb9", "#1ed760", "#ffa600", "#ff6b00"];
 const SEASONS = ["Invierno", "Primavera", "Verano", "Otoño"];
+// eslint-disable-next-line react/jsx-key
+const ICONS = [<Snowflake />, <Flower />, <Sun />, <Leaf />];
 
 const DonutChart = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -18,8 +21,8 @@ const DonutChart = () => {
   ];
 
   const radius = 100; // Radio del gráfico
-  const innerRadius = 70; // Radio interno del "donut"
-  const expandedRadius = 120; // Radio cuando el segmento está resaltado
+  const innerRadius = 60; // Radio interno del "donut"
+  const expandedRadius = 130; // Radio cuando el segmento está resaltado
 
   // Función para calcular el path de un segmento
   const calculatePath = (startAngle: number, endAngle: number, isHovered: boolean) => {
@@ -43,10 +46,12 @@ const DonutChart = () => {
     `;
   };
 
+  const rotationOffset = -135; // Girar el gráfico
+
   // Calcular los segmentos
   const segments = data.map((item, index) => {
-    const startAngle = (index * 360) / data.length; // Inicio del segmento
-    const endAngle = ((index + 1) * 360) / data.length; // Final del segmento
+    const startAngle = rotationOffset + (index * 360) / data.length; // Inicio del segmento
+    const endAngle = rotationOffset + ((index + 1) * 360) / data.length; // Final del segmento
     const isHovered = index === hoveredIndex;
 
     return (
@@ -58,6 +63,9 @@ const DonutChart = () => {
         strokeWidth='2'
         onMouseEnter={() => setHoveredIndex(index)}
         onMouseLeave={() => setHoveredIndex(null)}
+        style={{
+          transition: "d 0.2s ease-in-out", // Animación suave
+        }}
       />
     );
   });
@@ -79,6 +87,23 @@ const DonutChart = () => {
         }}
       >
         {segments}
+
+        {/* Mostrar el ícono centrado si hay un segmento seleccionado */}
+        {hoveredIndex !== null && (
+          <g transform='translate(0, 0)'>
+            <foreignObject x='-30' y='-30' width='60' height='60'>
+              <div
+                className='flex items-center justify-center w-full h-full text-center'
+                style={{
+                  transform: "scale(1.5)", // Aumenta el tamaño del ícono
+                  color: COLORS[hoveredIndex], // Cambia el color al del segmento
+                }}
+              >
+                {ICONS[hoveredIndex]}
+              </div>
+            </foreignObject>
+          </g>
+        )}
       </svg>
       {hoveredIndex !== null && (
         <div
