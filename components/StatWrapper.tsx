@@ -1,18 +1,19 @@
 "use client";
 
-import { X } from "lucide-react";
+import { CalendarClock, Award, X } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Award } from "lucide-react";
 
 const statComponents = {
   "hall-of-fame": dynamic(() => import("@/components/stats/HallOfFame")),
-  // Otros componentes de estadísticas
+  "estaciones-musicales": dynamic(() => import("@/components/stats/EstacionesMusicales")),
+  // Insertar más componentes dinámicos aquí
 };
 
 const statIcons = {
   "hall-of-fame": Award,
-  // Otros iconos (importar según sea necesario)
+  "estaciones-musicales": CalendarClock,
+  // Insertar más iconos aquí (importarlos de "lucide-react")
 };
 
 export default function StatWrapper() {
