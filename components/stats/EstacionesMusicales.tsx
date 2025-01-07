@@ -175,8 +175,8 @@ const DonutChart = () => {
       <div
         className='absolute bg-black text-white p-4 rounded-md shadow-lg'
         style={{
-          top: `${mousePosition.y - 20}px`, // Positivo: abajo, Negativo: arriba
-          left: `${mousePosition.x - 150}px`, // Positivo: derecha, Negativo: izquierda
+          top: `${mousePosition.y - 60}px`, // Positivo: abajo, Negativo: arriba
+          left: `${mousePosition.x - 140}px`, // Positivo: derecha, Negativo: izquierda
           zIndex: 50,
           transform: "translate(-50%, -50%)",
         }}
