@@ -11,7 +11,7 @@ const stats: Array<{
 }> = [
   { id: "top-tracks", title: "Top Tracks", icon: "Music", className: "md:col-span-2 lg:col-span-2 lg:row-span-2" },
   { id: "top-artists", title: "Top Artists", icon: "Users", className: "md:col-span-1 lg:col-span-2" },
-  { id: "listening-time", title: "Listening Time", icon: "Clock" },
+  { id: "estaciones-musicales", title: "Estaciones Musicales", icon: "CalendarClock" },
   { id: "genre-distribution", title: "Genre Distribution", icon: "PieChart" },
   { id: "listening-history", title: "Listening History", icon: "BarChart2", className: "md:col-span-2 lg:col-span-2" },
   { id: "recommendations", title: "Recommendations", icon: "Radio" },
