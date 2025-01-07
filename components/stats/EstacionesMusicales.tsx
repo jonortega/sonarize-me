@@ -1,30 +1,72 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Sun, Snowflake, Flower, Leaf } from "lucide-react";
 
-// Datos del gráfico
+// Colores e íconos para cada estación
 const COLORS = ["#1dafb9", "#1ed760", "#ffa600", "#ff6b00"];
 const SEASONS = ["Invierno", "Primavera", "Verano", "Otoño"];
 // eslint-disable-next-line react/jsx-key
 const ICONS = [<Snowflake />, <Flower />, <Sun />, <Leaf />];
 
+const SEASON_KEYS_MAP: Record<string, string> = {
+  invierno: "invierno",
+  primavera: "primavera",
+  verano: "verano",
+  otoño: "otono", // Mapea "otoño" a "otono"
+};
+
+interface StationData {
+  artist: { name: string; artistPicUrl: string };
+  genre: { name: string };
+}
+
+interface StationsResponse {
+  invierno: StationData;
+  primavera: StationData;
+  verano: StationData;
+  otono: StationData;
+}
+
 const DonutChart = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [data, setData] = useState<StationsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Cálculo de ángulos para cada segmento
-  const data = [
-    { name: "Invierno", value: 25 },
-    { name: "Primavera", value: 25 },
-    { name: "Verano", value: 25 },
-    { name: "Otoño", value: 25 },
-  ];
+  useEffect(() => {
+    const fetchStationsData = async () => {
+      try {
+        const response = await fetch("/api/stats/estaciones-musicales", {
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch station data");
+        }
+
+        const result: StationsResponse = await response.json();
+
+        console.log("Fetched season data:", result);
+
+        setData(result);
+      } catch (error) {
+        console.error("Error fetching station data:", error);
+        setError("Failed to load station data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStationsData();
+  }, []);
 
   const radius = 100; // Radio del gráfico
   const innerRadius = 60; // Radio interno del "donut"
   const expandedRadius = 130; // Radio cuando el segmento está resaltado
+  const rotationOffset = -135; // Girar el gráfico
 
-  // Función para calcular el path de un segmento
   const calculatePath = (startAngle: number, endAngle: number, isHovered: boolean) => {
     const r = isHovered ? expandedRadius : radius;
 
@@ -46,12 +88,9 @@ const DonutChart = () => {
     `;
   };
 
-  const rotationOffset = -135; // Girar el gráfico
-
-  // Calcular los segmentos
-  const segments = data.map((item, index) => {
-    const startAngle = rotationOffset + (index * 360) / data.length; // Inicio del segmento
-    const endAngle = rotationOffset + ((index + 1) * 360) / data.length; // Final del segmento
+  const segments = SEASONS.map((season, index) => {
+    const startAngle = rotationOffset + (index * 360) / SEASONS.length;
+    const endAngle = rotationOffset + ((index + 1) * 360) / SEASONS.length;
     const isHovered = index === hoveredIndex;
 
     return (
@@ -64,26 +103,41 @@ const DonutChart = () => {
         onMouseEnter={() => setHoveredIndex(index)}
         onMouseLeave={() => setHoveredIndex(null)}
         style={{
-          transition: "d 0.2s ease-in-out", // Animación suave
+          transition: "d 0.2s ease-in-out",
         }}
       />
     );
   });
 
+  if (loading) return <div>Cargando...</div>;
+  if (error || !data) return <div>{error || "Error al cargar los datos"}</div>;
+
+  // console.log("Currenst data state:", data);
+  // console.log("Hovered index:", hoveredIndex);
+
+  if (hoveredIndex !== null) {
+    const seasonKey = SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse;
+    console.log("Hovered index:", hoveredIndex);
+    console.log("Season key:", seasonKey);
+    console.log("Artist data for season:", data?.[seasonKey]?.artist);
+  }
+
+  // const seasonKey =
+  //   hoveredIndex !== null ? (SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse) : null;
+  // const currentData =
+  //   seasonKey && data?.[seasonKey]
+  //     ? `Artista: ${data[seasonKey].artist.name}, URL: ${data[seasonKey].artist.artistPicUrl}, Género: ${data[seasonKey].genre.name}`
+  //     : "Pasa el ratón sobre un segmento para ver los datos.";
+
   return (
-    <div
-      className='flex flex-col items-center'
-      style={{
-        width: "600px", // Reducir: mueve a la izquierda; aumentar: mueve a la derecha
-        height: "300px",
-      }}
-    >
+    <div className='relative flex items-center justify-center'>
+      {/* Gráfico circular */}
       <svg
         width='300'
         height='300'
         viewBox='-150 -150 300 300'
         style={{
-          overflow: "visible", // Permite que los segmentos salgan del área fija
+          overflow: "visible",
         }}
       >
         {segments}
@@ -95,8 +149,8 @@ const DonutChart = () => {
               <div
                 className='flex items-center justify-center w-full h-full text-center'
                 style={{
-                  transform: "scale(1.5)", // Aumenta el tamaño del ícono
-                  color: COLORS[hoveredIndex], // Cambia el color al del segmento
+                  transform: "scale(1.5)",
+                  color: COLORS[hoveredIndex],
                 }}
               >
                 {ICONS[hoveredIndex]}
@@ -105,18 +159,41 @@ const DonutChart = () => {
           </g>
         )}
       </svg>
-      {hoveredIndex !== null && (
-        <div
-          className='mt-4 text-lg font-medium'
-          style={{
-            width: "300px",
-            height: "40px",
-            textAlign: "center",
-          }}
-        >
-          Estás sobre: {SEASONS[hoveredIndex]}
-        </div>
-      )}
+
+      <div className='relative'>
+        <svg>{/* Segments */}</svg>
+        {hoveredIndex !== null && (
+          <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center'>
+            <Image
+              src={
+                data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].artist
+                  .artistPicUrl
+              }
+              alt={`Artista destacado ${SEASON_KEYS_MAP[SEASONS[hoveredIndex]]}`}
+              width={80}
+              height={80}
+              className='rounded-full mb-2'
+            />
+            <h3 className='text-white text-lg font-bold'>
+              {data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].artist.name}
+            </h3>
+            <p className='text-gray-400 text-sm'>
+              Género: {data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].genre.name}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Texto con los datos del segmento */}
+      {/* <div
+        className='mt-4 text-white text-center'
+        style={{
+          width: "300px", // Ancho fijo
+          wordWrap: "break-word", // Permitir wrap del texto
+        }}
+      >
+        {currentData}
+      </div> */}
     </div>
   );
 };

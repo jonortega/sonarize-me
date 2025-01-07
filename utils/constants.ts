@@ -3,4 +3,5 @@ export const SPOTIFY_SCOPES = [
   "user-read-private",
   "user-read-email",
   "user-read-recently-played",
+  "user-library-read",
 ].join(" ");
