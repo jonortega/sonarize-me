@@ -31,6 +31,7 @@ interface StationsResponse {
 
 const DonutChart = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [data, setData] = useState<StationsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +62,16 @@ const DonutChart = () => {
 
     fetchStationsData();
   }, []);
+
+  // Update mouse position on movement
+  const handleMouseMove = (event: React.MouseEvent) => {
+    setMousePosition({ x: event.clientX, y: event.clientY });
+  };
+
+  useEffect(() => {
+    console.log("Hovered Index:", hoveredIndex);
+    console.log("Mouse Position:", mousePosition);
+  }, [hoveredIndex, mousePosition]);
 
   const radius = 100; // Radio del gráfico
   const innerRadius = 60; // Radio interno del "donut"
@@ -101,6 +112,7 @@ const DonutChart = () => {
         stroke='#fff'
         strokeWidth='2'
         onMouseEnter={() => setHoveredIndex(index)}
+        onMouseMove={handleMouseMove}
         onMouseLeave={() => setHoveredIndex(null)}
         style={{
           transition: "d 0.2s ease-in-out",
@@ -112,9 +124,6 @@ const DonutChart = () => {
   if (loading) return <div>Cargando...</div>;
   if (error || !data) return <div>{error || "Error al cargar los datos"}</div>;
 
-  // console.log("Currenst data state:", data);
-  // console.log("Hovered index:", hoveredIndex);
-
   if (hoveredIndex !== null) {
     const seasonKey = SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse;
     console.log("Hovered index:", hoveredIndex);
@@ -122,15 +131,17 @@ const DonutChart = () => {
     console.log("Artist data for season:", data?.[seasonKey]?.artist);
   }
 
-  // const seasonKey =
-  //   hoveredIndex !== null ? (SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse) : null;
-  // const currentData =
-  //   seasonKey && data?.[seasonKey]
-  //     ? `Artista: ${data[seasonKey].artist.name}, URL: ${data[seasonKey].artist.artistPicUrl}, Género: ${data[seasonKey].genre.name}`
-  //     : "Pasa el ratón sobre un segmento para ver los datos.";
-
   return (
-    <div className='relative flex items-center justify-center'>
+    <div
+      className='relative w-full h-[400px] flex items-center justify-center'
+      onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect(); // Obtener posición del contenedor
+        const x = e.clientX - rect.left; // Coordenadas relativas
+        const y = e.clientY - rect.top; // Coordenadas relativas
+        console.log("Mouse Position (relative):", { x, y });
+        setMousePosition({ x, y });
+      }}
+    >
       {/* Gráfico circular */}
       <svg
         width='300'
@@ -160,40 +171,44 @@ const DonutChart = () => {
         )}
       </svg>
 
-      <div className='relative'>
-        <svg>{/* Segments */}</svg>
-        {hoveredIndex !== null && (
-          <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center'>
-            <Image
-              src={
-                data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].artist
-                  .artistPicUrl
-              }
-              alt={`Artista destacado ${SEASON_KEYS_MAP[SEASONS[hoveredIndex]]}`}
-              width={80}
-              height={80}
-              className='rounded-full mb-2'
-            />
-            <h3 className='text-white text-lg font-bold'>
-              {data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].artist.name}
-            </h3>
-            <p className='text-gray-400 text-sm'>
-              Género: {data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].genre.name}
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Texto con los datos del segmento */}
-      {/* <div
-        className='mt-4 text-white text-center'
+      {/* Tarjeta flotante */}
+      <div
+        className='absolute bg-black text-white p-4 rounded-md shadow-lg'
         style={{
-          width: "300px", // Ancho fijo
-          wordWrap: "break-word", // Permitir wrap del texto
+          top: `${mousePosition.y - 20}px`, // Positivo: abajo, Negativo: arriba
+          left: `${mousePosition.x - 150}px`, // Positivo: derecha, Negativo: izquierda
+          zIndex: 50,
+          transform: "translate(-50%, -50%)",
         }}
       >
-        {currentData}
-      </div> */}
+        {hoveredIndex !== null ? (
+          <>
+            <div className='flex items-center mb-2'>
+              <Image
+                src={
+                  data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].artist
+                    .artistPicUrl
+                }
+                alt='Artista'
+                width={48} // Define un tamaño fijo en píxeles
+                height={48} // Define un tamaño fijo en píxeles
+                className='w-12 h-12 rounded-full mr-2'
+              />
+              <div>
+                <h3 className='text-lg font-bold'>
+                  {data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].artist.name}
+                </h3>
+                <p className='text-gray-400 text-sm'>
+                  Género:{" "}
+                  {data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].genre.name}
+                </p>
+              </div>
+            </div>
+          </>
+        ) : (
+          <p>No hay datos disponibles</p>
+        )}
+      </div>
     </div>
   );
 };
