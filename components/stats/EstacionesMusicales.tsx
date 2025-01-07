@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Sun, Snowflake, Flower, Leaf } from "lucide-react";
+import { Sun, Snowflake, Flower, Leaf, AudioLines } from "lucide-react";
 
 // Colores e íconos para cada estación
 const COLORS = ["#1dafb9", "#1ed760", "#ffa600", "#ff6b00"];
@@ -133,7 +133,7 @@ const DonutChart = () => {
 
   return (
     <div
-      className='relative w-full h-[400px] flex items-center justify-center'
+      className='relative w-full h-[400px] flex flex-col items-center justify-center'
       onMouseMove={(e) => {
         const rect = e.currentTarget.getBoundingClientRect(); // Obtener posición del contenedor
         const x = e.clientX - rect.left; // Coordenadas relativas
@@ -141,6 +141,7 @@ const DonutChart = () => {
         console.log("Mouse Position (relative):", { x, y });
         setMousePosition({ x, y });
       }}
+      onMouseLeave={() => setHoveredIndex(null)}
     >
       {/* Gráfico circular */}
       <svg
@@ -172,43 +173,65 @@ const DonutChart = () => {
       </svg>
 
       {/* Tarjeta flotante */}
-      <div
-        className='absolute bg-black text-white p-4 rounded-md shadow-lg'
-        style={{
-          top: `${mousePosition.y - 60}px`, // Positivo: abajo, Negativo: arriba
-          left: `${mousePosition.x - 140}px`, // Positivo: derecha, Negativo: izquierda
-          zIndex: 50,
-          transform: "translate(-50%, -50%)",
-        }}
-      >
-        {hoveredIndex !== null ? (
-          <>
-            <div className='flex items-center mb-2'>
-              <Image
-                src={
-                  data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].artist
-                    .artistPicUrl
-                }
-                alt='Artista'
-                width={48} // Define un tamaño fijo en píxeles
-                height={48} // Define un tamaño fijo en píxeles
-                className='w-12 h-12 rounded-full mr-2'
-              />
-              <div>
-                <h3 className='text-lg font-bold'>
-                  {data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].artist.name}
-                </h3>
-                <p className='text-gray-400 text-sm'>
-                  Género:{" "}
-                  {data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].genre.name}
-                </p>
+      {hoveredIndex !== null && (
+        <div
+          className='absolute bg-black text-white p-4 rounded-lg shadow-lg w-72'
+          style={{
+            top: `${mousePosition.y - 100}px`, // Positivo: abajo, Negativo: arriba
+            left: `${
+              hoveredIndex !== null && SEASONS[hoveredIndex].toLowerCase() === "otoño"
+                ? mousePosition.x + 170 // Ajustar más hacia la derecha para otoño
+                : mousePosition.x - 160 // Posición estándar
+            }px`,
+            zIndex: 50,
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          {hoveredIndex !== null ? (
+            <>
+              {/* Título */}
+              <h2 className='text-lg font-bold text-center mb-4'>Destacados de {SEASONS[hoveredIndex]}</h2>
+
+              {/* Contenido en horizontal con cuadros separados */}
+              <div className='flex justify-between gap-4'>
+                {/* Cuadro de Artista */}
+                <div className='flex flex-col items-center bg-gray-800 p-4 rounded-md w-1/2'>
+                  <Image
+                    src={
+                      data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].artist
+                        .artistPicUrl
+                    }
+                    alt='Artista'
+                    width={60}
+                    height={60}
+                    className='rounded-full mb-2'
+                  />
+                  <p className='text-sm font-medium text-center'>
+                    {data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].artist.name}
+                  </p>
+                  <span className='text-xs text-gray-400 mt-1'>Artista</span>
+                </div>
+
+                {/* Cuadro de Género */}
+                <div className='flex flex-col items-center bg-gray-800 p-4 rounded-md w-1/2'>
+                  <div className='flex items-center justify-center w-16 h-16 bg-gray-700 rounded-full mb-2'>
+                    <AudioLines className='w-8 h-8 text-white' />
+                  </div>
+                  <p className='text-sm font-medium text-center'>
+                    {data[SEASON_KEYS_MAP[SEASONS[hoveredIndex]?.toLowerCase()] as keyof StationsResponse].genre.name
+                      .split(" ")
+                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(" ")}
+                  </p>
+                  <span className='text-xs text-gray-400 mt-1'>Género</span>
+                </div>
               </div>
-            </div>
-          </>
-        ) : (
-          <p>No hay datos disponibles</p>
-        )}
-      </div>
+            </>
+          ) : (
+            <p>No hay datos disponibles</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
