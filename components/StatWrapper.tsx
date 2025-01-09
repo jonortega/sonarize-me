@@ -14,7 +14,7 @@ const statComponents = {
 const statIcons = {
   "hall-of-fame": Award,
   "estaciones-musicales": CalendarClock,
-  "huella-del-dia": Fingerprint, // ! Cambiar por un icono más adecuado
+  "huella-del-dia": Fingerprint,
   // Insertar más iconos aquí (importarlos de "lucide-react")
 };
 

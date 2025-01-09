@@ -1,111 +1,97 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
-import "chart.js/auto";
-import { ActiveElement, ChartEvent } from "chart.js/auto";
+import { Chart as ChartJS, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend } from "chart.js";
+import { useEffect, useState } from "react";
 
-type HuellaDelDiaData = { [hour: string]: number };
+// Registra los componentes de Chart.js
+ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
 
-const HuellaDelDia = () => {
-  const [data, setData] = useState<HuellaDelDiaData | null>(null);
-  const [hoveredHour, setHoveredHour] = useState<string | null>(null);
+export default function HuellaDelDia() {
+  const [data, setData] = useState<number[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/api/stats/huella-del-dia");
-        const result = await response.json();
-        setData(result);
-      } catch (error) {
-        console.error("Error al cargar los datos:", error);
-      }
-    };
-    fetchData();
+    fetch("/api/stats/huella-del-dia")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setData(data);
+        }
+      })
+      .catch((err) => setError(err.message));
   }, []);
 
-  if (!data) {
-    return (
-      <div className='flex justify-center items-center h-64 text-white'>
-        <p>Cargando datos...</p>
-      </div>
-    );
+  if (error) {
+    return <p>Error: {error}</p>;
   }
 
   const labels = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, "0")}:00`);
-  const values = labels.map((hour) => data[hour] || 0);
-
-  const chartData = {
-    labels,
-    datasets: [
-      {
-        label: "Minutos escuchados",
-        data: values,
-        borderColor: "#1DB954",
-        backgroundColor: "rgba(29, 185, 84, 0.2)",
-        borderWidth: 2,
-        pointRadius: 3,
-        pointHoverRadius: 6,
-        pointBackgroundColor: "#1DB954",
-        tension: 0.4, // Líneas suavizadas
-      },
-    ],
-  };
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      tooltip: {
-        callbacks: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          label: (context: any) => `${context.raw} minutos`,
-        },
-      },
-    },
-    onHover: (event: ChartEvent, elements: ActiveElement[]) => {
-      if (elements.length > 0) {
-        const hoveredIndex = elements[0].index;
-        setHoveredHour(labels[hoveredIndex]);
-      } else {
-        setHoveredHour(null);
-      }
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Horas del día",
-          color: "#FFFFFF",
-        },
-        ticks: {
-          color: "#FFFFFF",
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Minutos escuchados",
-          color: "#FFFFFF",
-        },
-        ticks: {
-          stepSize: 10,
-          color: "#FFFFFF",
-        },
-        beginAtZero: true,
-        max: 60,
-      },
-    },
-  };
 
   return (
-    <div className='bg-black text-white rounded-md p-4 shadow-md'>
-      <h2 className='text-2xl font-bold mb-4'>Huella del Día</h2>
-      <div className='relative h-96'>
-        <Line data={chartData} options={options} />
-      </div>
+    <div>
+      <Line
+        data={{
+          labels,
+          datasets: [
+            {
+              label: "Minutos Escuchados",
+              data, // Datos desde el backend
+              backgroundColor: "rgba(30, 215, 96, 0.2)",
+              borderColor: "rgba(30, 215, 96, 1)",
+              borderWidth: 2,
+              tension: 0.4, // Suavidad de las líneas
+              fill: false,
+              pointStyle: false,
+            },
+          ],
+        }}
+        options={{
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 60, // Máximo de minutos por hora
+              title: {
+                display: true,
+                text: "Minutos",
+                color: "#FFFFFF",
+              },
+              grid: {
+                display: true, // Eliminar grid del eje y
+                color: "#121212",
+              },
+              ticks: {
+                color: "#FFFFFF", // Contraste para los ticks del eje y
+              },
+            },
+            x: {
+              title: {
+                display: true,
+                text: "Horas del Día",
+                color: "#FFFFFF",
+              },
+              grid: {
+                display: false, // Eliminar grid del eje x
+              },
+              ticks: {
+                color: "#FFFFFF", // Contraste para los ticks del eje x
+              },
+            },
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: "top",
+              labels: {
+                color: "#FFFFFF", // Contraste para el texto de la leyenda
+              },
+            },
+          },
+        }}
+      />
     </div>
   );
-};
-
-export default HuellaDelDia;
+}

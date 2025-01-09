@@ -1,33 +1,58 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 export async function GET() {
-  // Datos mock: minutos escuchados por hora del día
-  const mockData = {
-    "00:00": 15,
-    "01:00": 10,
-    "02:00": 5,
-    "03:00": 0,
-    "04:00": 0,
-    "05:00": 0,
-    "06:00": 20,
-    "07:00": 25,
-    "08:00": 30,
-    "09:00": 35,
-    "10:00": 40,
-    "11:00": 45,
-    "12:00": 50,
-    "13:00": 40,
-    "14:00": 35,
-    "15:00": 30,
-    "16:00": 25,
-    "17:00": 20,
-    "18:00": 15,
-    "19:00": 10,
-    "20:00": 20,
-    "21:00": 30,
-    "22:00": 40,
-    "23:00": 50,
-  };
+  const accessToken = (await cookies()).get("access_token")?.value;
 
-  return NextResponse.json(mockData);
+  if (!accessToken) {
+    return NextResponse.json({ error: "Access token not found" }, { status: 401 });
+  }
+
+  let url = "https://api.spotify.com/v1/me/player/recently-played?limit=50";
+  const allTracks = [];
+  let next = true;
+
+  try {
+    // Recuperar todas las canciones (paginar si es necesario)
+    while (next) {
+      const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error("Spotify API error:", error);
+        return NextResponse.json({ error: "Failed to fetch data" }, { status: response.status });
+      }
+
+      const data = await response.json();
+      allTracks.push(...data.items);
+
+      if (data.next) {
+        url = data.next;
+      } else {
+        next = false;
+      }
+    }
+
+    // Inicializar array de 24 posiciones para las horas del día
+    const listeningHours = Array(24).fill(0);
+
+    allTracks.forEach((track: { played_at: string; track: { duration_ms: number } }) => {
+      const playedAt = new Date(track.played_at);
+      const hour = playedAt.getHours();
+
+      const trackDurationMs = track.track.duration_ms;
+      const timeListenedMinutes = Math.max(0, Math.min(trackDurationMs / 1000 / 60, 60));
+
+      listeningHours[hour] += timeListenedMinutes;
+    });
+
+    console.log("Listening hours distribution:", listeningHours);
+
+    return NextResponse.json(listeningHours);
+  } catch (error) {
+    console.error("Error in /api/stats/huella-del-dia:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
