@@ -1,8 +1,14 @@
 "use client";
 
+/**
+ * ! Hacer que la animacion empiece antes
+ * ! Mostrar el valor de la diferencia cuando salga la nueva onda
+ * ! Permitir volver atrás apra ver las ondas originales
+ * ! Mejorar la distribución general del diseño
+ */
+
 import React, { useState, useEffect, useRef } from "react";
 import { select, scaleLinear, line, curveBasis } from "d3";
-import { X } from "lucide-react";
 
 interface FrequencyData {
   normal: number;
@@ -94,8 +100,8 @@ const ResonanceWaves: React.FC = () => {
     const actualData = generateWaveData(frequencyData.actual, 0.7, Math.PI / 4);
 
     if (!showCombined) {
-      drawWave(normalData, "#1DB954"); // Original Spotify green
-      drawWave(actualData, "#2EDA6C", 1000); // Lighter green for contrast
+      drawWave(normalData, "#1ed760"); // Original Spotify green
+      drawWave(actualData, "#68e394", 1000); // Lighter green for contrast
     } else {
       const combinedData = normalData.map((d, i) => ({
         x: d.x,
@@ -121,45 +127,25 @@ const ResonanceWaves: React.FC = () => {
   };
 
   return (
-    <div className='bg-[#121212] p-6 rounded-xl shadow-lg relative'>
-      <div className='flex items-center justify-between mb-6'>
-        <div className='flex items-center gap-2'>
-          <svg width='24' height='24' viewBox='0 0 24 24' fill='none'>
-            <path
-              d='M12 3V21M17 6V18M7 6V18'
-              stroke='#1DB954'
-              strokeWidth='2'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-            />
-          </svg>
-          <h1 className='text-xl font-bold text-[#FFFFFF]'>Indice De Resonancia</h1>
-        </div>
-        <button className='text-[#FFFFFF] hover:text-[#1DB954] transition-colors'>
-          <X size={20} />
-        </button>
+    <div className='bg-[#181818] p-6 rounded-lg'>
+      <h2 className='text-2xl font-bold mb-4 text-[#FFFFFF]'>Resonance Waves</h2>
+
+      <div className='space-y-2 mb-6'>
+        <p style={{ color: "#1DB954" }}>Normal: {isLoading ? "Loading..." : (frequencyData?.normal ?? "N/A")}</p>
+        <p style={{ color: "#2EDA6C" }}>Actual: {isLoading ? "Loading..." : (frequencyData?.actual ?? "N/A")}</p>
       </div>
 
-      <div className='bg-[#181818] p-6 rounded-lg'>
-        <h2 className='text-2xl font-bold mb-4 text-[#FFFFFF]'>Resonance Waves</h2>
-
-        <div className='space-y-2 mb-6'>
-          <p style={{ color: "#1DB954" }}>Normal: {isLoading ? "Loading..." : (frequencyData?.normal ?? "N/A")}</p>
-          <p style={{ color: "#2EDA6C" }}>Actual: {isLoading ? "Loading..." : (frequencyData?.actual ?? "N/A")}</p>
-        </div>
-
-        <div className='relative' style={{ width: "100%", height: "200px" }}>
-          <svg ref={svgRef} width='100%' height='100%' className='overflow-visible' />
-        </div>
-
-        <button
-          onClick={handleCombineWaves}
-          disabled={showCombined || isLoading}
-          className='mt-4 bg-[#1DB954] hover:bg-[#1ED760] text-[#FFFFFF] font-bold py-2 px-4 rounded-full w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
-        >
-          {isLoading ? "Loading..." : "Combine Waves"}
-        </button>
+      <div className='relative' style={{ width: "100%", height: "200px" }}>
+        <svg ref={svgRef} width='100%' height='100%' className='overflow-visible' />
       </div>
+
+      <button
+        onClick={handleCombineWaves}
+        disabled={showCombined || isLoading}
+        className='mt-4 bg-[#1DB954] hover:bg-[#1ED760] text-[#FFFFFF] font-bold py-2 px-4 rounded-full w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+      >
+        {isLoading ? "Loading..." : "Combine Waves"}
+      </button>
     </div>
   );
 };
