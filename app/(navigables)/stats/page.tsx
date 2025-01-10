@@ -13,7 +13,7 @@ const stats: Array<{
   { id: "huella-del-dia", title: "Huella Del Día", icon: "Fingerprint", className: "md:col-span-1 lg:col-span-2" },
   { id: "estaciones-musicales", title: "Estaciones Musicales", icon: "SunSnow" },
   { id: "tus-decadas", title: "Tus Décadas", icon: "Rewind" },
-  { id: "listening-history", title: "Listening History", icon: "BarChart2", className: "md:col-span-2 lg:col-span-2" },
+  { id: "la-bitacora", title: "La Bitácora", icon: "BookMarked", className: "md:col-span-2 lg:col-span-2" },
   { id: "indice-de-resonancia", title: "Índice de Resonancia", icon: "AudioWaveform" },
 ];
 
