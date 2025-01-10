@@ -1,71 +1,133 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
-const mockData = {
-  years: {
-    "2020": 150,
-    "2021": 200,
-    "2022": 180,
-    "2023": 220,
-  },
-  months: {
-    Enero: 20,
-    Febrero: 15,
-    Marzo: 25,
-    Abril: 18,
-    Mayo: 22,
-    Junio: 30,
-    Julio: 28,
-    Agosto: 19,
-    Septiembre: 21,
-    Octubre: 17,
-    Noviembre: 23,
-    Diciembre: 24,
-  },
-  days: {
-    "01": 2,
-    "02": 1,
-    "03": 3,
-    "04": 0,
-    "05": 2,
-    "06": 1,
-    "07": 4,
-    "08": 2,
-    "09": 1,
-    "10": 3,
-    "11": 2,
-    "12": 1,
-    "13": 3,
-    "14": 2,
-    "15": 1,
-    "16": 0,
-    "17": 2,
-    "18": 3,
-    "19": 1,
-    "20": 2,
-    "21": 3,
-    "22": 1,
-    "23": 2,
-    "24": 0,
-    "25": 3,
-    "26": 1,
-    "27": 2,
-    "28": 3,
-    "29": 1,
-    "30": 2,
-    "31": 3,
-  },
+type TrackData = {
+  year: string;
+  month: string;
+  day: string;
 };
 
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const year = searchParams.get("year");
-  const month = searchParams.get("month");
+type AggregatedData = {
+  [key: string]: number; // key: period (year, month, day), value: track count
+};
 
-  if (year && month) {
-    return NextResponse.json(mockData.days);
-  } else if (year) {
-    return NextResponse.json(mockData.months);
-  } else {
-    return NextResponse.json(mockData.years);
+let cache: {
+  years: AggregatedData;
+  months: { [year: string]: AggregatedData };
+  days: { [yearMonth: string]: AggregatedData };
+} | null = null;
+
+// Function to fetch all saved tracks from Spotify
+async function fetchAllSavedTracks(accessToken: string): Promise<TrackData[]> {
+  const url = "https://api.spotify.com/v1/me/tracks";
+  let tracks: TrackData[] = [];
+  let next = url;
+
+  while (next) {
+    const response = await fetch(next, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch data from Spotify");
+
+    const data = await response.json();
+
+    tracks = tracks.concat(
+      data.items.map((item: { added_at: string }) => {
+        const addedAt = new Date(item.added_at);
+        return {
+          year: addedAt.getFullYear().toString(),
+          month: (addedAt.getMonth() + 1).toString().padStart(2, "0"),
+          day: addedAt.getDate().toString().padStart(2, "0"),
+        };
+      })
+    );
+
+    console.log("Number of tracks fetched:", tracks.length);
+
+    next = data.next;
   }
+
+  return tracks;
+}
+
+// Function to aggregate tracks by a specific period
+function aggregateTracks(tracks: TrackData[], period: "year" | "month" | "day"): AggregatedData {
+  return tracks.reduce((acc: AggregatedData, track) => {
+    const key =
+      period === "year"
+        ? track.year
+        : period === "month"
+          ? `${track.year}-${track.month}`
+          : `${track.year}-${track.month}-${track.day}`;
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+}
+
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const cookieStore = await cookies();
+  const access_token = cookieStore.get("access_token")?.value;
+
+  if (!access_token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Extract query parameters
+  const year = url.searchParams.get("year");
+  const month = url.searchParams.get("month");
+
+  // Check cache or fetch and process data
+  if (!cache) {
+    const tracks = await fetchAllSavedTracks(access_token);
+    cache = {
+      years: aggregateTracks(tracks, "year"),
+      months: {},
+      days: {},
+    };
+
+    for (const yearKey in cache.years) {
+      const yearTracks = tracks.filter((t) => t.year === yearKey);
+      cache.months[yearKey] = aggregateTracks(yearTracks, "month");
+
+      for (const monthKey in cache.months[yearKey]) {
+        const [y, m] = monthKey.split("-");
+        const monthTracks = yearTracks.filter((t) => t.month === m);
+        cache.days[`${y}-${m}`] = aggregateTracks(monthTracks, "day");
+
+        console.log(`Processed days for ${y}-${m}:`, cache.days[`${y}-${m}`]);
+      }
+    }
+  }
+
+  // Return appropriate data based on query params
+  if (!year) {
+    // Return aggregated data by year
+    return NextResponse.json(cache.years);
+  }
+
+  if (year && !month) {
+    // Return aggregated data by month for the given year
+    return NextResponse.json(cache.months[year] || {});
+  }
+
+  // if (year && month) {
+  //   // Return aggregated data by day for the given month
+  //   return NextResponse.json(cache.days[`${year}-${month}`] || {});
+  // }
+
+  // * Eliminar despues de comprobación. Código dinal es el de arriba.
+  if (year && month) {
+    const key = `${year}-${month}`;
+    console.log(`Fetching data for days in: ${key}`);
+    console.log("Data in cache.days:", cache.days[key]); // Verifica si existe el dato esperado
+
+    // Return the data if available, or an empty object if not
+    return NextResponse.json(cache.days[key] || {});
+  }
+
+  return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
 }

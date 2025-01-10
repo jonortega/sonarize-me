@@ -17,6 +17,10 @@ import { ArrowLeft } from "lucide-react";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+interface AggregatedData {
+  [key: string]: number; // Ejemplo: {"2020": 150, "2021": 120}, {"2020-01": 15}, etc.
+}
+
 type TimeData = {
   [key: string]: number;
 };
@@ -27,32 +31,65 @@ export default function LaBitacora() {
   const [data, setData] = useState<TimeData>({});
   const [currentScale, setCurrentScale] = useState(0);
   const [history, setHistory] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async (year?: string, month?: string) => {
-    let url = "/api/stats/la-bitacora";
-    if (year) {
-      url += `?year=${year}`;
-      if (month) url += `&month=${month}`;
-    }
+    setIsLoading(true);
+    try {
+      let url = "/api/stats/la-bitacora";
+      if (year) {
+        url += `?year=${year}`;
+        if (month) url += `&month=${month}`;
+      }
 
-    const response = await fetch(url);
-    const newData: TimeData = await response.json();
-    setData(newData);
+      console.log("Fetching URL:", url); // Confirma que los parámetros year y month son correctos
+
+      const response = await fetch(url, {
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error fetching data: ${response.statusText}`);
+      }
+
+      const newData: AggregatedData = await response.json();
+
+      console.log("Fetched data:", newData);
+
+      setData(newData); // Actualiza el estado con los datos procesados
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBarClick = (event: ChartEvent, elements: ActiveElement[]) => {
     if (elements.length > 0) {
       const index = elements[0].index;
-      const selectedPeriod = Object.keys(data)[index];
+      const selectedPeriod = sortedKeys[index]; // Obtiene el periodo seleccionado (año, mes, día)
 
       if (currentScale < timeScales.length - 1) {
-        setHistory([...history, selectedPeriod]);
-        setCurrentScale(currentScale + 1);
-        fetchData(...history, selectedPeriod);
+        const newHistory = [...history, selectedPeriod];
+        setHistory(newHistory); // Añade el periodo actual al historial
+        setCurrentScale(currentScale + 1); // Incrementa el nivel del gráfico
+
+        // Construir los parámetros correctamente según el nivel
+        let year = newHistory[0];
+        let month;
+
+        if (currentScale === 1) {
+          // Extrae solo el mes si estamos en el nivel de meses
+          const [y, m] = selectedPeriod.split("-");
+          year = y;
+          month = m; // Aquí aseguramos que solo pase el mes
+        }
+
+        fetchData(year, month);
       }
     }
   };
@@ -60,14 +97,21 @@ export default function LaBitacora() {
   const handleBack = () => {
     if (currentScale > 0) {
       const newHistory = [...history];
-      newHistory.pop();
+      newHistory.pop(); // Quita el último elemento del historial
       setHistory(newHistory);
-      setCurrentScale(currentScale - 1);
-      fetchData(...newHistory);
+      setCurrentScale(currentScale - 1); // Reduce el nivel del gráfico
+
+      // Llama a fetchData con los parámetros adecuados
+      const [year, month] = newHistory;
+      fetchData(year, month);
     }
   };
 
-  const sortedKeys = Object.keys(data).sort((a, b) => parseInt(a) - parseInt(b));
+  const sortedKeys = Object.keys(data).sort((a, b) => {
+    // Ordena según el formato (año, año-mes, año-mes-día)
+    return a.localeCompare(b, undefined, { numeric: true });
+  });
+
   const sortedValues = sortedKeys.map((key) => data[key]);
 
   const chartData = {
@@ -145,21 +189,27 @@ export default function LaBitacora() {
 
   return (
     <div className='w-full h-full flex flex-col bg-spotify-gray-300 p-6 rounded-lg'>
-      <div className='flex justify-between items-center mb-6'>
-        {currentScale > 0 && (
-          <button
-            onClick={handleBack}
-            className='flex items-center text-spotify-green hover:underline transition-colors duration-200'
-          >
-            <ArrowLeft className='mr-2' size={20} />
-            Back to {timeScales[currentScale - 1]}s
-          </button>
-        )}
-      </div>
-      <div className='flex-grow h-[400px]'>
-        <Bar data={chartData} options={options} />
-      </div>
-      <div className='mt-4 text-center text-white text-sm'>Click on a bar to see more details</div>
+      {isLoading ? (
+        <div className='flex justify-center items-center h-full'>
+          <span className='text-white text-lg'>Loading...</span>
+        </div>
+      ) : (
+        <>
+          {currentScale > 0 && (
+            <button
+              onClick={handleBack}
+              className='flex items-center text-spotify-green hover:underline transition-colors duration-200'
+            >
+              <ArrowLeft className='mr-2' size={20} />
+              Back to {timeScales[currentScale - 1]}s
+            </button>
+          )}
+          <div className='flex-grow h-[400px]'>
+            <Bar data={chartData} options={options} />
+          </div>
+          <div className='mt-4 text-center text-white text-sm'>Click on a bar to see more details</div>
+        </>
+      )}
     </div>
   );
 }
