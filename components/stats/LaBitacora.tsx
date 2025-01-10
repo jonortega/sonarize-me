@@ -1,5 +1,13 @@
 "use client";
 
+/**
+ * ! Los datos enviados desde el servidor son solo los que tienen algo.
+ * ! Hay que corregir para que se envien los años, meses y días que no tienen datos (value=0).
+ *
+ * ! También hay que eliminar el periodo de carga entre clicks en las barras.
+ * ! Si se elimina, es mucho más fluida la interacción.
+ */
+
 import { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import {
