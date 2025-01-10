@@ -1,224 +1,167 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import * as d3 from "d3";
+import React, { useState, useEffect, useRef } from "react";
+import { select, scaleLinear, line, curveBasis } from "d3";
+import { X } from "lucide-react";
 
-const IndiceDeResonancia: React.FC = () => {
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const [data, setData] = useState<{ normal: number; actual: number } | null>(null);
-  const [combine, setCombine] = useState(false); // Controla cuándo se combinan las ondas
+interface FrequencyData {
+  normal: number;
+  actual: number;
+}
 
-  // Fetch data from the backend
+const ResonanceWaves: React.FC = () => {
+  const [frequencyData, setFrequencyData] = useState<FrequencyData | null>(null);
+  const [showCombined, setShowCombined] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const svgRef = useRef<SVGSVGElement>(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch("/api/stats/indice-de-resonancia");
-        const json = await response.json();
-        setData(json);
+        const data = await response.json();
+        setFrequencyData(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching frequency data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  // Function to generate a sine wave
-  const generateWave = (frequency: number, amplitude: number, length: number): [number, number][] => {
-    const points: [number, number][] = [];
-    const sampleRate = 100; // Number of points per unit length
-    for (let i = 0; i < length * sampleRate; i++) {
-      const x = i / sampleRate;
-      const y = amplitude * Math.sin(2 * Math.PI * frequency * x);
-      points.push([x, y]);
-    }
-    return points;
+  const generateWaveData = (frequency: number, amplitude: number = 0.5, phase: number = 0) => {
+    // Increase points for smoother curves but reduce wavelengths
+    return Array.from({ length: 200 }, (_, i) => ({
+      x: i,
+      y: amplitude * Math.sin(((frequency / 25) * i * Math.PI) / 24 + phase),
+    }));
   };
 
-  // Calculate and render the waves
   useEffect(() => {
-    if (!data || !svgRef.current) return;
+    if (!frequencyData || !svgRef.current) return;
 
-    const { normal, actual } = data;
+    const svg = select(svgRef.current);
+    const width = svgRef.current.clientWidth;
+    const height = svgRef.current.clientHeight;
+    const margin = { top: 40, right: 20, bottom: 20, left: 40 };
 
-    const svg = d3.select(svgRef.current);
-    const width = 800;
-    const height = 400;
-    const margin = { top: 20, right: 20, bottom: 20, left: 20 };
+    const xScale = scaleLinear()
+      .domain([0, 199])
+      .range([margin.left, width - margin.right]);
+
+    const yScale = scaleLinear()
+      .domain([-1, 1])
+      .range([height - margin.bottom, margin.top]);
+
+    const lineGenerator = line<{ x: number; y: number }>()
+      .x((d) => xScale(d.x))
+      .y((d) => yScale(d.y))
+      .curve(curveBasis); // Use curve basis for smoother lines
 
     // Clear previous content
     svg.selectAll("*").remove();
 
-    // Scale setup
-    const xScale = d3
-      .scaleLinear()
-      .domain([0, 5]) // Mostrar 5 longitudes de onda
-      .range([margin.left, width - margin.right]);
+    const drawWave = (data: { x: number; y: number }[], color: string, delay: number = 0) => {
+      const path = svg
+        .append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", color)
+        .attr("stroke-width", 2)
+        .attr("d", lineGenerator)
+        .attr("opacity", 0);
 
-    const yScale = d3
-      .scaleLinear()
-      .domain([-2, 2]) // Adaptar para evitar cortes
-      .range([height - margin.bottom, margin.top]);
+      const totalLength = path.node()?.getTotalLength() || 0;
 
-    // Generate the waves
-    const wave1 = generateWave(normal / 100, 1, 5); // Frecuencia escalada
-    const wave2 = generateWave(actual / 100, 1, 5);
-    const combinedWave = wave1.map(([x, y1], i) => [x, y1 + wave2[i][1]]);
-
-    // Draw axes
-    const xAxis = d3.axisBottom(xScale).ticks(5);
-    const yAxis = d3.axisLeft(yScale).ticks(5);
-
-    svg
-      .append("g")
-      .attr("transform", `translate(0,${height / 2})`)
-      .call(xAxis);
-
-    svg.append("g").attr("transform", `translate(${margin.left},0)`).call(yAxis);
-
-    // Draw wave1 (Yo Normal)
-    const pathWave1 = svg
-      .append("path")
-      .datum(wave1)
-      .attr("fill", "none")
-      .attr("stroke", "blue")
-      .attr("stroke-width", 2)
-      .attr("opacity", 1) // Comienza completamente visible
-      .attr(
-        "d",
-        d3
-          .line<[number, number]>()
-          .x(() => margin.left) // Comienza desde el margen izquierdo
-          .y(() => height / 2)
-      ); // Línea horizontal inicial
-
-    // Add label for wave1
-    const wave1Label = svg
-      .append("text")
-      .attr("x", xScale(wave1[0][0]) + 20) // Inicio de la onda
-      .attr("y", margin.top)
-      .attr("fill", "blue")
-      .attr("font-size", "12px")
-      .attr("text-anchor", "end") // Alinear al lado izquierdo del texto
-      .text(`Yo Normal: ${normal.toFixed(2)}`);
-
-    // Animate wave1
-    pathWave1
-      .transition()
-      .duration(1500)
-      .ease(d3.easeLinear)
-      .attr(
-        "d",
-        d3
-          .line<[number, number]>()
-          .x((d) => xScale(d[0]))
-          .y((d) => yScale(d[1]))
-      );
-
-    wave1Label
-      .transition()
-      .duration(1500)
-      .ease(d3.easeLinear)
-      .attr("x", xScale(wave1[0][0]) - 10)
-      .attr("y", yScale(wave1[0][1]));
-
-    // Draw wave2 (Yo Actual)
-    const pathWave2 = svg
-      .append("path")
-      .datum(wave2)
-      .attr("fill", "none")
-      .attr("stroke", "orange")
-      .attr("stroke-width", 2)
-      .attr("opacity", 1) // Comienza completamente visible
-      .attr(
-        "d",
-        d3
-          .line<[number, number]>()
-          .x(() => margin.left) // Comienza desde el margen izquierdo
-          .y(() => height / 2)
-      ); // Línea horizontal inicial
-
-    // Add label for wave2
-    const wave2Label = svg
-      .append("text")
-      .attr("x", xScale(wave2[0][0]) + 20) // Inicio de la onda
-      .attr("y", margin.top + 20)
-      .attr("fill", "orange")
-      .attr("font-size", "12px")
-      .attr("text-anchor", "end") // Alinear al lado izquierdo del texto
-      .text(`Yo Actual: ${actual.toFixed(2)}`);
-
-    // Animate wave2
-    pathWave2
-      .transition()
-      .delay(1500) // Aparece después de la primera onda
-      .duration(1500)
-      .ease(d3.easeLinear)
-      .attr(
-        "d",
-        d3
-          .line<[number, number]>()
-          .x((d) => xScale(d[0]))
-          .y((d) => yScale(d[1]))
-      );
-
-    wave2Label
-      .transition()
-      .delay(1500)
-      .duration(1500)
-      .ease(d3.easeLinear)
-      .attr("x", xScale(wave2[0][0]) - 10)
-      .attr("y", yScale(wave2[0][1]));
-
-    // Draw combined wave (Onda Combinada)
-    const pathCombined = svg
-      .append("path")
-      .datum(wave1) // Comienza igual que wave1
-      .attr("fill", "none")
-      .attr("stroke", Math.abs(normal - actual) < 10 ? "green" : "red")
-      .attr("stroke-width", 3)
-      .attr("opacity", 0) // Comienza invisible
-      .attr(
-        "d",
-        d3
-          .line<[number, number]>()
-          .x((d) => xScale(d[0]))
-          .y((d) => yScale(d[1]))
-      );
-
-    // Animate transformation to combined wave and fading of originals
-    if (combine) {
-      pathCombined
+      path
+        .attr("stroke-dasharray", totalLength + " " + totalLength)
+        .attr("stroke-dashoffset", totalLength)
+        .transition()
+        .duration(1000)
+        .attr("opacity", 1)
         .transition()
         .duration(2000)
-        .ease(d3.easeLinear)
-        .attr(
-          "d",
-          d3
-            .line<[number, number]>()
-            .x((d) => xScale(d[0]))
-            .y((d, i) => yScale(combinedWave[i][1]))
-        )
-        .attr("opacity", 1); // Aparece progresivamente
+        .attr("stroke-dashoffset", 0)
+        .delay(delay);
 
-      pathWave1.transition().duration(2000).ease(d3.easeLinear).attr("opacity", 0); // Se desvanece
-      wave1Label.transition().duration(2000).ease(d3.easeLinear).attr("opacity", 0); // Desaparece la etiqueta
+      return path;
+    };
 
-      pathWave2.transition().duration(2000).ease(d3.easeLinear).attr("opacity", 0); // Se desvanece
-      wave2Label.transition().duration(2000).ease(d3.easeLinear).attr("opacity", 0); // Desaparece la etiqueta
+    const normalData = generateWaveData(frequencyData.normal);
+    const actualData = generateWaveData(frequencyData.actual, 0.7, Math.PI / 4);
+
+    if (!showCombined) {
+      drawWave(normalData, "#1DB954"); // Original Spotify green
+      drawWave(actualData, "#2EDA6C", 1000); // Lighter green for contrast
+    } else {
+      const combinedData = normalData.map((d, i) => ({
+        x: d.x,
+        y: d.y + actualData[i].y,
+      }));
+      drawWave(combinedData, "#FF7EB9");
     }
-  }, [data, combine]);
+  }, [frequencyData, showCombined]);
+
+  const handleCombineWaves = () => {
+    const svg = select(svgRef.current);
+
+    // Fade out existing waves
+    svg
+      .selectAll("path")
+      .transition()
+      .duration(1000)
+      .attr("opacity", 0)
+      .remove()
+      .on("end", () => {
+        setShowCombined(true);
+      });
+  };
 
   return (
-    <div>
-      <h2>Índice de Resonancia</h2>
-      <svg ref={svgRef} width={800} height={400} />
-      {!data && <p>Cargando datos...</p>}
-      <button style={{ marginTop: "20px", padding: "10px 20px", fontSize: "16px" }} onClick={() => setCombine(true)}>
-        Combinar Ondas
-      </button>
+    <div className='bg-[#121212] p-6 rounded-xl shadow-lg relative'>
+      <div className='flex items-center justify-between mb-6'>
+        <div className='flex items-center gap-2'>
+          <svg width='24' height='24' viewBox='0 0 24 24' fill='none'>
+            <path
+              d='M12 3V21M17 6V18M7 6V18'
+              stroke='#1DB954'
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            />
+          </svg>
+          <h1 className='text-xl font-bold text-[#FFFFFF]'>Indice De Resonancia</h1>
+        </div>
+        <button className='text-[#FFFFFF] hover:text-[#1DB954] transition-colors'>
+          <X size={20} />
+        </button>
+      </div>
+
+      <div className='bg-[#181818] p-6 rounded-lg'>
+        <h2 className='text-2xl font-bold mb-4 text-[#FFFFFF]'>Resonance Waves</h2>
+
+        <div className='space-y-2 mb-6'>
+          <p style={{ color: "#1DB954" }}>Normal: {isLoading ? "Loading..." : (frequencyData?.normal ?? "N/A")}</p>
+          <p style={{ color: "#2EDA6C" }}>Actual: {isLoading ? "Loading..." : (frequencyData?.actual ?? "N/A")}</p>
+        </div>
+
+        <div className='relative' style={{ width: "100%", height: "200px" }}>
+          <svg ref={svgRef} width='100%' height='100%' className='overflow-visible' />
+        </div>
+
+        <button
+          onClick={handleCombineWaves}
+          disabled={showCombined || isLoading}
+          className='mt-4 bg-[#1DB954] hover:bg-[#1ED760] text-[#FFFFFF] font-bold py-2 px-4 rounded-full w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+        >
+          {isLoading ? "Loading..." : "Combine Waves"}
+        </button>
+      </div>
     </div>
   );
 };
 
-export default IndiceDeResonancia;
+export default ResonanceWaves;
