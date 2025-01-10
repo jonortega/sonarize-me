@@ -67,12 +67,15 @@ export default function LaBitacora() {
     }
   };
 
+  const sortedKeys = Object.keys(data).sort((a, b) => parseInt(a) - parseInt(b));
+  const sortedValues = sortedKeys.map((key) => data[key]);
+
   const chartData = {
-    labels: Object.keys(data),
+    labels: sortedKeys,
     datasets: [
       {
         label: "Tracks Saved",
-        data: Object.values(data),
+        data: sortedValues,
         backgroundColor: "rgba(30, 215, 96, 0.6)",
         borderColor: "rgba(30, 215, 96, 1)",
         borderWidth: 1,
@@ -82,29 +85,81 @@ export default function LaBitacora() {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false, // ???
     plugins: {
       legend: {
         position: "top" as const,
+        labels: {
+          color: "rgba(255, 255, 255, 0.8)",
+          font: {
+            size: 14,
+          },
+        },
       },
       title: {
         display: true,
         text: `Tracks Saved by ${timeScales[currentScale].charAt(0).toUpperCase() + timeScales[currentScale].slice(1)}`,
+        color: "rgba(255, 255, 255, 0.9)",
+        font: {
+          size: 18,
+          weight: 700,
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: { parsed: { y: number } }) => {
+            const value = context.parsed.y;
+            const total = Object.values(data).reduce((sum, v) => sum + v, 0);
+            const percentage = ((value / total) * 100).toFixed(1);
+            return `${value} tracks (${percentage}%)`;
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: "rgba(255, 255, 255, 0.8)",
+          font: {
+            size: 12,
+          },
+        },
+        grid: {
+          color: "#121212",
+        },
+      },
+      y: {
+        ticks: {
+          color: "rgba(255, 255, 255, 0.8)",
+          font: {
+            size: 12,
+          },
+        },
+        grid: {
+          color: "#121212",
+        },
       },
     },
     onClick: handleBarClick,
   };
 
   return (
-    <div className='w-full h-full flex flex-col'>
-      {currentScale > 0 && (
-        <button onClick={handleBack} className='flex items-center text-spotify-green mb-4 hover:underline'>
-          <ArrowLeft className='mr-2' size={20} />
-          Back to {timeScales[currentScale - 1]}s
-        </button>
-      )}
-      <div className='flex-grow'>
+    <div className='w-full h-full flex flex-col bg-spotify-gray-300 p-6 rounded-lg'>
+      <div className='flex justify-between items-center mb-6'>
+        {currentScale > 0 && (
+          <button
+            onClick={handleBack}
+            className='flex items-center text-spotify-green hover:underline transition-colors duration-200'
+          >
+            <ArrowLeft className='mr-2' size={20} />
+            Back to {timeScales[currentScale - 1]}s
+          </button>
+        )}
+      </div>
+      <div className='flex-grow h-[400px]'>
         <Bar data={chartData} options={options} />
       </div>
+      <div className='mt-4 text-center text-white text-sm'>Click on a bar to see more details</div>
     </div>
   );
 }
