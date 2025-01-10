@@ -9,13 +9,12 @@ const stats: Array<{
   icon: keyof typeof import("lucide-react");
   className?: string;
 }> = [
-  { id: "top-tracks", title: "Top Tracks", icon: "Music", className: "md:col-span-2 lg:col-span-2 lg:row-span-2" },
+  { id: "hall-of-fame", title: "Hall of Fame", icon: "Award", className: "md:col-span-2 lg:col-span-2 lg:row-span-2" },
   { id: "huella-del-dia", title: "Huella Del Día", icon: "Fingerprint", className: "md:col-span-1 lg:col-span-2" },
-  { id: "estaciones-musicales", title: "Estaciones Musicales", icon: "CalendarClock" },
-  { id: "genre-distribution", title: "Genre Distribution", icon: "PieChart" },
+  { id: "estaciones-musicales", title: "Estaciones Musicales", icon: "SunSnow" },
+  { id: "tus-decadas", title: "Tus Décadas", icon: "Rewind" },
   { id: "listening-history", title: "Listening History", icon: "BarChart2", className: "md:col-span-2 lg:col-span-2" },
-  { id: "recommendations", title: "Recommendations", icon: "Radio" },
-  { id: "hall-of-fame", title: "Hall of Fame", icon: "Award", className: "md:col-span-2 lg:col-span-2" },
+  { id: "indice-de-resonancia", title: "Índice de Resonancia", icon: "AudioWaveform" },
 ];
 
 export default function Stats() {
