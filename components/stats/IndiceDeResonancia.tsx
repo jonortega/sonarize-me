@@ -6,12 +6,7 @@ import * as d3 from "d3";
 const IndiceDeResonancia: React.FC = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [data, setData] = useState<{ normal: number; actual: number } | null>(null);
-
-  // Controles de visualización
-  const [showWave1, setShowWave1] = useState(true);
-  const [showWave2, setShowWave2] = useState(true);
-  const [showCombined, setShowCombined] = useState(true);
-  const [opacityControl, setOpacityControl] = useState(0.5); // Rango entre 0 y 1
+  const [combine, setCombine] = useState(false); // Controla cuándo se combinan las ondas
 
   // Fetch data from the backend
   useEffect(() => {
@@ -81,96 +76,147 @@ const IndiceDeResonancia: React.FC = () => {
 
     svg.append("g").attr("transform", `translate(${margin.left},0)`).call(yAxis);
 
-    // Opacity levels
-    const opacityWave1 = 1 - opacityControl; // Máxima opacidad cuando el control está a la izquierda
-    const opacityWave2 = 1 - opacityControl;
-    const opacityCombined = opacityControl; // Máxima opacidad cuando el control está a la derecha
+    // Draw wave1 (Yo Normal)
+    const pathWave1 = svg
+      .append("path")
+      .datum(wave1)
+      .attr("fill", "none")
+      .attr("stroke", "blue")
+      .attr("stroke-width", 2)
+      .attr("opacity", 1) // Comienza completamente visible
+      .attr(
+        "d",
+        d3
+          .line<[number, number]>()
+          .x(() => margin.left) // Comienza desde el margen izquierdo
+          .y(() => height / 2)
+      ); // Línea horizontal inicial
 
-    // Draw wave1
-    if (showWave1) {
-      svg
-        .append("path")
-        .datum(wave1 as [number, number][])
-        .attr("fill", "none")
-        .attr("stroke", "blue")
-        .attr("stroke-width", 2)
-        .attr("opacity", opacityWave1)
+    // Add label for wave1
+    const wave1Label = svg
+      .append("text")
+      .attr("x", xScale(wave1[0][0]) + 20) // Inicio de la onda
+      .attr("y", margin.top)
+      .attr("fill", "blue")
+      .attr("font-size", "12px")
+      .attr("text-anchor", "end") // Alinear al lado izquierdo del texto
+      .text(`Yo Normal: ${normal.toFixed(2)}`);
+
+    // Animate wave1
+    pathWave1
+      .transition()
+      .duration(1500)
+      .ease(d3.easeLinear)
+      .attr(
+        "d",
+        d3
+          .line<[number, number]>()
+          .x((d) => xScale(d[0]))
+          .y((d) => yScale(d[1]))
+      );
+
+    wave1Label
+      .transition()
+      .duration(1500)
+      .ease(d3.easeLinear)
+      .attr("x", xScale(wave1[0][0]) - 10)
+      .attr("y", yScale(wave1[0][1]));
+
+    // Draw wave2 (Yo Actual)
+    const pathWave2 = svg
+      .append("path")
+      .datum(wave2)
+      .attr("fill", "none")
+      .attr("stroke", "orange")
+      .attr("stroke-width", 2)
+      .attr("opacity", 1) // Comienza completamente visible
+      .attr(
+        "d",
+        d3
+          .line<[number, number]>()
+          .x(() => margin.left) // Comienza desde el margen izquierdo
+          .y(() => height / 2)
+      ); // Línea horizontal inicial
+
+    // Add label for wave2
+    const wave2Label = svg
+      .append("text")
+      .attr("x", xScale(wave2[0][0]) + 20) // Inicio de la onda
+      .attr("y", margin.top + 20)
+      .attr("fill", "orange")
+      .attr("font-size", "12px")
+      .attr("text-anchor", "end") // Alinear al lado izquierdo del texto
+      .text(`Yo Actual: ${actual.toFixed(2)}`);
+
+    // Animate wave2
+    pathWave2
+      .transition()
+      .delay(1500) // Aparece después de la primera onda
+      .duration(1500)
+      .ease(d3.easeLinear)
+      .attr(
+        "d",
+        d3
+          .line<[number, number]>()
+          .x((d) => xScale(d[0]))
+          .y((d) => yScale(d[1]))
+      );
+
+    wave2Label
+      .transition()
+      .delay(1500)
+      .duration(1500)
+      .ease(d3.easeLinear)
+      .attr("x", xScale(wave2[0][0]) - 10)
+      .attr("y", yScale(wave2[0][1]));
+
+    // Draw combined wave (Onda Combinada)
+    const pathCombined = svg
+      .append("path")
+      .datum(wave1) // Comienza igual que wave1
+      .attr("fill", "none")
+      .attr("stroke", Math.abs(normal - actual) < 10 ? "green" : "red")
+      .attr("stroke-width", 3)
+      .attr("opacity", 0) // Comienza invisible
+      .attr(
+        "d",
+        d3
+          .line<[number, number]>()
+          .x((d) => xScale(d[0]))
+          .y((d) => yScale(d[1]))
+      );
+
+    // Animate transformation to combined wave and fading of originals
+    if (combine) {
+      pathCombined
+        .transition()
+        .duration(2000)
+        .ease(d3.easeLinear)
         .attr(
           "d",
           d3
             .line<[number, number]>()
             .x((d) => xScale(d[0]))
-            .y((d) => yScale(d[1]))
-        );
-    }
+            .y((d, i) => yScale(combinedWave[i][1]))
+        )
+        .attr("opacity", 1); // Aparece progresivamente
 
-    // Draw wave2
-    if (showWave2) {
-      svg
-        .append("path")
-        .datum(wave2 as [number, number][])
-        .attr("fill", "none")
-        .attr("stroke", "orange")
-        .attr("stroke-width", 2)
-        .attr("opacity", opacityWave2)
-        .attr(
-          "d",
-          d3
-            .line<[number, number]>()
-            .x((d) => xScale(d[0]))
-            .y((d) => yScale(d[1]))
-        );
-    }
+      pathWave1.transition().duration(2000).ease(d3.easeLinear).attr("opacity", 0); // Se desvanece
+      wave1Label.transition().duration(2000).ease(d3.easeLinear).attr("opacity", 0); // Desaparece la etiqueta
 
-    // Draw combined wave
-    if (showCombined) {
-      svg
-        .append("path")
-        .datum(combinedWave as [number, number][])
-        .attr("fill", "none")
-        .attr("stroke", Math.abs(normal - actual) < 10 ? "green" : "red")
-        .attr("stroke-width", 3)
-        .attr("opacity", opacityCombined)
-        .attr(
-          "d",
-          d3
-            .line<[number, number]>()
-            .x((d) => xScale(d[0]))
-            .y((d) => yScale(d[1]))
-        );
+      pathWave2.transition().duration(2000).ease(d3.easeLinear).attr("opacity", 0); // Se desvanece
+      wave2Label.transition().duration(2000).ease(d3.easeLinear).attr("opacity", 0); // Desaparece la etiqueta
     }
-  }, [data, showWave1, showWave2, showCombined, opacityControl]);
+  }, [data, combine]);
 
   return (
     <div>
       <h2>Índice de Resonancia</h2>
       <svg ref={svgRef} width={800} height={400} />
       {!data && <p>Cargando datos...</p>}
-      <div>
-        <label>
-          <input type='checkbox' checked={showWave1} onChange={() => setShowWave1(!showWave1)} />
-          Mostrar &quot;Yo Normal&quot;
-        </label>
-        <label>
-          <input type='checkbox' checked={showWave2} onChange={() => setShowWave2(!showWave2)} />
-          Mostrar &quot;Yo Actual&quot;
-        </label>
-        <label>
-          <input type='checkbox' checked={showCombined} onChange={() => setShowCombined(!showCombined)} />
-          Mostrar Onda Combinada
-        </label>
-        <label>
-          Opacidad:
-          <input
-            type='range'
-            min='0'
-            max='1'
-            step='0.1'
-            value={opacityControl}
-            onChange={(e) => setOpacityControl(parseFloat(e.target.value))}
-          />
-        </label>
-      </div>
+      <button style={{ marginTop: "20px", padding: "10px 20px", fontSize: "16px" }} onClick={() => setCombine(true)}>
+        Combinar Ondas
+      </button>
     </div>
   );
 };
