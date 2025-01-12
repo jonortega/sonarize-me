@@ -1,6 +1,6 @@
 "use client";
 
-import { X, SunSnow, Award, Fingerprint, BookMarked, AudioWaveform } from "lucide-react";
+import { X, SunSnow, Award, Fingerprint, BookMarked, AudioWaveform, Rewind } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
@@ -9,7 +9,7 @@ const statComponents = {
   "estaciones-musicales": dynamic(() => import("@/components/stats/EstacionesMusicales")),
   "huella-del-dia": dynamic(() => import("@/components/stats/HuellaDelDia")),
   "la-bitacora": dynamic(() => import("@/components/stats/LaBitacora")),
-  // "tus-decadas": dynamic(() => import("@/components/stats/TusDecadas")),
+  "tus-decadas": dynamic(() => import("@/components/stats/TusDecadas")),
   "indice-de-resonancia": dynamic(() => import("@/components/stats/IndiceDeResonancia")),
   // Insertar más componentes dinámicos aquí
 };
@@ -19,7 +19,7 @@ const statIcons = {
   "estaciones-musicales": SunSnow,
   "huella-del-dia": Fingerprint,
   "la-bitacora": BookMarked,
-  // "tus-decadas": Rewind,
+  "tus-decadas": Rewind,
   "indice-de-resonancia": AudioWaveform,
   // Insertar más iconos aquí (importarlos de "lucide-react")
 };
