@@ -8,10 +8,13 @@ interface FrequencyData {
   actual: number;
 }
 
+type WaveType = "normal" | "actual" | "combined" | null;
+
 const ResonanceWaves: React.FC = () => {
   const [frequencyData, setFrequencyData] = useState<FrequencyData | null>(null);
   const [showCombined, setShowCombined] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [highlightedWave, setHighlightedWave] = useState<WaveType>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
@@ -61,7 +64,7 @@ const ResonanceWaves: React.FC = () => {
 
     svg.selectAll("*").remove();
 
-    const drawWave = (data: { x: number; y: number }[], color: string, delay: number = 0) => {
+    const drawWave = (data: { x: number; y: number }[], color: string, delay: number = 0, waveType: WaveType) => {
       const path = svg
         .append("path")
         .datum(data)
@@ -69,7 +72,8 @@ const ResonanceWaves: React.FC = () => {
         .attr("stroke", color)
         .attr("stroke-width", 2)
         .attr("d", lineGenerator)
-        .attr("opacity", 0);
+        .attr("opacity", 0)
+        .attr("class", `wave-${waveType}`);
 
       const totalLength = path.node()?.getTotalLength() || 0;
 
@@ -78,10 +82,10 @@ const ResonanceWaves: React.FC = () => {
         .attr("stroke-dashoffset", totalLength)
         .transition()
         .duration(1000)
-        .delay(delay) // Reduced initial delay
+        .delay(delay)
         .attr("opacity", 1)
         .transition()
-        .duration(1500) // Slightly faster animation
+        .duration(1500)
         .attr("stroke-dashoffset", 0);
 
       return path;
@@ -91,16 +95,27 @@ const ResonanceWaves: React.FC = () => {
     const actualData = generateWaveData(frequencyData.actual, 0.7, Math.PI / 4);
 
     if (!showCombined) {
-      drawWave(normalData, "#1ed760", 100); // Reduced delay
-      drawWave(actualData, "#68e394", 300); // Reduced delay
+      drawWave(normalData, "#1ed760", 100, "normal"); // Spotify green
+      drawWave(actualData, "#4687D6", 300, "actual"); // Complementary blue
     } else {
       const combinedData = normalData.map((d, i) => ({
         x: d.x,
         y: d.y + actualData[i].y,
       }));
-      drawWave(combinedData, "#FF7EB9", 100); // Reduced delay
+      drawWave(combinedData, "#FF7EB9", 100, "combined");
     }
   }, [frequencyData, showCombined]);
+
+  useEffect(() => {
+    if (!svgRef.current) return;
+
+    const svg = select(svgRef.current);
+    svg.selectAll("path").attr("filter", "");
+
+    if (highlightedWave) {
+      svg.select(`.wave-${highlightedWave}`).attr("filter", "drop-shadow(0 0 6px currentColor)");
+    }
+  }, [highlightedWave]);
 
   const handleToggleWaves = () => {
     const svg = select(svgRef.current);
@@ -113,29 +128,61 @@ const ResonanceWaves: React.FC = () => {
       .remove()
       .on("end", () => {
         setShowCombined(!showCombined);
+        setHighlightedWave(null);
       });
   };
 
   const difference = frequencyData ? Math.abs(frequencyData.actual - frequencyData.normal) : 0;
 
+  const FrequencyCard: React.FC<{
+    label: string;
+    value: number | string;
+    color: string;
+    type: WaveType;
+  }> = ({ label, value, color, type }) => (
+    <div
+      className={`bg-[#282828] p-4 rounded-lg text-center transition-all duration-300 hover:bg-[#363636] cursor-pointer`}
+      style={{
+        background:
+          highlightedWave === type
+            ? `radial-gradient(circle at center, #363636 40%, ${
+                type === "normal"
+                  ? "rgba(30, 215, 96, 0.15)"
+                  : type === "actual"
+                    ? "rgba(70, 135, 214, 0.15)"
+                    : "rgba(255, 126, 185, 0.15)"
+              } 100%)`
+            : "#282828",
+      }}
+      onMouseEnter={() => setHighlightedWave(type)}
+      onMouseLeave={() => setHighlightedWave(null)}
+    >
+      <p className='text-[#B3B3B3] text-sm mb-2'>{label}</p>
+      <p className={`text-3xl font-bold`} style={{ color }}>
+        {value}
+      </p>
+    </div>
+  );
+
   return (
     <div className='bg-[#181818] p-6 rounded-lg'>
       {!showCombined ? (
         <div className='grid grid-cols-2 gap-4 mb-6'>
-          <div className='bg-[#282828] p-4 rounded-lg'>
-            <p className='text-[#B3B3B3] text-sm'>Normal Frequency</p>
-            <p className='text-[#1DB954] text-2xl font-bold'>{isLoading ? "..." : (frequencyData?.normal ?? "N/A")}</p>
-          </div>
-          <div className='bg-[#282828] p-4 rounded-lg'>
-            <p className='text-[#B3B3B3] text-sm'>Actual Frequency</p>
-            <p className='text-[#2EDA6C] text-2xl font-bold'>{isLoading ? "..." : (frequencyData?.actual ?? "N/A")}</p>
-          </div>
+          <FrequencyCard
+            label='Normal Frequency'
+            value={isLoading ? "..." : (frequencyData?.normal ?? "N/A")}
+            color='#1ed760'
+            type='normal'
+          />
+          <FrequencyCard
+            label='Actual Frequency'
+            value={isLoading ? "..." : (frequencyData?.actual ?? "N/A")}
+            color='#4687D6'
+            type='actual'
+          />
         </div>
       ) : (
-        <div className='bg-[#282828] p-4 rounded-lg mb-6 border-2 border-[#FF7EB9]'>
-          <p className='text-[#B3B3B3] text-sm'>Combined Resonance</p>
-          <p className='text-[#FF7EB9] text-3xl font-bold'>{difference}</p>
-        </div>
+        <FrequencyCard label='Combined Resonance' value={difference} color='#FF7EB9' type='combined' />
       )}
 
       <div className='relative' style={{ width: "100%", height: "200px" }}>
