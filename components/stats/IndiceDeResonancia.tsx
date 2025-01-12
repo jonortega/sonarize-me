@@ -1,12 +1,5 @@
 "use client";
 
-/**
- * ! Hacer que la animacion empiece antes
- * ! Mostrar el valor de la diferencia cuando salga la nueva onda
- * ! Permitir volver atrás apra ver las ondas originales
- * ! Mejorar la distribución general del diseño
- */
-
 import React, { useState, useEffect, useRef } from "react";
 import { select, scaleLinear, line, curveBasis } from "d3";
 
@@ -39,7 +32,6 @@ const ResonanceWaves: React.FC = () => {
   }, []);
 
   const generateWaveData = (frequency: number, amplitude: number = 0.5, phase: number = 0) => {
-    // Increase points for smoother curves but reduce wavelengths
     return Array.from({ length: 200 }, (_, i) => ({
       x: i,
       y: amplitude * Math.sin(((frequency / 25) * i * Math.PI) / 24 + phase),
@@ -65,9 +57,8 @@ const ResonanceWaves: React.FC = () => {
     const lineGenerator = line<{ x: number; y: number }>()
       .x((d) => xScale(d.x))
       .y((d) => yScale(d.y))
-      .curve(curveBasis); // Use curve basis for smoother lines
+      .curve(curveBasis);
 
-    // Clear previous content
     svg.selectAll("*").remove();
 
     const drawWave = (data: { x: number; y: number }[], color: string, delay: number = 0) => {
@@ -87,11 +78,11 @@ const ResonanceWaves: React.FC = () => {
         .attr("stroke-dashoffset", totalLength)
         .transition()
         .duration(1000)
+        .delay(delay) // Reduced initial delay
         .attr("opacity", 1)
         .transition()
-        .duration(2000)
-        .attr("stroke-dashoffset", 0)
-        .delay(delay);
+        .duration(1500) // Slightly faster animation
+        .attr("stroke-dashoffset", 0);
 
       return path;
     };
@@ -100,51 +91,63 @@ const ResonanceWaves: React.FC = () => {
     const actualData = generateWaveData(frequencyData.actual, 0.7, Math.PI / 4);
 
     if (!showCombined) {
-      drawWave(normalData, "#1ed760"); // Original Spotify green
-      drawWave(actualData, "#68e394", 1000); // Lighter green for contrast
+      drawWave(normalData, "#1ed760", 100); // Reduced delay
+      drawWave(actualData, "#68e394", 300); // Reduced delay
     } else {
       const combinedData = normalData.map((d, i) => ({
         x: d.x,
         y: d.y + actualData[i].y,
       }));
-      drawWave(combinedData, "#FF7EB9");
+      drawWave(combinedData, "#FF7EB9", 100); // Reduced delay
     }
   }, [frequencyData, showCombined]);
 
-  const handleCombineWaves = () => {
+  const handleToggleWaves = () => {
     const svg = select(svgRef.current);
 
-    // Fade out existing waves
     svg
       .selectAll("path")
       .transition()
-      .duration(1000)
+      .duration(500)
       .attr("opacity", 0)
       .remove()
       .on("end", () => {
-        setShowCombined(true);
+        setShowCombined(!showCombined);
       });
   };
 
+  const difference = frequencyData ? Math.abs(frequencyData.actual - frequencyData.normal) : 0;
+
   return (
     <div className='bg-[#181818] p-6 rounded-lg'>
-      <h2 className='text-2xl font-bold mb-4 text-[#FFFFFF]'>Resonance Waves</h2>
-
-      <div className='space-y-2 mb-6'>
-        <p style={{ color: "#1DB954" }}>Normal: {isLoading ? "Loading..." : (frequencyData?.normal ?? "N/A")}</p>
-        <p style={{ color: "#2EDA6C" }}>Actual: {isLoading ? "Loading..." : (frequencyData?.actual ?? "N/A")}</p>
-      </div>
+      {!showCombined ? (
+        <div className='grid grid-cols-2 gap-4 mb-6'>
+          <div className='bg-[#282828] p-4 rounded-lg'>
+            <p className='text-[#B3B3B3] text-sm'>Normal Frequency</p>
+            <p className='text-[#1DB954] text-2xl font-bold'>{isLoading ? "..." : (frequencyData?.normal ?? "N/A")}</p>
+          </div>
+          <div className='bg-[#282828] p-4 rounded-lg'>
+            <p className='text-[#B3B3B3] text-sm'>Actual Frequency</p>
+            <p className='text-[#2EDA6C] text-2xl font-bold'>{isLoading ? "..." : (frequencyData?.actual ?? "N/A")}</p>
+          </div>
+        </div>
+      ) : (
+        <div className='bg-[#282828] p-4 rounded-lg mb-6 border-2 border-[#FF7EB9]'>
+          <p className='text-[#B3B3B3] text-sm'>Combined Resonance</p>
+          <p className='text-[#FF7EB9] text-3xl font-bold'>{difference}</p>
+        </div>
+      )}
 
       <div className='relative' style={{ width: "100%", height: "200px" }}>
         <svg ref={svgRef} width='100%' height='100%' className='overflow-visible' />
       </div>
 
       <button
-        onClick={handleCombineWaves}
-        disabled={showCombined || isLoading}
+        onClick={handleToggleWaves}
+        disabled={isLoading}
         className='mt-4 bg-[#1DB954] hover:bg-[#1ED760] text-[#FFFFFF] font-bold py-2 px-4 rounded-full w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
       >
-        {isLoading ? "Loading..." : "Combine Waves"}
+        {isLoading ? "Loading..." : showCombined ? "Show Original Waves" : "Combine Waves"}
       </button>
     </div>
   );
