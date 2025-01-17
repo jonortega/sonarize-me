@@ -101,44 +101,14 @@ export default function TusDecadas() {
     ctx.save();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Aplicar transformaciones para zoom
     if (zoomLevel === "detailed") {
       ctx.translate(-focusPoint.x * scale + canvas.width / 2, -focusPoint.y * scale + canvas.height / 2);
     }
-
     ctx.scale(scale, scale);
 
     ctx.fillStyle = "#121212";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1 * scale;
-    ctx.font = `${14 * scale}px Arial`;
-    ctx.fillStyle = "#ffffff";
-    ctx.textAlign = "center";
-
-    // Dibujar divisores y etiquetas de las décadas
-    decades.forEach((decade) => {
-      const decadeStartIndex = completeYears.indexOf(decade);
-      const decadeStartX = AXIS_PADDING + decadeStartIndex * YEAR_WIDTH;
-      const decadeEndX = decadeStartX + YEAR_WIDTH * 10;
-      const decadeCenterX = (decadeStartX + decadeEndX) / 2;
-
-      // Dibujar etiqueta centrada de la década
-      ctx.fillText(decade.toString(), decadeCenterX, canvas.height - AXIS_PADDING + 40 * scale);
-
-      // Línea divisoria al inicio de la década
-      ctx.beginPath();
-      ctx.moveTo(decadeStartX, canvas.height - AXIS_PADDING);
-      ctx.lineTo(decadeStartX, canvas.height - AXIS_PADDING + 20 * scale);
-      ctx.stroke();
-    });
-
-    // Dibujar el divisor final para la última década
-    const finalDecadeStartX = AXIS_PADDING + (completeYears.length - 1) * YEAR_WIDTH;
-    ctx.beginPath();
-    ctx.moveTo(finalDecadeStartX, canvas.height - AXIS_PADDING);
-    ctx.lineTo(finalDecadeStartX, canvas.height - AXIS_PADDING + 20 * scale);
-    ctx.stroke();
 
     // Dibujar tracks por cada año
     completeYears.forEach((year, index) => {
@@ -153,6 +123,59 @@ export default function TusDecadas() {
         });
       }
     });
+
+    ctx.restore();
+
+    // Dibujar eje X siempre al final
+    ctx.save();
+    ctx.scale(scale, scale);
+
+    // ! Esto no sé si lo estoy haciendo bien
+    // Dibujar eje X
+    const axisY = canvas.height - AXIS_PADDING + 1; // Línea ligeramente más abajo
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(AXIS_PADDING, axisY);
+    ctx.lineTo(canvas.width - PADDING, axisY);
+    ctx.stroke();
+
+    ctx.restore();
+    // ! Hasta aquí
+
+    // Dibujar eje X siempre al final
+    ctx.save();
+    ctx.scale(scale, scale);
+
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1;
+    ctx.font = `${14}px Arial`;
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+
+    // Dibujar divisores y etiquetas de las décadas
+    decades.forEach((decade) => {
+      const decadeStartIndex = completeYears.indexOf(decade);
+      const decadeStartX = AXIS_PADDING + decadeStartIndex * YEAR_WIDTH;
+      const decadeEndX = decadeStartX + YEAR_WIDTH * 10;
+      const decadeCenterX = (decadeStartX + decadeEndX) / 2;
+
+      // Dibujar etiqueta centrada de la década
+      ctx.fillText(decade.toString(), decadeCenterX / scale, (canvas.height - AXIS_PADDING + 40) / scale);
+
+      // Línea divisoria al inicio de la década
+      ctx.beginPath();
+      ctx.moveTo(decadeStartX / scale, (canvas.height - AXIS_PADDING) / scale);
+      ctx.lineTo(decadeStartX / scale, (canvas.height - AXIS_PADDING + 20) / scale);
+      ctx.stroke();
+    });
+
+    // Dibujar el divisor final para la última década
+    const finalDecadeStartX = AXIS_PADDING + (completeYears.length - 1) * YEAR_WIDTH;
+    ctx.beginPath();
+    ctx.moveTo(finalDecadeStartX, canvas.height - AXIS_PADDING);
+    ctx.lineTo(finalDecadeStartX, canvas.height - AXIS_PADDING + 20 * scale);
+    ctx.stroke();
 
     ctx.restore();
   }, [tracksByYear, scale, zoomLevel, focusPoint, drawImage]);
