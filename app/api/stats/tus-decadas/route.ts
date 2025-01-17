@@ -86,7 +86,14 @@ export async function GET(): Promise<NextResponse> {
         }
 
         // Get the largest image available
-        const albumImage = track.album.images.sort((a, b) => b.width - a.width)[0];
+        // Ensure the album has images before trying to access them
+        const albumImage = track.album.images?.sort((a, b) => b.width - a.width)[0];
+
+        // If no image is available, skip this track
+        if (!albumImage) {
+          console.warn(`No image found for album: ${track.album.id}`);
+          return;
+        }
 
         tracks.push({
           id: track.album.id,
