@@ -34,6 +34,16 @@ interface ProcessedTrack {
   year: number;
 }
 
+export interface TrackData {
+  id: string;
+  albumPicUrl: string;
+  year: number;
+}
+
+type TracksByYear = {
+  [year: number]: TrackData[];
+};
+
 async function fetchSavedTracks(access_token: string, url: string): Promise<SpotifyResponse> {
   const response = await fetch(url, {
     headers: {
@@ -113,9 +123,20 @@ export async function GET(): Promise<NextResponse> {
     // Sort tracks by year
     tracks.sort((a, b) => a.year - b.year);
 
-    console.log("Fetched tracks:", tracks);
+    // Calculate the full decades range
+    const minYear = Math.floor(Math.min(...tracks.map((track) => track.year)) / 10) * 10; // Start of first decade
+    const maxYear = Math.ceil(Math.max(...tracks.map((track) => track.year)) / 10) * 10 - 1; // End of last decade
 
-    return NextResponse.json(tracks);
+    const tracksByYear: TracksByYear = {};
+
+    // Fill missing years across the full decades range
+    for (let year = minYear; year <= maxYear; year++) {
+      tracksByYear[year] = tracks.filter((track) => track.year === year);
+    }
+
+    console.log("Fetched tracks with full decades filled:", tracksByYear);
+
+    return NextResponse.json(tracksByYear);
   } catch (error) {
     console.error("Error fetching tracks:", error);
     return NextResponse.json({ error: "Failed to fetch tracks" }, { status: 500 });

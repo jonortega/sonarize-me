@@ -13,7 +13,7 @@ type TracksByYear = {
 };
 
 export default function TusDecadas() {
-  const [tracks, setTracks] = useState<TrackData[]>([]);
+  const [tracksByYear, setTracksByYear] = useState<TracksByYear>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [scale, setScale] = useState(1);
@@ -23,7 +23,6 @@ export default function TusDecadas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  // Fetch data
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
@@ -34,7 +33,7 @@ export default function TusDecadas() {
         const response = await fetch("/api/stats/tus-decadas", { signal });
         if (!response.ok) throw new Error("Failed to fetch tracks");
         const data = await response.json();
-        setTracks(data);
+        setTracksByYear(data);
       } catch (err) {
         if ((err as Error).name !== "AbortError") {
           setError(err instanceof Error ? err.message : "An error occurred");
@@ -51,7 +50,6 @@ export default function TusDecadas() {
     };
   }, []);
 
-  // Draw images
   const drawImage = useCallback((ctx: CanvasRenderingContext2D, url: string, x: number, y: number, size: number) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -66,7 +64,6 @@ export default function TusDecadas() {
     };
   }, []);
 
-  // Render canvas
   const renderCanvas = useCallback(() => {
     if (!canvasRef.current) return;
 
@@ -81,20 +78,20 @@ export default function TusDecadas() {
     const AXIS_PADDING = 80 * scale;
     const YEAR_WIDTH = ALBUM_SIZE;
 
-    const tracksByYear: TracksByYear = tracks.reduce((acc: TracksByYear, track: TrackData) => {
-      const year = track.year;
-      if (!acc[year]) {
-        acc[year] = [];
-      }
-      acc[year].push(track);
-      return acc;
-    }, {});
-
     const years = Object.keys(tracksByYear)
       .map((year) => Number(year))
       .sort((a, b) => a - b);
 
-    const totalWidth = years.length * YEAR_WIDTH + AXIS_PADDING + PADDING;
+    if (years.length === 0) return;
+
+    // Asegurar que las décadas completas están incluidas
+    const minYear = Math.floor(years[0] / 10) * 10; // Inicio de la década más baja
+    const maxYear = Math.ceil(years[years.length - 1] / 10) * 10 - 1; // Final de la década más alta
+    const completeYears = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
+
+    const decades = Array.from(new Set(completeYears.map((year) => Math.floor(year / 10) * 10)));
+
+    const totalWidth = completeYears.length * YEAR_WIDTH + AXIS_PADDING + PADDING;
     const maxTracksInYear = Math.max(...Object.values(tracksByYear).map((tracks) => tracks.length));
     const totalHeight = maxTracksInYear * ALBUM_SIZE + AXIS_PADDING + PADDING * 2;
 
@@ -113,19 +110,52 @@ export default function TusDecadas() {
     ctx.fillStyle = "#121212";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    years.forEach((year, index) => {
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1 * scale;
+    ctx.font = `${14 * scale}px Arial`;
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+
+    // Dibujar divisores y etiquetas de las décadas
+    decades.forEach((decade) => {
+      const decadeStartIndex = completeYears.indexOf(decade);
+      const decadeStartX = AXIS_PADDING + decadeStartIndex * YEAR_WIDTH;
+      const decadeEndX = decadeStartX + YEAR_WIDTH * 10;
+      const decadeCenterX = (decadeStartX + decadeEndX) / 2;
+
+      // Dibujar etiqueta centrada de la década
+      ctx.fillText(decade.toString(), decadeCenterX, canvas.height - AXIS_PADDING + 40 * scale);
+
+      // Línea divisoria al inicio de la década
+      ctx.beginPath();
+      ctx.moveTo(decadeStartX, canvas.height - AXIS_PADDING);
+      ctx.lineTo(decadeStartX, canvas.height - AXIS_PADDING + 20 * scale);
+      ctx.stroke();
+    });
+
+    // Dibujar el divisor final para la última década
+    const finalDecadeStartX = AXIS_PADDING + (completeYears.length - 1) * YEAR_WIDTH;
+    ctx.beginPath();
+    ctx.moveTo(finalDecadeStartX, canvas.height - AXIS_PADDING);
+    ctx.lineTo(finalDecadeStartX, canvas.height - AXIS_PADDING + 20 * scale);
+    ctx.stroke();
+
+    // Dibujar tracks por cada año
+    completeYears.forEach((year, index) => {
       const yearStartX = AXIS_PADDING + index * YEAR_WIDTH;
 
-      tracksByYear[year].forEach((track, trackIndex) => {
-        const x = yearStartX;
-        const y = canvas.height - AXIS_PADDING - (trackIndex + 1) * ALBUM_SIZE;
+      if (tracksByYear[year]) {
+        tracksByYear[year].forEach((track, trackIndex) => {
+          const x = yearStartX;
+          const y = canvas.height - AXIS_PADDING - (trackIndex + 1) * ALBUM_SIZE;
 
-        drawImage(ctx, track.albumPicUrl, x, y, ALBUM_SIZE);
-      });
+          drawImage(ctx, track.albumPicUrl, x, y, ALBUM_SIZE);
+        });
+      }
     });
 
     ctx.restore();
-  }, [tracks, scale, zoomLevel, focusPoint, drawImage]);
+  }, [tracksByYear, scale, zoomLevel, focusPoint, drawImage]);
 
   useEffect(() => {
     renderCanvas();
