@@ -1,5 +1,16 @@
 "use client";
 
+/**
+ * ! Hay bugs a la hora de renderizar la cuadrícula de imágenes,
+ * ! se superponen las portadas y sobre todo al hacer zoom.
+ * ! Puede que la solución sea esperar a que se cargue todo antes de mostrarlo,
+ * ! y mantenerlo como una imagen estática.
+ *
+ * ! El componente hace dos veces petición al backend, porovocando
+ * ! que se carguen todos los datos dos veces inncesariamente.
+ * ! ¿Por qué hace eso, es de Next.js?
+ */
+
 import { useEffect, useRef, useState, useCallback } from "react";
 
 export interface TrackData {
@@ -12,6 +23,10 @@ export interface DecadeData {
   decade: number;
   tracks: TrackData[];
 }
+
+type TracksByYear = {
+  [year: number]: TrackData[];
+};
 
 interface ImageLoadingQueue {
   x: number;
@@ -31,20 +46,35 @@ export default function TusDecadas() {
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const fetchTracks = async () => {
+      setLoading(true);
+
       try {
-        const response = await fetch("/api/stats/tus-decadas");
+        const response = await fetch("/api/stats/tus-decadas", { signal });
         if (!response.ok) throw new Error("Failed to fetch tracks");
         const data = await response.json();
         setTracks(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        if ((err as Error).name === "AbortError") {
+          console.log("Petición abortada");
+        } else {
+          setError(err instanceof Error ? err.message : "An error occurred");
+        }
       } finally {
-        setLoading(false);
+        if (!signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchTracks();
+
+    return () => {
+      controller.abort(); // Cancelar la petición al limpiar el efecto
+    };
   }, []);
 
   const drawImage = useCallback((ctx: CanvasRenderingContext2D, url: string, x: number, y: number, size: number) => {
@@ -53,6 +83,12 @@ export default function TusDecadas() {
     img.src = url;
     img.onload = () => {
       ctx.drawImage(img, x, y, size, size);
+    };
+    img.onerror = () => {
+      console.error(`Error al cargar la imagen desde ${url}`);
+      // Opcional: Puedes dibujar un marcador de error en el canvas
+      ctx.fillStyle = "#ff0000";
+      ctx.fillRect(x, y, size, size); // Dibuja un cuadrado rojo para indicar el error
     };
   }, []);
 
@@ -65,94 +101,105 @@ export default function TusDecadas() {
     if (!ctx) return;
 
     ctxRef.current = ctx;
-    imageQueueRef.current = []; // Clear previous image queue
+    imageQueueRef.current = []; // Limpia la cola anterior
 
-    // Group tracks by decade
-    const decadeGroups = tracks.reduce<DecadeData[]>((acc, track) => {
-      const decade = Math.floor(track.year / 10) * 10;
-      const decadeGroup = acc.find((group) => group.decade === decade);
-
-      if (decadeGroup) {
-        decadeGroup.tracks.push(track);
-      } else {
-        acc.push({ decade, tracks: [track] });
+    // 1. Agrupar tracks por año
+    const tracksByYear: TracksByYear = tracks.reduce((acc: TracksByYear, track: TrackData) => {
+      const year = track.year;
+      if (!acc[year]) {
+        acc[year] = []; // Inicializa el array del año si no existe
       }
-
+      acc[year].push(track); // Añade el track al año correspondiente
       return acc;
-    }, []);
+    }, {});
 
-    // Sort decades
-    decadeGroups.sort((a, b) => a.decade - b.decade);
+    // 2. Crear una lista ordenada de años
+    const years = Object.keys(tracksByYear)
+      .map((year) => Number(year)) // Convertir las claves (strings) a números
+      .sort((a, b) => a - b); // Ordenar los años de menor a mayor
 
-    // Calculate dimensions
+    // 3. Configurar dimensiones del canvas
     const ALBUM_SIZE = 30 * scale;
-    const ALBUMS_PER_ROW = 8;
     const PADDING = 20 * scale;
     const AXIS_PADDING = 80 * scale;
-    const DECADE_WIDTH = ALBUM_SIZE * ALBUMS_PER_ROW;
+    const YEAR_WIDTH = ALBUM_SIZE; // Ancho de cada columna (1 columna por año)
 
-    // Calculate canvas size based on content
-    const totalDecadeWidth = DECADE_WIDTH * decadeGroups.length;
-    canvas.width = totalDecadeWidth + AXIS_PADDING + PADDING;
+    const totalWidth = years.length * YEAR_WIDTH + AXIS_PADDING + PADDING;
+    const maxTracksInYear = Math.max(...Object.values(tracksByYear).map((tracks) => tracks.length));
+    const totalHeight = maxTracksInYear * ALBUM_SIZE + AXIS_PADDING + PADDING * 2;
 
-    // Calculate maximum height needed
-    const maxTracksInDecade = Math.max(...decadeGroups.map((g) => g.tracks.length));
-    const rowsNeeded = Math.ceil(maxTracksInDecade / ALBUMS_PER_ROW);
-    const totalHeight = rowsNeeded * ALBUM_SIZE + AXIS_PADDING + PADDING * 2;
+    canvas.width = totalWidth;
     canvas.height = totalHeight;
 
-    // Set container minimum width to ensure horizontal scrolling works
     container.style.minWidth = `${canvas.width}px`;
 
-    // Clear canvas
+    // 4. Limpiar el canvas
     ctx.fillStyle = "#121212";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw axes
+    // 5. Dibujar ejes
     ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 2 * scale;
 
-    // Y axis
+    // Eje Y
     ctx.beginPath();
     ctx.moveTo(AXIS_PADDING, PADDING);
     ctx.lineTo(AXIS_PADDING, canvas.height - AXIS_PADDING);
     ctx.stroke();
 
-    // X axis
+    // Eje X
     ctx.beginPath();
     ctx.moveTo(AXIS_PADDING, canvas.height - AXIS_PADDING);
     ctx.lineTo(canvas.width - PADDING, canvas.height - AXIS_PADDING);
     ctx.stroke();
 
-    // Draw decade labels and divisory lines
+    // 6. Dibujar etiquetas de décadas
     ctx.fillStyle = "#ffffff";
     ctx.font = `${18 * scale}px system-ui, -apple-system, sans-serif`;
     ctx.textAlign = "center";
 
-    decadeGroups.forEach((group, index) => {
-      const decadeStartX = AXIS_PADDING + index * DECADE_WIDTH;
-      const decadeCenterX = decadeStartX + DECADE_WIDTH / 2;
+    const decades = Array.from(new Set(years.map((year) => Math.floor(year / 10) * 10))).sort((a, b) => a - b);
 
-      // Draw decade label centered in its section
-      ctx.fillText(group.decade.toString(), decadeCenterX, canvas.height - AXIS_PADDING + 30 * scale);
+    decades.forEach((decade, index) => {
+      // Recalcular inicio y fin de la década basado en el índice
+      const decadeStartX = AXIS_PADDING + years.indexOf(decade) * YEAR_WIDTH;
+      const decadeEndX = decadeStartX + YEAR_WIDTH * 10; // Cada década cubre 10 columnas
+      const decadeCenterX = (decadeStartX + decadeEndX) / 2;
 
-      // Draw decade boundary line
+      // Ajustar etiquetas en los extremos
+      if (index === 0) {
+        // Primera década: ajustamos el rango al inicio
+        const firstYearX = AXIS_PADDING + 0 * YEAR_WIDTH; // Inicio absoluto
+        const endFirstDecadeX = firstYearX + YEAR_WIDTH * 10; // Fin de la primera década
+        const centeredFirstDecadeX = (firstYearX + endFirstDecadeX) / 2;
+
+        ctx.fillText(decade.toString(), centeredFirstDecadeX, canvas.height - AXIS_PADDING + 30 * scale);
+      } else if (index === decades.length - 1) {
+        // Última década: ajustamos el rango al final
+        const lastYearX = AXIS_PADDING + (years.length - 10) * YEAR_WIDTH; // Inicio de la última década
+        const endLastDecadeX = lastYearX + YEAR_WIDTH * 10; // Fin absoluto
+        const centeredLastDecadeX = (lastYearX + endLastDecadeX) / 2;
+
+        ctx.fillText(decade.toString(), centeredLastDecadeX, canvas.height - AXIS_PADDING + 30 * scale);
+      } else {
+        // Décadas intermedias se centran normalmente
+        ctx.fillText(decade.toString(), decadeCenterX, canvas.height - AXIS_PADDING + 30 * scale);
+      }
+
+      // Línea divisoria al inicio de la década
       ctx.beginPath();
       ctx.moveTo(decadeStartX, canvas.height - AXIS_PADDING);
       ctx.lineTo(decadeStartX, canvas.height - AXIS_PADDING + 10 * scale);
       ctx.stroke();
     });
 
-    // Queue album covers for drawing
-    decadeGroups.forEach((group, decadeIndex) => {
-      const decadeStartX = AXIS_PADDING + decadeIndex * DECADE_WIDTH;
+    // 7. Renderizar "torres" de álbumes por año
+    years.forEach((year, index) => {
+      const yearStartX = AXIS_PADDING + index * YEAR_WIDTH;
 
-      group.tracks.forEach((track, trackIndex) => {
-        const row = Math.floor(trackIndex / ALBUMS_PER_ROW);
-        const col = trackIndex % ALBUMS_PER_ROW;
-
-        const x = decadeStartX + col * ALBUM_SIZE;
-        const y = canvas.height - AXIS_PADDING - (row + 1) * ALBUM_SIZE;
+      tracksByYear[year].forEach((track, trackIndex) => {
+        const x = yearStartX;
+        const y = canvas.height - AXIS_PADDING - (trackIndex + 1) * ALBUM_SIZE;
 
         imageQueueRef.current.push({
           x,
@@ -163,7 +210,7 @@ export default function TusDecadas() {
       });
     });
 
-    // Draw all queued images
+    // 8. Dibujar las imágenes en el canvas
     imageQueueRef.current.forEach(({ x, y, size, url }) => {
       drawImage(ctx, url, x, y, size);
     });
