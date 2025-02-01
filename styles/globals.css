@@ -10,6 +10,7 @@
   --spotify-gray-200: #535353;
   --spotify-gray-300: #212121;
   --spotify-blue: #4687d6;
+  --spotify-red: #ff7eb9;
 }
 
 body {
@@ -21,11 +22,11 @@ body {
   .bg-spotify-green {
     background-color: var(--spotify-green);
   }
-  .bg-spotify-black {
-    background-color: var(--spotify-black);
-  }
   .text-spotify-green {
     color: var(--spotify-green);
+  }
+  .bg-spotify-black {
+    background-color: var(--spotify-black);
   }
   .bg-spotify-gray-100 {
     background-color: var(--spotify-gray-100);
@@ -41,6 +42,12 @@ body {
   }
   .border-spotify-gray-200 {
     border-color: var(--spotify-gray-200);
+  }
+  .bg-spotify-red {
+    background-color: var(--spotify-red);
+  }
+  .text-spotify-red {
+    color: var(--spotify-red);
   }
 }
 

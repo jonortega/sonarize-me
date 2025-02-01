@@ -18,6 +18,7 @@ export default {
           300: "#212121",
         },
         "spotify-blue": "#4687D6",
+        "spotify-red": "#FF7EB9",
       },
     },
   },

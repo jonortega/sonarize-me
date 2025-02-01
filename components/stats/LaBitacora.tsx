@@ -22,6 +22,7 @@ import {
   ActiveElement,
 } from "chart.js";
 import { ArrowLeft } from "lucide-react";
+import NoFavorites from "@/components/NoFavorites";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -201,6 +202,8 @@ export default function LaBitacora() {
         <div className='flex justify-center items-center h-full'>
           <span className='text-white text-lg'>Loading...</span>
         </div>
+      ) : Object.keys(data).length === 0 ? ( // 🔹 Comprueba si data está vacío
+        <NoFavorites />
       ) : (
         <>
           {currentScale > 0 && (

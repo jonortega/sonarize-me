@@ -29,7 +29,7 @@ interface StationsResponse {
   otono: StationData;
 }
 
-const DonutChart = () => {
+const EstacionesMusicales = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [data, setData] = useState<StationsResponse | null>(null);
@@ -236,4 +236,4 @@ const DonutChart = () => {
   );
 };
 
-export default DonutChart;
+export default EstacionesMusicales;
