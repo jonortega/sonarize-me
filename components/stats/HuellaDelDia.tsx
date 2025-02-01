@@ -10,19 +10,64 @@ ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip,
 export default function HuellaDelDia() {
   const [data, setData] = useState<number[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/stats/huella-del-dia")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
-        } else {
-          setData(data);
+    const controller = new AbortController();
+    const signal = controller.signal;
+    let isAborted = false; // Bandera para evitar actualizaciones de estado tras un aborto
+
+    const fetchHuellaDelDia = async () => {
+      console.log("=== INICIO DE FETCH, setLoading(true) ===");
+      setLoading(true); // Establece el estado de carga
+      setData([]); // Resetea los datos previos
+
+      try {
+        const response = await fetch("/api/stats/huella-del-dia", { signal });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch Huella Del Día data");
         }
-      })
-      .catch((err) => setError(err.message));
+
+        const result = await response.json();
+
+        if (!isAborted) {
+          if (result.error) {
+            setError(result.error);
+          } else {
+            setData(result);
+          }
+        }
+      } catch (error) {
+        if ((error as Error).name === "AbortError") {
+          console.log("=== FETCH ABORTADO ===");
+          isAborted = true; // Se marca como abortado
+          return;
+        }
+        console.error("Error fetching Huella Del Día data:", error);
+        if (!isAborted) {
+          setError("Failed to load Huella Del Día data. Please try again later.");
+        }
+      } finally {
+        if (!isAborted) {
+          console.log("=== FIN DE FETCH, setLoading(false) ===");
+          setLoading(false); // Solo actualiza el estado si no fue abortado
+        }
+      }
+    };
+
+    fetchHuellaDelDia();
+
+    return () => {
+      console.log("=== ABORTANDO FETCH ===");
+      isAborted = true; // Evita actualizaciones de estado tras el desmontaje
+      controller.abort(); // Aborta la solicitud pendiente
+    };
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   if (error) {
     return <p>Error: {error}</p>;
