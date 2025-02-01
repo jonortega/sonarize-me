@@ -104,7 +104,7 @@ export async function GET(): Promise<NextResponse> {
     const normal =
       sampledTracks.length > 0
         ? Math.round(sampledTracks.reduce((sum, track) => sum + track.popularity, 0) / sampledTracks.length)
-        : 0;
+        : -1; // -1 si no hay canciones favoritas
 
     // Calcular el valor "actual"
     const recentlyPlayedUrl = "https://api.spotify.com/v1/me/player/recently-played?limit=50";

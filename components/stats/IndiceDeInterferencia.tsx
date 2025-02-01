@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { select, scaleLinear, line, curveBasis } from "d3";
+import NoFavorites from "@/components/NoFavorites";
 
 interface FrequencyData {
   normal: number;
@@ -163,6 +164,10 @@ const IndiceDeInterferencia: React.FC = () => {
       </p>
     </div>
   );
+
+  if (!isLoading && (!frequencyData || frequencyData.normal === -1)) {
+    return <NoFavorites />;
+  }
 
   return (
     <div className='bg-[#181818] p-6 rounded-lg'>
