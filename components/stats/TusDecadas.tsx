@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import NoFavorites from "@/components/NoFavorites";
 
 export interface TrackData {
   id: string;
@@ -209,6 +210,10 @@ export default function TusDecadas() {
         <div className='text-white text-center'>Loading...</div>
       </div>
     );
+  }
+
+  if (Object.keys(tracksByYear).length === 0) {
+    return <NoFavorites />;
   }
 
   if (error) {
