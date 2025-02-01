@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Sun, Snowflake, Flower, Leaf, AudioLines } from "lucide-react";
+import NoFavorites from "@/components/NoFavorites";
 
 // Colores e íconos para cada estación
 const COLORS = ["#1dafb9", "#1ed760", "#ffa600", "#ff6b00"];
@@ -50,6 +51,16 @@ const EstacionesMusicales = () => {
         const result: StationsResponse = await response.json();
 
         console.log("Fetched season data:", result);
+
+        // Comprobación: Si todos los datos son "vacíos", no hay tracks reales
+        const allEmpty = Object.values(result).every(
+          (season) => season.artist.name === "Artista desconocido" && season.genre.name === "Sin género"
+        );
+
+        if (allEmpty) {
+          setError("No hay canciones guardadas en favoritos.");
+          return;
+        }
 
         setData(result);
       } catch (error) {
@@ -121,7 +132,8 @@ const EstacionesMusicales = () => {
     );
   });
 
-  if (loading) return <div>Cargando...</div>;
+  if (loading) return <div>Cargando...</div>; // ! Se puede extraer al fallback?
+  if (error === "No hay canciones guardadas en favoritos.") return <NoFavorites />;
   if (error || !data) return <div>{error || "Error al cargar los datos"}</div>;
 
   if (hoveredIndex !== null) {
