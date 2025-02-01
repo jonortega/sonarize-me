@@ -45,7 +45,7 @@ export async function GET() {
       const trackDurationMs = track.track.duration_ms;
       const timeListenedMinutes = Math.max(0, Math.min(trackDurationMs / 1000 / 60, 60));
 
-      listeningHours[hour] += timeListenedMinutes;
+      listeningHours[hour] = Math.min(60, listeningHours[hour] + timeListenedMinutes); // Max 60 mins por hora
     });
 
     console.log("Listening hours distribution:", listeningHours);
