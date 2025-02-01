@@ -19,20 +19,52 @@ const IndiceDeInterferencia: React.FC = () => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    let isAborted = false; // Bandera para evitar actualizaciones de estado tras un aborto
+
     const fetchData = async () => {
+      console.log("=== INICIO DE FETCH, setIsLoading(true) ===");
+      setIsLoading(true); // Asegura que el estado de carga se establece correctamente
+      setFrequencyData(null); // Resetea los datos previos para evitar inconsistencias
+
       try {
-        setIsLoading(true);
-        const response = await fetch("/api/stats/indice-de-interferencia");
+        const response = await fetch("/api/stats/indice-de-interferencia", { signal });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch frequency data");
+        }
+
         const data = await response.json();
-        setFrequencyData(data);
+
+        if (!isAborted) {
+          setFrequencyData(data); // Solo actualiza los datos si no fue abortado
+        }
       } catch (error) {
+        if ((error as Error).name === "AbortError") {
+          console.log("=== FETCH ABORTADO ===");
+          isAborted = true; // Marca como abortado para evitar efectos secundarios
+          return;
+        }
         console.error("Error fetching frequency data:", error);
+        if (!isAborted) {
+          setFrequencyData(null); // Resetea los datos en caso de error
+        }
       } finally {
-        setIsLoading(false);
+        if (!isAborted) {
+          console.log("=== FIN DE FETCH, setIsLoading(false) ===");
+          setIsLoading(false); // Solo cambia el estado si no fue abortado
+        }
       }
     };
 
     fetchData();
+
+    return () => {
+      console.log("=== ABORTANDO FETCH ===");
+      isAborted = true; // Marca la solicitud como abortada
+      controller.abort(); // Cancela la solicitud activa
+    };
   }, []);
 
   const generateWaveData = (frequency: number, amplitude: number = 0.5, phase: number = 0) => {
@@ -164,6 +196,14 @@ const IndiceDeInterferencia: React.FC = () => {
       </p>
     </div>
   );
+
+  if (isLoading) {
+    return (
+      <div className='w-full p-6 bg-[#121212] rounded-lg min-h-[200px] flex items-center justify-center'>
+        <div className='text-white text-center text-lg animate-pulse'>Loading...</div>
+      </div>
+    );
+  }
 
   if (!isLoading && (!frequencyData || frequencyData.normal === -1)) {
     return <NoFavorites />;
