@@ -38,10 +38,19 @@ const EstacionesMusicales = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    let isAborted = false; // Bandera para evitar actualizaciones de estado tras un aborto
+
     const fetchStationsData = async () => {
+      console.log("=== INICIO DE FETCH, setLoading(true) ===");
+      setLoading(true); // Asegura que el estado de carga se establece correctamente
+      setData(null); // Resetea los datos previos para evitar inconsistencias
+
       try {
         const response = await fetch("/api/stats/estaciones-musicales", {
           credentials: "include",
+          signal,
         });
 
         if (!response.ok) {
@@ -57,21 +66,38 @@ const EstacionesMusicales = () => {
           (season) => season.artist.name === "Artista desconocido" && season.genre.name === "Sin género"
         );
 
-        if (allEmpty) {
-          setError("No hay canciones guardadas en favoritos.");
+        if (!isAborted) {
+          if (allEmpty) {
+            setError("No hay canciones guardadas en favoritos.");
+            return;
+          }
+          setData(result);
+        }
+      } catch (error) {
+        if ((error as Error).name === "AbortError") {
+          console.log("=== FETCH ABORTADO ===");
+          isAborted = true; // Marca como abortado
           return;
         }
-
-        setData(result);
-      } catch (error) {
         console.error("Error fetching station data:", error);
-        setError("Failed to load station data. Please try again later.");
+        if (!isAborted) {
+          setError("Failed to load station data. Please try again later.");
+        }
       } finally {
-        setLoading(false);
+        if (!isAborted) {
+          console.log("=== FIN DE FETCH, setLoading(false) ===");
+          setLoading(false); // Solo cambia el estado si no fue abortado
+        }
       }
     };
 
     fetchStationsData();
+
+    return () => {
+      console.log("=== ABORTANDO FETCH ===");
+      isAborted = true; // Marca la solicitud como abortada
+      controller.abort(); // Cancela la solicitud activa
+    };
   }, []);
 
   // Update mouse position on movement
