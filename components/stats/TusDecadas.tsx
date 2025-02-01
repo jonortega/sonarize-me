@@ -14,7 +14,7 @@ type TracksByYear = {
 };
 
 export default function TusDecadas() {
-  const [tracksByYear, setTracksByYear] = useState<TracksByYear>({});
+  const [tracksByYear, setTracksByYear] = useState<TracksByYear | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [scale, setScale] = useState(1);
@@ -27,26 +27,41 @@ export default function TusDecadas() {
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
+    let isAborted = false;
 
     const fetchTracks = async () => {
+      console.log("=== INICIO DE FETCH, setLoading(true) ===");
       setLoading(true);
+      setTracksByYear(null);
+
       try {
         const response = await fetch("/api/stats/tus-decadas", { signal });
         if (!response.ok) throw new Error("Failed to fetch tracks");
+
         const data = await response.json();
         setTracksByYear(data);
       } catch (err) {
-        if ((err as Error).name !== "AbortError") {
+        if ((err as Error).name === "AbortError") {
+          console.log("=== FETCH ABORTADO ===");
+          isAborted = true; // Marca como abortado
+        } else {
           setError(err instanceof Error ? err.message : "An error occurred");
+          setTracksByYear(null);
+          console.log("=== FETCH ERROR, setError y setTracksByYear(null) ===");
         }
       } finally {
-        setLoading(false);
+        if (!isAborted) {
+          console.log("=== FIN DE FETCH, setLoading(false) ===");
+          setLoading(false);
+        }
       }
     };
 
     fetchTracks();
 
     return () => {
+      console.log("=== ABORTANDO FETCH ===");
+      isAborted = true; // Marca la petición como abortada antes de cancelar
       controller.abort();
     };
   }, []);
@@ -79,9 +94,11 @@ export default function TusDecadas() {
     const AXIS_PADDING = 80 * scale;
     const YEAR_WIDTH = ALBUM_SIZE;
 
-    const years = Object.keys(tracksByYear)
-      .map((year) => Number(year))
-      .sort((a, b) => a - b);
+    const years = tracksByYear
+      ? Object.keys(tracksByYear)
+          .map((year) => Number(year))
+          .sort((a, b) => a - b)
+      : [];
 
     if (years.length === 0) return;
 
@@ -93,7 +110,7 @@ export default function TusDecadas() {
     const decades = Array.from(new Set(completeYears.map((year) => Math.floor(year / 10) * 10)));
 
     const totalWidth = completeYears.length * YEAR_WIDTH + AXIS_PADDING + PADDING;
-    const maxTracksInYear = Math.max(...Object.values(tracksByYear).map((tracks) => tracks.length));
+    const maxTracksInYear = tracksByYear ? Math.max(...Object.values(tracksByYear).map((tracks) => tracks.length)) : 0;
     const totalHeight = maxTracksInYear * ALBUM_SIZE + AXIS_PADDING + PADDING * 2;
 
     canvas.width = totalWidth;
@@ -115,7 +132,7 @@ export default function TusDecadas() {
     completeYears.forEach((year, index) => {
       const yearStartX = AXIS_PADDING + index * YEAR_WIDTH;
 
-      if (tracksByYear[year]) {
+      if (tracksByYear && tracksByYear[year]) {
         tracksByYear[year].forEach((track, trackIndex) => {
           const x = yearStartX;
           const y = canvas.height - AXIS_PADDING - (trackIndex + 1) * ALBUM_SIZE;
@@ -205,18 +222,21 @@ export default function TusDecadas() {
   };
 
   if (loading) {
+    console.log("-------- 1. Renderizando Loading, loading:", loading);
     return (
-      <div className='w-full p-6 bg-[#121212] rounded-lg'>
-        <div className='text-white text-center'>Loading...</div>
+      <div className='w-full p-6 bg-[#121212] rounded-lg min-h-[200px] flex items-center justify-center'>
+        <div className='text-white text-center text-lg animate-pulse'>Loading...</div>
       </div>
     );
   }
 
-  if (Object.keys(tracksByYear).length === 0) {
+  if (!loading && tracksByYear && Object.keys(tracksByYear).length === 0) {
+    console.log("-------- 2. No hay favoritos, loading:", loading);
     return <NoFavorites />;
   }
 
   if (error) {
+    console.log("-------- 3. Error en la carga, loading:", loading);
     return (
       <div className='w-full p-6 bg-[#121212] rounded-lg'>
         <div className='text-red-500 text-center'>{error}</div>
@@ -224,6 +244,7 @@ export default function TusDecadas() {
     );
   }
 
+  console.log("-------- 4. Renderizando estadística, loading:", loading);
   return (
     <div className='w-full bg-[#121212] rounded-lg p-6 shadow-lg'>
       <div

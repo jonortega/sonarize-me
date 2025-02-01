@@ -134,7 +134,7 @@ export async function GET(): Promise<NextResponse> {
       tracksByYear[year] = tracks.filter((track) => track.year === year);
     }
 
-    console.log("Fetched tracks with full decades filled:", tracksByYear);
+    // console.log("Fetched tracks with full decades filled:", tracksByYear);
 
     return NextResponse.json(tracksByYear);
   } catch (error) {
