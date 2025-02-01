@@ -10,10 +10,19 @@ export default function HallOfFame() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    let isAborted = false;
+
     const fetchHallOfFame = async () => {
+      console.log("=== INICIO DE FETCH, setLoading(true) ===");
+      setLoading(true); // Asegura que el estado de carga se establece correctamente
+      setData(null); // Resetea los datos para evitar inconsistencias
+
       try {
         const response = await fetch("/api/stats/hall-of-fame", {
           credentials: "include",
+          signal,
         });
 
         if (!response.ok) {
@@ -23,14 +32,28 @@ export default function HallOfFame() {
         const result: HallOfFameData = await response.json();
         setData(result);
       } catch (error) {
+        if ((error as Error).name === "AbortError") {
+          console.log("=== FETCH ABORTADO ===");
+          isAborted = true; // Se marca como abortado para evitar efectos secundarios
+          return;
+        }
         console.error("Error fetching Hall of Fame data:", error);
         setError("Failed to load Hall of Fame data. Please try again later.");
       } finally {
-        setLoading(false);
+        if (!isAborted) {
+          console.log("=== FIN DE FETCH, setLoading(false) ===");
+          setLoading(false); // Solo se ejecuta si no se abortó
+        }
       }
     };
 
     fetchHallOfFame();
+
+    return () => {
+      console.log("=== ABORTANDO FETCH ===");
+      isAborted = true; // Evitar que las actualizaciones de estado se apliquen tras desmontar
+      controller.abort();
+    };
   }, []);
 
   const handleAlbumClick = (album: Album) => {
