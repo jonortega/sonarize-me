@@ -10,7 +10,7 @@ interface FrequencyData {
 
 type WaveType = "normal" | "actual" | "combined" | null;
 
-const ResonanceWaves: React.FC = () => {
+const IndiceDeInterferencia: React.FC = () => {
   const [frequencyData, setFrequencyData] = useState<FrequencyData | null>(null);
   const [showCombined, setShowCombined] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,7 +21,7 @@ const ResonanceWaves: React.FC = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("/api/stats/indice-de-resonancia");
+        const response = await fetch("/api/stats/indice-de-interferencia");
         const data = await response.json();
         setFrequencyData(data);
       } catch (error) {
@@ -182,7 +182,7 @@ const ResonanceWaves: React.FC = () => {
           />
         </div>
       ) : (
-        <FrequencyCard label='Combined Resonance' value={difference} color='#FF7EB9' type='combined' />
+        <FrequencyCard label='Interferencia Combinada' value={difference} color='#FF7EB9' type='combined' />
       )}
 
       <div className='relative' style={{ width: "100%", height: "200px" }}>
@@ -200,4 +200,4 @@ const ResonanceWaves: React.FC = () => {
   );
 };
 
-export default ResonanceWaves;
+export default IndiceDeInterferencia;

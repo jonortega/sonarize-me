@@ -14,7 +14,7 @@ const stats: Array<{
   { id: "estaciones-musicales", title: "Estaciones Musicales", icon: "SunSnow" },
   { id: "tus-decadas", title: "Tus Décadas", icon: "Rewind" },
   { id: "la-bitacora", title: "La Bitácora", icon: "BookMarked", className: "md:col-span-2 lg:col-span-2" },
-  { id: "indice-de-resonancia", title: "Índice de Resonancia", icon: "AudioWaveform" },
+  { id: "indice-de-interferencia", title: "Índice de Interferencia", icon: "AudioWaveform" },
 ];
 
 export default function Stats() {

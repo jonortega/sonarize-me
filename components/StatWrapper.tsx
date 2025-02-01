@@ -10,7 +10,7 @@ const statComponents = {
   "huella-del-dia": dynamic(() => import("@/components/stats/HuellaDelDia")),
   "la-bitacora": dynamic(() => import("@/components/stats/LaBitacora")),
   "tus-decadas": dynamic(() => import("@/components/stats/TusDecadas")),
-  "indice-de-resonancia": dynamic(() => import("@/components/stats/IndiceDeResonancia")),
+  "indice-de-interferencia": dynamic(() => import("@/components/stats/IndiceDeInterferencia")),
   // Insertar más componentes dinámicos aquí
 };
 
@@ -20,7 +20,7 @@ const statIcons = {
   "huella-del-dia": Fingerprint,
   "la-bitacora": BookMarked,
   "tus-decadas": Rewind,
-  "indice-de-resonancia": AudioWaveform,
+  "indice-de-interferencia": AudioWaveform,
   // Insertar más iconos aquí (importarlos de "lucide-react")
 };
 
