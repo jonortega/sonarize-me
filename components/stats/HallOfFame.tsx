@@ -92,12 +92,12 @@ export default function HallOfFame() {
               layout='fill'
               objectFit='cover'
               sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-              className='transition-transform duration-300 ease-in-out group-hover:scale-110'
+              className='transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:z-[10]' // Cambiar z-index dinámicamente
             />
-            <div className='absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity duration-300 flex items-end justify-start p-2'>
+            <div className='absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-opacity duration-300 flex items-end justify-start p-2 z-[20]'>
               <div className='text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                <p className='font-semibold text-sm truncate'>{album.track}</p>
-                <p className='text-xs text-spotify-gray-100 truncate'>{album.artist}</p>
+                <p className='font-semibold text-sm text-ellipsis'>{album.track}</p>
+                <p className='text-xs text-spotify-gray-100 text-ellipsis'>{album.artist}</p>
               </div>
             </div>
           </div>
