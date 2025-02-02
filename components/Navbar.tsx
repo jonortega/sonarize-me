@@ -20,7 +20,7 @@ export default function Navbar({ user }: NavbarProps) {
           <div className='flex-shrink-0'>
             <Link href='/home' className=' flex items-center'>
               <ChartColumn size={24} className='ml-2 text-spotify-green' />
-              <span className='ml-2 text-white font-bold text-xl'>Spotify Stats</span>
+              <span className='ml-2 text-white font-bold text-xl hidden sm:inline'>Spotify Stats</span>
             </Link>
           </div>
           <div className='flex-grow flex justify-center items-baseline space-x-4'>
