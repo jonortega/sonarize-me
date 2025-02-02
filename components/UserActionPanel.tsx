@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { User } from "@/lib/types";
-import { LogOut, Settings, UserIcon } from "lucide-react";
+import { LogOut, UserIcon } from "lucide-react";
 
 interface UserActionPanelProps {
   user: User;
@@ -48,13 +48,13 @@ export default function UserActionPanel({ user }: UserActionPanelProps) {
       {isOpen && (
         <div className='absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-spotify-black border border-gray-700 z-10'>
           <div className='py-1'>
-            <button
+            {/* <button
               onClick={() => console.log("Settings clicked")}
               className='block w-full text-left px-4 py-2 text-sm text-spotify-white hover:bg-gray-800'
             >
               <Settings className='inline-block mr-2' size={16} />
               Settings
-            </button>
+            </button> */}
             <button
               onClick={handleLogout}
               className='block w-full text-left px-4 py-2 text-sm text-spotify-white hover:bg-gray-800'
