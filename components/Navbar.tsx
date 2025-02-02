@@ -28,7 +28,7 @@ export default function Navbar({ user }: NavbarProps) {
               href='/home'
               className={`px-3 py-2 rounded-md text-sm font-medium ${
                 pathname === "/home"
-                  ? "bg-spotify-green text-white"
+                  ? "bg-spotify-green text-spotify-gray-300"
                   : "text-gray-300 hover:bg-spotify-gray-200 hover:text-white"
               }`}
             >
@@ -38,7 +38,7 @@ export default function Navbar({ user }: NavbarProps) {
               href='/stats'
               className={`px-3 py-2 rounded-md text-sm font-medium ${
                 pathname === "/stats"
-                  ? "bg-spotify-green text-white"
+                  ? "bg-spotify-green text-spotify-gray-300"
                   : "text-gray-300 hover:bg-spotify-gray-200 hover:text-white"
               }`}
             >

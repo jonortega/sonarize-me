@@ -19,10 +19,9 @@ export default function LoginPage() {
         </div>
         <a
           href='/api/auth/login'
-          className='group relative inline-flex items-center justify-center px-8 py-3 bg-[#1db954] text-white text-base sm:text-lg font-semibold rounded-full overflow-hidden transition-all duration-300 hover:bg-[#1ed760] hover:scale-105 hover:shadow-[0_0_20px_rgba(29,185,84,0.3)]'
+          className='group relative inline-flex items-center justify-center px-8 py-3 bg-[#1db954] text-spotify-gray-300 text-base sm:text-lg font-semibold rounded-full overflow-hidden transition-all duration-300 hover:bg-[#1ed760] hover:scale-105 hover:shadow-[0_0_20px_rgba(29,185,84,0.3)]'
         >
           <span className='relative z-10'>Sign In</span>
-          <div className='absolute inset-0 -translate-y-full group-hover:translate-y-0 bg-[#1ed760] transition-transform duration-300'></div>
         </a>
       </div>
     </main>

@@ -11,8 +11,8 @@ export default function TopGenres({ genres }: { genres: Genre[] }) {
       <ul className='flex flex-wrap gap-2'>
         {genres.map((genre, index) => (
           <li key={genre.name} className='bg-spotify-green bg-opacity-20 px-3 py-1 rounded-full text-sm'>
-            <span className='text-spotify-white font-bold mr-2'>#{index + 1}</span>
-            <span className='truncate'>{genre.name}</span>
+            <span className='text-spotify-gray-300 font-bold mr-2'>#{index + 1}</span>
+            <span className='truncate text-spotify-gray-300'>{genre.name}</span>
           </li>
         ))}
       </ul>
