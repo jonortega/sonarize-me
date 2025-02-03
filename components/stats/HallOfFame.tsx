@@ -1,61 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Album, HallOfFameData } from "@/lib/types";
+import { useFetch } from "@/lib/useFetch";
 import Loading from "@/components/Loading";
 
 export default function HallOfFame() {
-  const [data, setData] = useState<HallOfFameData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-    let isAborted = false;
-
-    const fetchHallOfFame = async () => {
-      console.log("=== INICIO DE FETCH, setLoading(true) ===");
-      setLoading(true); // Asegura que el estado de carga se establece correctamente
-      setData(null); // Resetea los datos para evitar inconsistencias
-
-      try {
-        const response = await fetch("/api/stats/hall-of-fame", {
-          credentials: "include",
-          signal,
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch Hall of Fame data");
-        }
-
-        const result: HallOfFameData = await response.json();
-        setData(result);
-      } catch (error) {
-        if ((error as Error).name === "AbortError") {
-          console.log("=== FETCH ABORTADO ===");
-          isAborted = true; // Se marca como abortado para evitar efectos secundarios
-          return;
-        }
-        console.error("Error fetching Hall of Fame data:", error);
-        setError("Failed to load Hall of Fame data. Please try again later.");
-      } finally {
-        if (!isAborted) {
-          console.log("=== FIN DE FETCH, setLoading(false) ===");
-          setLoading(false); // Solo se ejecuta si no se abortó
-        }
-      }
-    };
-
-    fetchHallOfFame();
-
-    return () => {
-      console.log("=== ABORTANDO FETCH ===");
-      isAborted = true; // Evitar que las actualizaciones de estado se apliquen tras desmontar
-      controller.abort();
-    };
-  }, []);
+  const { data, loading, error } = useFetch<HallOfFameData>("/api/stats/hall-of-fame");
 
   const handleAlbumClick = (album: Album) => {
     // This function can be implemented in the future to handle click events
@@ -69,7 +20,7 @@ export default function HallOfFame() {
   if (error || !data) {
     return (
       <div className='text-white'>
-        <p>{error || "Unable to load your Hall of Fame. Please try again later."}</p>
+        <p>{error || "No se ha podido cargar tu Hall Of Fame. Por favor, inténtalo de nuevo más tarde."}</p>
       </div>
     );
   }

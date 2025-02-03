@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Sun, Snowflake, Flower, Leaf, AudioLines } from "lucide-react";
 import NoFavorites from "@/components/NoFavorites";
 import Loading from "@/components/Loading";
+import { useFetch } from "@/lib/useFetch";
 
 // Colores e íconos para cada estación
 const COLORS = ["#1dafb9", "#1ed760", "#ffa600", "#ff6b00"];
@@ -34,72 +35,8 @@ interface StationsResponse {
 const EstacionesMusicales = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [data, setData] = useState<StationsResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-    let isAborted = false; // Bandera para evitar actualizaciones de estado tras un aborto
-
-    const fetchStationsData = async () => {
-      console.log("=== INICIO DE FETCH, setLoading(true) ===");
-      setLoading(true); // Asegura que el estado de carga se establece correctamente
-      setData(null); // Resetea los datos previos para evitar inconsistencias
-
-      try {
-        const response = await fetch("/api/stats/estaciones-musicales", {
-          credentials: "include",
-          signal,
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch station data");
-        }
-
-        const result: StationsResponse = await response.json();
-
-        console.log("Fetched season data:", result);
-
-        // Comprobación: Si todos los datos son "vacíos", no hay tracks reales
-        const allEmpty = Object.values(result).every(
-          (season) => season.artist.name === "Artista desconocido" && season.genre.name === "Sin género"
-        );
-
-        if (!isAborted) {
-          if (allEmpty) {
-            setError("No hay canciones guardadas en favoritos.");
-            return;
-          }
-          setData(result);
-        }
-      } catch (error) {
-        if ((error as Error).name === "AbortError") {
-          console.log("=== FETCH ABORTADO ===");
-          isAborted = true; // Marca como abortado
-          return;
-        }
-        console.error("Error fetching station data:", error);
-        if (!isAborted) {
-          setError("Failed to load station data. Please try again later.");
-        }
-      } finally {
-        if (!isAborted) {
-          console.log("=== FIN DE FETCH, setLoading(false) ===");
-          setLoading(false); // Solo cambia el estado si no fue abortado
-        }
-      }
-    };
-
-    fetchStationsData();
-
-    return () => {
-      console.log("=== ABORTANDO FETCH ===");
-      isAborted = true; // Marca la solicitud como abortada
-      controller.abort(); // Cancela la solicitud activa
-    };
-  }, []);
+  const { data, loading, error } = useFetch<StationsResponse>("/api/stats/estaciones-musicales");
 
   // Update mouse position on movement
   const handleMouseMove = (event: React.MouseEvent) => {
@@ -159,8 +96,14 @@ const EstacionesMusicales = () => {
     );
   });
 
-  if (loading) return <Loading />; // ! Se puede extraer al fallback?
-  if (error === "No hay canciones guardadas en favoritos.") return <NoFavorites />;
+  const allEmpty =
+    data &&
+    Object.values(data).every(
+      (season) => season.artist.name === "Artista desconocido" && season.genre.name === "Sin género"
+    );
+
+  if (loading) return <Loading />;
+  if (allEmpty) return <NoFavorites />;
   if (error || !data) return <div>{error || "Error al cargar los datos"}</div>;
 
   if (hoveredIndex !== null) {

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { select, scaleLinear, line, curveBasis } from "d3";
 import NoFavorites from "@/components/NoFavorites";
 import Loading from "@/components/Loading";
+import { useFetch } from "@/lib/useFetch";
 
 interface FrequencyData {
   normal: number;
@@ -13,60 +14,11 @@ interface FrequencyData {
 type WaveType = "normal" | "actual" | "combined" | null;
 
 const IndiceDeInterferencia: React.FC = () => {
-  const [frequencyData, setFrequencyData] = useState<FrequencyData | null>(null);
   const [showCombined, setShowCombined] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [highlightedWave, setHighlightedWave] = useState<WaveType>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-    let isAborted = false; // Bandera para evitar actualizaciones de estado tras un aborto
-
-    const fetchData = async () => {
-      console.log("=== INICIO DE FETCH, setIsLoading(true) ===");
-      setIsLoading(true); // Asegura que el estado de carga se establece correctamente
-      setFrequencyData(null); // Resetea los datos previos para evitar inconsistencias
-
-      try {
-        const response = await fetch("/api/stats/indice-de-interferencia", { signal });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch frequency data");
-        }
-
-        const data = await response.json();
-
-        if (!isAborted) {
-          setFrequencyData(data); // Solo actualiza los datos si no fue abortado
-        }
-      } catch (error) {
-        if ((error as Error).name === "AbortError") {
-          console.log("=== FETCH ABORTADO ===");
-          isAborted = true; // Marca como abortado para evitar efectos secundarios
-          return;
-        }
-        console.error("Error fetching frequency data:", error);
-        if (!isAborted) {
-          setFrequencyData(null); // Resetea los datos en caso de error
-        }
-      } finally {
-        if (!isAborted) {
-          console.log("=== FIN DE FETCH, setIsLoading(false) ===");
-          setIsLoading(false); // Solo cambia el estado si no fue abortado
-        }
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      console.log("=== ABORTANDO FETCH ===");
-      isAborted = true; // Marca la solicitud como abortada
-      controller.abort(); // Cancela la solicitud activa
-    };
-  }, []);
+  const { data: frequencyData, loading, error } = useFetch<FrequencyData>("/api/stats/indice-de-interferencia");
 
   const generateWaveData = (frequency: number, amplitude: number = 0.5, phase: number = 0) => {
     return Array.from({ length: 200 }, (_, i) => ({
@@ -198,12 +150,16 @@ const IndiceDeInterferencia: React.FC = () => {
     </div>
   );
 
-  if (isLoading) {
+  if (loading) {
     return <Loading />;
   }
 
-  if (!isLoading && (!frequencyData || frequencyData.normal === -1)) {
+  if (!loading && (!frequencyData || frequencyData.normal === -1)) {
     return <NoFavorites />;
+  }
+
+  if (error) {
+    return <p className='text-white'>{error}</p>;
   }
 
   return (
@@ -212,13 +168,13 @@ const IndiceDeInterferencia: React.FC = () => {
         <div className='grid grid-cols-2 gap-4 mb-6'>
           <FrequencyCard
             label='Normal Frequency'
-            value={isLoading ? "..." : (frequencyData?.normal ?? "N/A")}
+            value={loading ? "..." : (frequencyData?.normal ?? "N/A")}
             color='#1ed760'
             type='normal'
           />
           <FrequencyCard
             label='Actual Frequency'
-            value={isLoading ? "..." : (frequencyData?.actual ?? "N/A")}
+            value={loading ? "..." : (frequencyData?.actual ?? "N/A")}
             color='#4687D6'
             type='actual'
           />
@@ -233,10 +189,10 @@ const IndiceDeInterferencia: React.FC = () => {
 
       <button
         onClick={handleToggleWaves}
-        disabled={isLoading}
+        disabled={loading}
         className='mt-4 bg-[#1DB954] hover:bg-[#1ED760] text-[#FFFFFF] font-bold py-2 px-4 rounded-full w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
       >
-        {isLoading ? "Loading..." : showCombined ? "Show Original Waves" : "Combine Waves"}
+        {loading ? "Loading..." : showCombined ? "Show Original Waves" : "Combine Waves"}
       </button>
     </div>
   );

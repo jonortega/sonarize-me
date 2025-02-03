@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import NoFavorites from "@/components/NoFavorites";
 import Loading from "@/components/Loading";
+import { useFetch } from "@/lib/useFetch";
 
 export interface TrackData {
   id: string;
@@ -15,9 +16,6 @@ type TracksByYear = {
 };
 
 export default function TusDecadas() {
-  const [tracksByYear, setTracksByYear] = useState<TracksByYear | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [scale, setScale] = useState(1);
   const [zoomLevel, setZoomLevel] = useState<"full" | "detailed">("full");
   const [focusPoint, setFocusPoint] = useState({ x: 0, y: 0 });
@@ -25,47 +23,7 @@ export default function TusDecadas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-    let isAborted = false;
-
-    const fetchTracks = async () => {
-      console.log("=== INICIO DE FETCH, setLoading(true) ===");
-      setLoading(true);
-      setTracksByYear(null);
-
-      try {
-        const response = await fetch("/api/stats/tus-decadas", { signal });
-        if (!response.ok) throw new Error("Failed to fetch tracks");
-
-        const data = await response.json();
-        setTracksByYear(data);
-      } catch (err) {
-        if ((err as Error).name === "AbortError") {
-          console.log("=== FETCH ABORTADO ===");
-          isAborted = true; // Marca como abortado
-        } else {
-          setError(err instanceof Error ? err.message : "An error occurred");
-          setTracksByYear(null);
-          console.log("=== FETCH ERROR, setError y setTracksByYear(null) ===");
-        }
-      } finally {
-        if (!isAborted) {
-          console.log("=== FIN DE FETCH, setLoading(false) ===");
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchTracks();
-
-    return () => {
-      console.log("=== ABORTANDO FETCH ===");
-      isAborted = true; // Marca la petición como abortada antes de cancelar
-      controller.abort();
-    };
-  }, []);
+  const { data: tracksByYear, loading, error } = useFetch<TracksByYear>("/api/stats/tus-decadas");
 
   const drawImage = useCallback((ctx: CanvasRenderingContext2D, url: string, x: number, y: number, size: number) => {
     const img = new Image();
@@ -223,17 +181,14 @@ export default function TusDecadas() {
   };
 
   if (loading) {
-    console.log("-------- 1. Renderizando Loading, loading:", loading);
     return <Loading />;
   }
 
   if (!loading && tracksByYear && Object.keys(tracksByYear).length === 0) {
-    console.log("-------- 2. No hay favoritos, loading:", loading);
     return <NoFavorites />;
   }
 
   if (error) {
-    console.log("-------- 3. Error en la carga, loading:", loading);
     return (
       <div className='w-full p-6 bg-[#121212] rounded-lg'>
         <div className='text-red-500 text-center'>{error}</div>
@@ -241,7 +196,6 @@ export default function TusDecadas() {
     );
   }
 
-  console.log("-------- 4. Renderizando estadística, loading:", loading);
   return (
     <div className='w-full bg-[#121212] rounded-lg p-6 shadow-lg'>
       <div
