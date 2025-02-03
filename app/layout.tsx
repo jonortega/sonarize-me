@@ -6,6 +6,9 @@ import Footer from "@/components/Footer";
 export const metadata: Metadata = {
   title: "Spotify Stats",
   description: "Explora las estadísticas de tu cuenta de Spotify.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 const inter = Inter({ subsets: ["latin"] });
