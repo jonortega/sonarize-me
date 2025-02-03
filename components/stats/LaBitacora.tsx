@@ -23,6 +23,7 @@ import {
 } from "chart.js";
 import { ArrowLeft } from "lucide-react";
 import NoFavorites from "@/components/NoFavorites";
+import Loading from "@/components/Loading";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -199,9 +200,7 @@ export default function LaBitacora() {
   return (
     <div className='w-full h-full flex flex-col bg-spotify-gray-300 p-6 rounded-lg'>
       {isLoading ? (
-        <div className='flex justify-center items-center h-full'>
-          <span className='text-white text-lg'>Loading...</span>
-        </div>
+        <Loading />
       ) : Object.keys(data).length === 0 ? ( // 🔹 Comprueba si data está vacío
         <NoFavorites />
       ) : (

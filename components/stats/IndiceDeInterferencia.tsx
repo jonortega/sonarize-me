@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { select, scaleLinear, line, curveBasis } from "d3";
 import NoFavorites from "@/components/NoFavorites";
+import Loading from "@/components/Loading";
 
 interface FrequencyData {
   normal: number;
@@ -198,11 +199,7 @@ const IndiceDeInterferencia: React.FC = () => {
   );
 
   if (isLoading) {
-    return (
-      <div className='w-full p-6 bg-[#121212] rounded-lg min-h-[200px] flex items-center justify-center'>
-        <div className='text-white text-center text-lg animate-pulse'>Loading...</div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (!isLoading && (!frequencyData || frequencyData.normal === -1)) {

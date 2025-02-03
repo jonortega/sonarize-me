@@ -3,6 +3,7 @@
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend } from "chart.js";
 import { useEffect, useState } from "react";
+import Loading from "@/components/Loading";
 
 // Registra los componentes de Chart.js
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
@@ -66,7 +67,7 @@ export default function HuellaDelDia() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (error) {

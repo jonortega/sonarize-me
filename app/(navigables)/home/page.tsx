@@ -5,7 +5,6 @@ import TopArtists from "@/components/TopArtists";
 import TopGenres from "@/components/TopGenres";
 import UserProfile from "@/components/UserProfile";
 import RecentlyPlayed from "@/components/RecentlyPlayed";
-import Loading from "@/components/Loading";
 import UserProfileSkeleton from "@/components/skeletons/UserProfileSkeleton";
 import TrackArtistSkeleton from "@/components/skeletons/TrackArtistSkeleton";
 import GenreSkeleton from "@/components/skeletons/GenreSkeleton";
@@ -43,9 +42,7 @@ export default function Home() {
       </section>
       <section className='bg-[#0A0A0A]'>
         <div className='max-w-5xl mx-auto px-4 md:px-8 py-12'>
-          <Suspense fallback={<Loading />}>
-            <RecentlyPlayed />
-          </Suspense>
+          <RecentlyPlayed />
         </div>
       </section>
     </main>

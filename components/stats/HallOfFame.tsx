@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Album, HallOfFameData } from "@/lib/types";
+import Loading from "@/components/Loading";
 
 export default function HallOfFame() {
   const [data, setData] = useState<HallOfFameData | null>(null);
@@ -62,11 +63,7 @@ export default function HallOfFame() {
   };
 
   if (loading) {
-    return (
-      <div className='flex items-center justify-center h-64'>
-        <div className='animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-spotify-green'></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error || !data) {

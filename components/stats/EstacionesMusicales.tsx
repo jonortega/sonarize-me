@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Sun, Snowflake, Flower, Leaf, AudioLines } from "lucide-react";
 import NoFavorites from "@/components/NoFavorites";
+import Loading from "@/components/Loading";
 
 // Colores e íconos para cada estación
 const COLORS = ["#1dafb9", "#1ed760", "#ffa600", "#ff6b00"];
@@ -158,7 +159,7 @@ const EstacionesMusicales = () => {
     );
   });
 
-  if (loading) return <div>Cargando...</div>; // ! Se puede extraer al fallback?
+  if (loading) return <Loading />; // ! Se puede extraer al fallback?
   if (error === "No hay canciones guardadas en favoritos.") return <NoFavorites />;
   if (error || !data) return <div>{error || "Error al cargar los datos"}</div>;
 

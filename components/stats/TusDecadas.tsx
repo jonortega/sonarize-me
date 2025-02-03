@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import NoFavorites from "@/components/NoFavorites";
+import Loading from "@/components/Loading";
 
 export interface TrackData {
   id: string;
@@ -223,11 +224,7 @@ export default function TusDecadas() {
 
   if (loading) {
     console.log("-------- 1. Renderizando Loading, loading:", loading);
-    return (
-      <div className='w-full p-6 bg-[#121212] rounded-lg min-h-[200px] flex items-center justify-center'>
-        <div className='text-white text-center text-lg animate-pulse'>Loading...</div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (!loading && tracksByYear && Object.keys(tracksByYear).length === 0) {
