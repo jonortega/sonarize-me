@@ -167,13 +167,13 @@ const IndiceDeInterferencia: React.FC = () => {
       {!showCombined ? (
         <div className='grid grid-cols-2 gap-4 mb-6'>
           <FrequencyCard
-            label='Normal Frequency'
+            label='Frecuencia Habitual'
             value={loading ? "..." : (frequencyData?.normal ?? "N/A")}
             color='#1ed760'
             type='normal'
           />
           <FrequencyCard
-            label='Actual Frequency'
+            label='Frecuencia del Momento'
             value={loading ? "..." : (frequencyData?.actual ?? "N/A")}
             color='#4687D6'
             type='actual'
@@ -190,9 +190,9 @@ const IndiceDeInterferencia: React.FC = () => {
       <button
         onClick={handleToggleWaves}
         disabled={loading}
-        className='mt-4 bg-[#1DB954] hover:bg-[#1ED760] text-[#FFFFFF] font-bold py-2 px-4 rounded-full w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+        className='mt-4 bg-[#1DB954] hover:bg-[#1ED760] text-spotify-gray-300 font-bold py-2 px-4 rounded-full w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
       >
-        {loading ? "Loading..." : showCombined ? "Show Original Waves" : "Combine Waves"}
+        {loading ? "Cargando..." : showCombined ? "Mostrar Ondas Originales" : "Combinar Ondas"}
       </button>
     </div>
   );

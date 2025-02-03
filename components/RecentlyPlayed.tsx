@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { Clock, ChevronDown, ChevronUp } from "lucide-react";
+import { useFetch } from "@/lib/useFetch";
 
 interface RecentTrack {
   id: string;
@@ -14,59 +15,11 @@ interface RecentTrack {
 }
 
 export default function RecentlyPlayed() {
-  const [recentTracks, setRecentTracks] = useState<RecentTrack[]>([]);
   const [showAll, setShowAll] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-    let isAborted = false;
+  const { data: recentTracks, loading, error } = useFetch<RecentTrack[]>("/api/home/recently-played");
 
-    const fetchRecentlyPlayed = async () => {
-      console.log("=== INICIO DE FETCH, setLoading(true) ===");
-      setLoading(true);
-      setRecentTracks([]); // Limpia datos anteriores para evitar inconsistencias
-
-      try {
-        const response = await fetch("/api/home/recently-played", {
-          credentials: "include", // Incluye cookies en la solicitud
-          signal, // Permite abortar la solicitud si el componente se desmonta
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch recently played tracks");
-        }
-
-        const data: RecentTrack[] = await response.json();
-        setRecentTracks(data);
-      } catch (error) {
-        if ((error as Error).name === "AbortError") {
-          console.log("=== FETCH ABORTADO ===");
-          isAborted = true;
-          return;
-        }
-        console.error("Error fetching recently played tracks:", error);
-        setError("Failed to load recently played tracks. Please try again later.");
-      } finally {
-        if (!isAborted) {
-          console.log("=== FIN DE FETCH, setLoading(false) ===");
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchRecentlyPlayed();
-
-    return () => {
-      console.log("=== ABORTANDO FETCH ===");
-      isAborted = true; // Evita actualizaciones de estado tras desmontar
-      controller.abort();
-    };
-  }, []);
-
-  const displayedTracks = showAll ? recentTracks : recentTracks.slice(0, 10);
+  const displayedTracks = showAll ? recentTracks || [] : (recentTracks || []).slice(0, 10);
 
   return (
     <div className='bg-spotify-gray-300 p-6 rounded-lg border border-spotify-gray-200'>
@@ -75,17 +28,17 @@ export default function RecentlyPlayed() {
         Recently Played
       </h2>
       {loading ? (
-        <p className='text-center text-spotify-gray-100'>Loading...</p>
+        <p className='text-center text-spotify-gray-100'>Cargando...</p>
       ) : error ? (
         <p className='text-center text-spotify-red'>{error}</p>
-      ) : recentTracks.length > 0 ? (
+      ) : recentTracks && recentTracks.length > 0 ? (
         <>
           <div className='w-full'>
             <div className='grid grid-cols-[auto_1fr_1fr_auto] gap-4 text-sm text-spotify-gray-100 px-4 pb-2'>
               <div>#</div>
-              <div>Title</div>
-              <div>Album</div>
-              <div>Played At</div>
+              <div>Título</div>
+              <div>Álbum</div>
+              <div>Escuchado</div>
             </div>
             <ul className='space-y-2'>
               {displayedTracks.map((track, index) => (
@@ -115,19 +68,19 @@ export default function RecentlyPlayed() {
               {showAll ? (
                 <>
                   <ChevronUp className='mr-2' />
-                  Show Less
+                  Mostrar Menos
                 </>
               ) : (
                 <>
                   <ChevronDown className='mr-2' />
-                  Show All
+                  Mostrar Más
                 </>
               )}
             </button>
           </div>
         </>
       ) : (
-        <p className='text-center text-spotify-gray-100'>No recently played tracks available.</p>
+        <p className='text-center text-spotify-gray-100'>No hay canciones reproducidas recientemente disponibles.</p>
       )}
     </div>
   );

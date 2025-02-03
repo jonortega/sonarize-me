@@ -56,7 +56,7 @@ export default function LaBitacora() {
         if (month) url += `&month=${month}`;
       }
 
-      console.log("Fetching URL:", url); // Confirma que los parámetros year y month son correctos
+      console.log("Fetching URL:", url);
 
       const response = await fetch(url, {
         credentials: "include",
@@ -70,7 +70,7 @@ export default function LaBitacora() {
 
       console.log("Fetched data:", newData);
 
-      setData(newData); // Actualiza el estado con los datos procesados
+      setData(newData);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -128,7 +128,7 @@ export default function LaBitacora() {
     labels: sortedKeys,
     datasets: [
       {
-        label: "Tracks Saved",
+        label: "Canciones Guardadas",
         data: sortedValues,
         backgroundColor: "rgba(30, 215, 96, 0.6)",
         borderColor: "rgba(30, 215, 96, 1)",
@@ -217,7 +217,7 @@ export default function LaBitacora() {
           <div className='flex-grow h-[400px]'>
             <Bar data={chartData} options={options} />
           </div>
-          <div className='mt-4 text-center text-white text-sm'>Click on a bar to see more details</div>
+          <div className='mt-4 text-center text-white text-sm'>Haz clic en una barra para ver más detalles</div>
         </>
       )}
     </div>

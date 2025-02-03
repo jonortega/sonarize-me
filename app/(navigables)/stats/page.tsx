@@ -28,7 +28,7 @@ export default function Stats() {
     <main className='bg-spotify-black min-h-screen'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
         <h1 className='text-4xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-spotify-green to-spotify-blue bg-clip-text text-transparent'>
-          Your Spotify Stats
+          Estadísticas Avanzadas
         </h1>
         <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6'>
           {stats.map((stat) => (

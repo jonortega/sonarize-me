@@ -11,7 +11,7 @@ import GenreSkeleton from "@/components/skeletons/GenreSkeleton";
 
 export const metadata: Metadata = {
   title: "Home | Spotify Stats",
-  description: "Bienvenido a tu Dashboard de Spotify.",
+  description: "Bienvenido a tu Home de Spotify.",
 };
 
 export default function Home() {
@@ -20,7 +20,7 @@ export default function Home() {
       <section className='bg-spotify-black'>
         <div className='max-w-5xl mx-auto px-4 md:px-8 py-8'>
           <h1 className='text-4xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-spotify-green to-spotify-blue bg-clip-text text-transparent'>
-            Your Spotify Insights
+            Tus Spotify Tops
           </h1>
           <Suspense fallback={<UserProfileSkeleton />}>
             <UserProfile />
