@@ -1,5 +1,6 @@
 import axios from "axios";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 const SPOTIFY_RECENTLY_PLAYED_URL = "https://api.spotify.com/v1/me/player/recently-played";
 const LIMIT = 50; // Obtener las últimas 50 canciones reproducidas
@@ -25,14 +26,8 @@ interface SpotifyRecentlyPlayedItem {
   played_at: string;
 }
 
-export async function GET(req: NextRequest) {
-  const authorizationHeader = req.headers.get("authorization");
-
-  if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "No access token provided" }, { status: 401 });
-  }
-
-  const access_token = authorizationHeader.split(" ")[1];
+export async function GET() {
+  const access_token = (await cookies()).get("access_token")?.value;
 
   if (!access_token) {
     return NextResponse.json({ error: "No access token provided" }, { status: 401 });

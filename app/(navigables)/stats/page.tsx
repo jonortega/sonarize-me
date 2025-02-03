@@ -2,6 +2,12 @@ import { Suspense } from "react";
 import StatCard from "@/components/StatCard";
 import StatWrapper from "@/components/StatWrapper";
 import Loading from "@/components/Loading";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Stats | Spotify Stats",
+  description: "Bienvenido a tus estadísticas de Spotify.",
+};
 
 const stats: Array<{
   id: string;

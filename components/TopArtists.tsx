@@ -1,8 +1,29 @@
+import { cookies } from "next/headers";
 import Image from "next/image";
-import { Artist } from "@/lib/types";
 import { Users } from "lucide-react";
+import { Artist } from "@/lib/types";
 
-export default function TopArtists({ artists }: { artists: Artist[] }) {
+async function fetchTopArtists(): Promise<Artist[]> {
+  try {
+    const cookieStore = await cookies();
+    const access_token = cookieStore.get("access_token")?.value;
+    if (!access_token) throw new Error("No access token");
+
+    const response = await fetch("http://localhost:3000/api/home/top-artists", {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch top artists");
+    return response.json();
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export default async function TopArtists() {
+  const artists = await fetchTopArtists();
+
   return (
     <div className='bg-spotify-gray-300 p-4 rounded-lg border-2 border-spotify-gray-200 h-full'>
       <h2 className='text-2xl font-bold mb-4 flex items-center'>

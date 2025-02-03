@@ -1,8 +1,33 @@
+import { cookies } from "next/headers";
 import Image from "next/image";
-import { User } from "@/lib/types";
 import { UserIcon } from "lucide-react";
+import { User } from "@/lib/types";
 
-export default function UserProfile({ user }: { user: User }) {
+async function fetchUserProfile(): Promise<User | null> {
+  try {
+    const cookieStore = await cookies();
+    const access_token = cookieStore.get("access_token")?.value;
+    if (!access_token) throw new Error("No access token");
+
+    const response = await fetch("http://localhost:3000/api/home/user-profile", {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch user profile");
+    return response.json();
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export default async function UserProfile() {
+  const user = await fetchUserProfile();
+
+  if (!user) {
+    return <div className='text-red-500 text-center'>Error al cargar el perfil</div>;
+  }
+
   return (
     <div className='flex items-center justify-center space-x-4 bg-spotify-gray-300 p-6 rounded-lg border-2 border-spotify-gray-200 max-w-sm mx-auto shadow-lg'>
       {user.imageUrl ? (
