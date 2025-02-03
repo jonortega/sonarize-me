@@ -6,6 +6,9 @@ import TopGenres from "@/components/TopGenres";
 import UserProfile from "@/components/UserProfile";
 import RecentlyPlayed from "@/components/RecentlyPlayed";
 import Loading from "@/components/Loading";
+import UserProfileSkeleton from "@/components/skeletons/UserProfileSkeleton";
+import TrackArtistSkeleton from "@/components/skeletons/TrackArtistSkeleton";
+import GenreSkeleton from "@/components/skeletons/GenreSkeleton";
 
 export const metadata: Metadata = {
   title: "Home | Spotify Stats",
@@ -20,18 +23,18 @@ export default function Home() {
           <h1 className='text-4xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-spotify-green to-spotify-blue bg-clip-text text-transparent'>
             Your Spotify Insights
           </h1>
-          <Suspense fallback={<Loading />}>
+          <Suspense fallback={<UserProfileSkeleton />}>
             <UserProfile />
           </Suspense>
           <div className='mt-12 grid grid-cols-1 md:grid-cols-2 gap-6'>
-            <Suspense fallback={<Loading />}>
+            <Suspense fallback={<TrackArtistSkeleton count={5} />}>
               <TopTracks />
             </Suspense>
-            <Suspense fallback={<Loading />}>
+            <Suspense fallback={<TrackArtistSkeleton count={5} />}>
               <TopArtists />
             </Suspense>
             <div className='md:col-span-2'>
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<GenreSkeleton count={5} />}>
                 <TopGenres />
               </Suspense>
             </div>
