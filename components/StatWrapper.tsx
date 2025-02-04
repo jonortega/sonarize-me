@@ -1,7 +1,6 @@
 "use client";
 
-import { X, SunSnow, Award, Fingerprint, BookMarked, AudioWaveform, Rewind } from "lucide-react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import dynamic from "next/dynamic";
 
 const statComponents = {
@@ -11,81 +10,52 @@ const statComponents = {
   "la-bitacora": dynamic(() => import("@/components/stats/LaBitacora")),
   "tus-decadas": dynamic(() => import("@/components/stats/TusDecadas")),
   "indice-de-interferencia": dynamic(() => import("@/components/stats/IndiceDeInterferencia")),
-  // Insertar más componentes dinámicos aquí
 };
 
-const statIcons = {
-  "hall-of-fame": Award,
-  "estaciones-musicales": SunSnow,
-  "huella-del-dia": Fingerprint,
-  "la-bitacora": BookMarked,
-  "tus-decadas": Rewind,
-  "indice-de-interferencia": AudioWaveform,
-  // Insertar más iconos aquí (importarlos de "lucide-react")
-};
-
-export default function StatWrapper() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const statId = searchParams.get("stat");
-
-  const closeModal = () => {
-    router.push("/stats");
-  };
-
-  if (!statId) return null;
-
-  const StatComponent = statComponents[statId as keyof typeof statComponents];
-  const StatIcon = statIcons[statId as keyof typeof statIcons];
-
-  const title = statId
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-
-  return (
-    <div className='fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50'>
-      <div
-        className='bg-spotify-gray-300 rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto shadow-lg animate-popup'
-        style={{
-          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.5)",
-          overflow: "hidden",
-        }}
-      >
-        <div className='flex justify-between items-center mb-4'>
-          <div className='flex items-center mb-4'>
-            {StatIcon && <StatIcon className='w-8 h-8 text-spotify-green mr-3' />}
-            <h2 className='text-2xl font-bold text-white'>{title}</h2>
-          </div>
-
-          <button onClick={closeModal} className='text-spotify-gray-100 hover:text-white'>
-            <X size={24} />
-          </button>
-        </div>
-        <div className='text-spotify-gray-100 grow m-6'>
-          <StatComponent />
-        </div>
-      </div>
-    </div>
-  );
+interface StatWrapperProps {
+  activeStat: string | null;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-const popupKeyframes = `
-  @keyframes popup {
-    0% {
-      opacity: 0;
-      transform: scale(0.9) translateY(20px);
+export default function StatWrapper({ activeStat, isOpen, onClose }: StatWrapperProps) {
+  const getStatComponent = (statId: string | null) => {
+    if (!statId || !(statId in statComponents)) {
+      return (
+        <div className='text-sm text-spotify-gray-100'>Selecciona una estadística válida para ver los detalles.</div>
+      );
     }
-    100% {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-  }
-`;
+    const DynamicComponent = statComponents[statId as keyof typeof statComponents];
+    return <DynamicComponent />;
+  };
 
-<style jsx global>{`
-  ${popupKeyframes}
-  .animate-popup {
-    animation: popup 0.3s ease-out forwards;
-  }
-`}</style>;
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className='w-[95vw] max-w-4xl min-h-[60vh] max-h-[80vh] p-6'>
+        <DialogHeader>
+          <DialogTitle className='text-2xl font-bold text-spotify-green'>
+            {activeStat
+              ? activeStat
+                  .split("-")
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(" ")
+              : "Estadística"}
+          </DialogTitle>
+        </DialogHeader>
+        <div className='flex-1 overflow-y-auto py-4'>
+          <div className='w-full h-full min-h-[400px] flex items-center justify-center'>
+            <div className='w-full max-w-3xl mx-auto'>{getStatComponent(activeStat)}</div>
+          </div>
+        </div>
+        <div className='mt-4 text-right'>
+          <button
+            onClick={onClose}
+            className='px-4 py-2 bg-spotify-gray-100 text-black font-semibold rounded-lg hover:bg-spotify-green/90'
+          >
+            Cerrar
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

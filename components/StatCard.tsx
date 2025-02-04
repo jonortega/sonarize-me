@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { type LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import * as Icons from "lucide-react";
 
 interface StatCardProps {
@@ -9,20 +8,16 @@ interface StatCardProps {
   iconName: keyof typeof Icons;
   className?: string;
   statId: string;
+  onClick: (statId: string) => void;
 }
 
-export default function StatCard({ title, iconName, className = "", statId }: StatCardProps) {
-  const router = useRouter();
+export default function StatCard({ title, iconName, className = "", statId, onClick }: StatCardProps) {
   const IconComponent = Icons[iconName] as LucideIcon;
-
-  const openStat = () => {
-    router.push(`/stats?stat=${statId}`);
-  };
 
   return (
     <div
       className={`bg-spotify-gray-300 p-6 rounded-lg border border-spotify-gray-200 hover:bg-spotify-gray-200 transition-colors cursor-pointer flex flex-col ${className}`}
-      onClick={openStat}
+      onClick={() => onClick(statId)}
     >
       <div className='flex items-center mb-4'>
         <IconComponent className='w-8 h-8 text-spotify-green mr-3' />
