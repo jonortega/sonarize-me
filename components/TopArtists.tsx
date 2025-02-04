@@ -21,7 +21,7 @@ async function fetchTopArtists(timeRange: string): Promise<Artist[]> {
   }
 }
 
-export default async function TopArtists({ timeRange = "medium_term" }: { timeRange?: string }) {
+export default async function TopArtists({ timeRange = "short_term" }: { timeRange?: string }) {
   const artists = await fetchTopArtists(timeRange);
 
   return (
@@ -34,7 +34,15 @@ export default async function TopArtists({ timeRange = "medium_term" }: { timeRa
         {artists.map((artist, index) => (
           <li key={artist.id} className='flex items-center space-x-3'>
             <span className='text-spotify-green font-bold min-w-[24px]'>#{index + 1}</span>
-            <Image src={artist.imageUrl} alt={artist.name} width={50} height={50} className='rounded-full' />
+            <div className='w-12 h-12 rounded-full overflow-hidden'>
+              <Image
+                src={artist.imageUrl}
+                alt={artist.name}
+                width={50}
+                height={50}
+                className='object-cover w-full h-full'
+              />
+            </div>
             <p className='font-semibold truncate flex-grow min-w-0'>{artist.name}</p>
           </li>
         ))}

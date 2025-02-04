@@ -15,7 +15,7 @@ export default function TimeRangeSelector() {
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const currentTimeRange = searchParams.get("time_range") || "medium_term";
+  const currentTimeRange = searchParams.get("time_range") || "short_term";
 
   const handleValueChange = (value: string) => {
     const params = new URLSearchParams(searchParams);

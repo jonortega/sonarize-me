@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const SPOTIFY_API_URL = "https://api.spotify.com/v1/me/top/tracks";
 const LIMIT = 5; // Obtener los 5 tracks principales
-const DEFAULT_TIME_RANGE = "medium_term"; // Rango de tiempo por defecto
+const DEFAULT_TIME_RANGE = "short_term"; // Rango de tiempo por defecto
 
 interface Track {
   name: string; // Nombre del track

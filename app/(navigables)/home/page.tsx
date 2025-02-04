@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default function Home({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
-  const timeRange = searchParams.time_range || "medium_term";
+  const timeRange = searchParams.time_range || "short_term";
 
   return (
     <main className='min-h-screen relative'>

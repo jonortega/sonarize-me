@@ -20,7 +20,7 @@ async function fetchTopGenres(timeRange: string): Promise<Genre[]> {
   }
 }
 
-export default async function TopGenres({ timeRange = "medium_term" }: { timeRange?: string }) {
+export default async function TopGenres({ timeRange = "short_term" }: { timeRange?: string }) {
   const genres = await fetchTopGenres(timeRange);
 
   return (

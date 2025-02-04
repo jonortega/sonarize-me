@@ -21,7 +21,7 @@ async function fetchTopTracks(timeRange: string): Promise<Track[]> {
   }
 }
 
-export default async function TopTracks({ timeRange = "medium_term" }: { timeRange?: string }) {
+export default async function TopTracks({ timeRange = "short_term" }: { timeRange?: string }) {
   const tracks = await fetchTopTracks(timeRange);
 
   return (
