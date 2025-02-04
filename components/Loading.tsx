@@ -38,10 +38,11 @@ export default function Loading() {
   const { action, subject } = phrases[phraseIndex];
 
   return (
-    <div className='flex items-center justify-center h-40 bg-spotify-black text-spotify-white rounded-lg shadow-lg'>
-      <p className={`text-lg font-semibold transition-opacity duration-500 ${fadeOut ? "opacity-0" : "opacity-100"}`}>
-        <span className='text-spotify-green'>{action}</span> {subject}
-        <span className='inline-block w-8 text-left'>{dots}</span>
+    <div className='flex items-center justify-center h-40 bg-spotify-black text-spotify-white rounded-lg'>
+      <p className={`text-lg  font-semibold transition-opacity duration-500 ${fadeOut ? "opacity-0" : "opacity-100"}`}>
+        <span className='text-spotify-green drop-shadow-[0_4px_6px_rgba(30,215,96,0.3)]'>{action}</span>{" "}
+        <span className='drop-shadow-[0_4px_6px_rgba(205,205,205,0.3)]'>{subject}</span>
+        <span className='inline-block w-8 text-left '>{dots}</span>
       </p>
     </div>
   );

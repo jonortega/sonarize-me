@@ -198,13 +198,13 @@ export default function LaBitacora() {
   };
 
   return (
-    <div className='w-full h-full flex flex-col bg-spotify-gray-300 p-6 rounded-lg'>
+    <>
       {isLoading ? (
         <Loading />
       ) : Object.keys(data).length === 0 ? ( // 🔹 Comprueba si data está vacío
         <NoFavorites />
       ) : (
-        <>
+        <div className='w-full h-full flex flex-col bg-spotify-gray-300 p-6 rounded-lg'>
           {currentScale > 0 && (
             <button
               onClick={handleBack}
@@ -218,8 +218,8 @@ export default function LaBitacora() {
             <Bar data={chartData} options={options} />
           </div>
           <div className='mt-4 text-center text-white text-sm'>Haz clic en una barra para ver más detalles</div>
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 }
