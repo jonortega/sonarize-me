@@ -27,7 +27,7 @@ export default function HallOfFame() {
 
   return (
     <div>
-      <div className='grid grid-cols-4 gap-0 mx-auto' style={{ width: "100%", height: "auto" }}>
+      <div className='grid grid-cols-4 gap-0 mx-auto' style={{ width: "75%", height: "auto" }}>
         {data.albums.map((album, index) => (
           <div
             key={index}
