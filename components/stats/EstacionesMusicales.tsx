@@ -159,7 +159,11 @@ const EstacionesMusicales = () => {
         <div
           className='absolute bg-black text-white p-4 rounded-lg shadow-lg w-72'
           style={{
-            top: `${mousePosition.y - 100}px`, // Positivo: abajo, Negativo: arriba
+            top: `${
+              hoveredIndex !== null && SEASONS[hoveredIndex].toLowerCase() === "invierno"
+                ? mousePosition.y // Mueve la tarjeta hacia abajo 50px más
+                : mousePosition.y - 100 // Posición estándar
+            }px`, // Positivo: abajo, Negativo: arriba
             left: `${
               hoveredIndex !== null && SEASONS[hoveredIndex].toLowerCase() === "otoño"
                 ? mousePosition.x + 170 // Ajustar más hacia la derecha para otoño
