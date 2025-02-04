@@ -28,8 +28,11 @@ export default function Home({ searchParams }: { searchParams: { [key: string]: 
           <Suspense fallback={<UserProfileSkeleton />}>
             <UserProfile />
           </Suspense>
-          <TimeRangeSelector />
-          <div className='mt-12 grid grid-cols-1 md:grid-cols-2 gap-6'>
+          {/* Agrupamos TimeRangeSelector con los Tops */}
+          <div className='flex justify-center mt-8'>
+            <TimeRangeSelector />
+          </div>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <Suspense fallback={<TrackArtistSkeleton count={5} />}>
               <TopTracks timeRange={timeRange} />
             </Suspense>
