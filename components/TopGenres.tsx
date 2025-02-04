@@ -2,13 +2,13 @@ import { cookies } from "next/headers";
 import { Hash } from "lucide-react";
 import { Genre } from "@/lib/types";
 
-async function fetchTopGenres(): Promise<Genre[]> {
+async function fetchTopGenres(timeRange: string): Promise<Genre[]> {
   try {
     const cookieStore = await cookies();
     const access_token = cookieStore.get("access_token")?.value;
     if (!access_token) throw new Error("No access token");
 
-    const response = await fetch("http://localhost:3000/api/home/top-genres", {
+    const response = await fetch(`http://localhost:3000/api/home/top-genres?time_range=${timeRange}`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 
@@ -20,8 +20,8 @@ async function fetchTopGenres(): Promise<Genre[]> {
   }
 }
 
-export default async function TopGenres() {
-  const genres = await fetchTopGenres();
+export default async function TopGenres({ timeRange = "medium_term" }: { timeRange?: string }) {
+  const genres = await fetchTopGenres(timeRange);
 
   return (
     <div className='bg-spotify-gray-300 bg-opacity-30 p-4 rounded-lg border-2 border-spotify-gray-200'>

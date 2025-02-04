@@ -8,13 +8,16 @@ import RecentlyPlayed from "@/components/RecentlyPlayed";
 import UserProfileSkeleton from "@/components/skeletons/UserProfileSkeleton";
 import TrackArtistSkeleton from "@/components/skeletons/TrackArtistSkeleton";
 import GenreSkeleton from "@/components/skeletons/GenreSkeleton";
+import TimeRangeSelector from "@/components/TimeRangeSelector";
 
 export const metadata: Metadata = {
   title: "Home | Spotify Stats",
   description: "Bienvenido a tu Home de Spotify.",
 };
 
-export default function Home() {
+export default function Home({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
+  const timeRange = searchParams.time_range || "medium_term";
+
   return (
     <main className='min-h-screen relative'>
       <section className='bg-spotify-black'>
@@ -25,16 +28,17 @@ export default function Home() {
           <Suspense fallback={<UserProfileSkeleton />}>
             <UserProfile />
           </Suspense>
+          <TimeRangeSelector />
           <div className='mt-12 grid grid-cols-1 md:grid-cols-2 gap-6'>
             <Suspense fallback={<TrackArtistSkeleton count={5} />}>
-              <TopTracks />
+              <TopTracks timeRange={timeRange} />
             </Suspense>
             <Suspense fallback={<TrackArtistSkeleton count={5} />}>
-              <TopArtists />
+              <TopArtists timeRange={timeRange} />
             </Suspense>
             <div className='md:col-span-2'>
               <Suspense fallback={<GenreSkeleton count={5} />}>
-                <TopGenres />
+                <TopGenres timeRange={timeRange} />
               </Suspense>
             </div>
           </div>

@@ -3,13 +3,13 @@ import Image from "next/image";
 import { Users } from "lucide-react";
 import { Artist } from "@/lib/types";
 
-async function fetchTopArtists(): Promise<Artist[]> {
+async function fetchTopArtists(timeRange: string): Promise<Artist[]> {
   try {
     const cookieStore = await cookies();
     const access_token = cookieStore.get("access_token")?.value;
     if (!access_token) throw new Error("No access token");
 
-    const response = await fetch("http://localhost:3000/api/home/top-artists", {
+    const response = await fetch(`http://localhost:3000/api/home/top-artists?time_range=${timeRange}`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 
@@ -21,8 +21,8 @@ async function fetchTopArtists(): Promise<Artist[]> {
   }
 }
 
-export default async function TopArtists() {
-  const artists = await fetchTopArtists();
+export default async function TopArtists({ timeRange = "medium_term" }: { timeRange?: string }) {
+  const artists = await fetchTopArtists(timeRange);
 
   return (
     <div className='bg-spotify-gray-300 p-4 rounded-lg border-2 border-spotify-gray-200 h-full'>

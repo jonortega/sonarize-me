@@ -3,13 +3,13 @@ import Image from "next/image";
 import { Music } from "lucide-react";
 import { Track } from "@/lib/types";
 
-async function fetchTopTracks(): Promise<Track[]> {
+async function fetchTopTracks(timeRange: string): Promise<Track[]> {
   try {
     const cookieStore = await cookies();
     const access_token = cookieStore.get("access_token")?.value;
     if (!access_token) throw new Error("No access token");
 
-    const response = await fetch("http://localhost:3000/api/home/top-tracks", {
+    const response = await fetch(`http://localhost:3000/api/home/top-tracks?time_range=${timeRange}`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 
@@ -21,8 +21,8 @@ async function fetchTopTracks(): Promise<Track[]> {
   }
 }
 
-export default async function TopTracks() {
-  const tracks = await fetchTopTracks();
+export default async function TopTracks({ timeRange = "medium_term" }: { timeRange?: string }) {
+  const tracks = await fetchTopTracks(timeRange);
 
   return (
     <div className='bg-spotify-gray-300 p-4 rounded-lg border-2 border-spotify-gray-200 h-full'>

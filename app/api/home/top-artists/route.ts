@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const SPOTIFY_API_URL = "https://api.spotify.com/v1/me/top/artists";
 const LIMIT = 5; // Obtener los 5 tracks principales
-const TIME_RANGE = "medium_term"; // Últimos 6 meses
+const DEFAULT_TIME_RANGE = "medium_term";
 
 interface Artist {
   id: string;
@@ -39,6 +39,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "No access token provided" }, { status: 401 });
   }
 
+  // Obtener el parámetro `time_range` de la URL
+  const { searchParams } = new URL(req.url);
+  const timeRange = searchParams.get("time_range") || DEFAULT_TIME_RANGE;
+
   try {
     const response = await axios.get(SPOTIFY_API_URL, {
       headers: {
@@ -46,7 +50,7 @@ export async function GET(req: NextRequest) {
       },
       params: {
         limit: LIMIT,
-        time_range: TIME_RANGE,
+        time_range: timeRange,
       },
     });
 
