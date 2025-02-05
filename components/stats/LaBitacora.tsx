@@ -171,13 +171,14 @@ export default function LaBitacora() {
     maintainAspectRatio: false, // ???
     plugins: {
       legend: {
-        position: "top" as const,
-        labels: {
-          color: "rgba(255, 255, 255, 0.8)",
-          font: {
-            size: 14,
-          },
-        },
+        display: false,
+        // position: "top" as const,
+        // labels: {
+        //   color: "rgba(255, 255, 255, 0.8)",
+        //   font: {
+        //     size: 14,
+        //   },
+        // },
       },
       title: {
         display: true,
@@ -218,6 +219,10 @@ export default function LaBitacora() {
         font: {
           size: 18,
           weight: 700,
+        },
+        padding: {
+          top: 0, // Espacio arriba del título
+          bottom: 20, // Espacio adicional debajo del título
         },
       },
       tooltip: {
