@@ -89,14 +89,73 @@ export async function GET(req: Request) {
       days: {},
     };
 
+    // * Obtener el rango completo de años desde el primer hasta el último
+    const allYears = Object.keys(cache.years).map(Number);
+    const minYear = Math.min(...allYears);
+    const maxYear = Math.max(...allYears);
+
+    // * Completar los años faltantes con valor 0
+    for (let y = minYear; y <= maxYear; y++) {
+      const yearStr = y.toString();
+      if (!(yearStr in cache.years)) {
+        cache.years[yearStr] = 0;
+      }
+    }
+
     for (const yearKey in cache.years) {
       const yearTracks = tracks.filter((t) => t.year === yearKey);
       cache.months[yearKey] = aggregateTracks(yearTracks, "month");
+
+      // * Completar los meses faltantes con valor 0
+      for (const yearKey in cache.months) {
+        for (let m = 1; m <= 12; m++) {
+          const monthStr = m.toString().padStart(2, "0");
+          const key = `${yearKey}-${monthStr}`;
+          if (!(key in cache.months[yearKey])) {
+            cache.months[yearKey][key] = 0;
+          }
+        }
+      }
 
       for (const monthKey in cache.months[yearKey]) {
         const [y, m] = monthKey.split("-");
         const monthTracks = yearTracks.filter((t) => t.month === m);
         cache.days[`${y}-${m}`] = aggregateTracks(monthTracks, "day");
+
+        // * Completar los días faltantes con valor 0
+        const daysInMonth: { [key: string]: number } = {
+          "01": 31,
+          "02": 28,
+          "03": 31,
+          "04": 30,
+          "05": 31,
+          "06": 30,
+          "07": 31,
+          "08": 31,
+          "09": 30,
+          "10": 31,
+          "11": 30,
+          "12": 31,
+        };
+
+        for (const yearMonth in cache.days) {
+          const [, month] = yearMonth.split("-");
+          let days = daysInMonth[month] || 30; // Valor por defecto de seguridad
+
+          // * Si existe un día 29 de febrero en los datos, añadimos febrero con 29 días
+          if (month === "02" && cache.days[yearMonth]["29"]) {
+            days = 29;
+          }
+
+          // * Completar los días faltantes con valor 0
+          for (let d = 1; d <= days; d++) {
+            const dayStr = d.toString().padStart(2, "0");
+            const key = `${yearMonth}-${dayStr}`;
+            if (!(key in cache.days[yearMonth])) {
+              cache.days[yearMonth][key] = 0;
+            }
+          }
+        }
 
         console.log(`Processed days for ${y}-${m}:`, cache.days[`${y}-${m}`]);
       }
