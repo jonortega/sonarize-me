@@ -181,49 +181,7 @@ export default function LaBitacora() {
         // },
       },
       title: {
-        display: true,
-        text: (() => {
-          if (currentScale === 0) {
-            return "Canciones Guardadas por Año";
-          } else if (currentScale === 1) {
-            const year = history[0];
-            return `Canciones Guardadas en el Año ${year}`;
-          } else if (currentScale === 2) {
-            const [year, fullMonth] = history;
-            const month = fullMonth.split("-")[1];
-
-            console.log("Dentro del title text => Month:", month);
-
-            const monthNames = [
-              "enero",
-              "febrero",
-              "marzo",
-              "abril",
-              "mayo",
-              "junio",
-              "julio",
-              "agosto",
-              "septiembre",
-              "octubre",
-              "noviembre",
-              "diciembre",
-            ];
-            const monthName =
-              month && parseInt(month, 10) >= 1 && parseInt(month, 10) <= 12
-                ? monthNames[parseInt(month, 10) - 1]
-                : "mes desconocido";
-            return `Canciones Guardadas en ${capitalizeFirstLetter(monthName)} de ${year}`;
-          }
-        })(),
-        color: "rgba(255, 255, 255, 0.9)",
-        font: {
-          size: 18,
-          weight: 700,
-        },
-        padding: {
-          top: 0, // Espacio arriba del título
-          bottom: 20, // Espacio adicional debajo del título
-        },
+        display: false,
       },
       tooltip: {
         callbacks: {
@@ -275,12 +233,60 @@ export default function LaBitacora() {
           {currentScale > 0 && (
             <button
               onClick={handleBack}
-              className='flex items-center text-spotify-green hover:underline transition-colors duration-200'
+              className='flex items-center text-spotify-red hover:underline transition-colors duration-200'
             >
               <ArrowLeft className='mr-2' size={20} />
               Volver a {capitalizeFirstLetter(timeScales[currentScale - 1])}
             </button>
           )}
+
+          {/* Título personalizado */}
+          <h2 className='text-center text-white text-lg font-bold mt-4 mb-2'>
+            {(() => {
+              if (currentScale === 0) {
+                return "Canciones Guardadas por Año";
+              } else if (currentScale === 1) {
+                const year = history[0];
+                return (
+                  <>
+                    Canciones Guardadas en el Año{" "}
+                    <span className='text-spotify-green drop-shadow-[0_4px_6px_rgba(30,215,96,0.2)]'>{year}</span>
+                  </>
+                );
+              } else if (currentScale === 2) {
+                const [year, fullMonth] = history;
+                const month = fullMonth.split("-")[1];
+                const monthNames = [
+                  "enero",
+                  "febrero",
+                  "marzo",
+                  "abril",
+                  "mayo",
+                  "junio",
+                  "julio",
+                  "agosto",
+                  "septiembre",
+                  "octubre",
+                  "noviembre",
+                  "diciembre",
+                ];
+                const monthName =
+                  month && parseInt(month, 10) >= 1 && parseInt(month, 10) <= 12
+                    ? monthNames[parseInt(month, 10) - 1]
+                    : "mes desconocido";
+                return (
+                  <>
+                    Canciones Guardadas en{" "}
+                    <span className='text-spotify-green drop-shadow-[0_4px_6px_rgba(30,215,96,0.2)]'>
+                      {capitalizeFirstLetter(monthName)}
+                    </span>{" "}
+                    de <span className='text-spotify-green drop-shadow-[0_4px_6px_rgba(30,215,96,0.2)]'>{year}</span>
+                  </>
+                );
+              }
+            })()}
+          </h2>
+
           <div className='flex-grow h-[400px]'>
             <Bar data={chartData} options={options} />
           </div>
