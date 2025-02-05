@@ -13,6 +13,7 @@ async function fetchTopGenres(timeRange: string): Promise<Genre[]> {
     });
 
     if (!response.ok) throw new Error("Failed to fetch top genres");
+
     return response.json();
   } catch (error) {
     console.error(error);
@@ -22,6 +23,22 @@ async function fetchTopGenres(timeRange: string): Promise<Genre[]> {
 
 export default async function TopGenres({ timeRange = "short_term" }: { timeRange?: string }) {
   const genres = await fetchTopGenres(timeRange);
+  console.log("Top Genres", genres);
+
+  // Manejo de casos donde no hay géneros
+  if (genres.length === 0) {
+    return (
+      <div className='bg-spotify-gray-300 bg-opacity-30 p-4 rounded-lg border-2 border-spotify-gray-200'>
+        <h2 className='text-2xl font-bold mb-4 flex items-center'>
+          <Hash className='mr-2 text-spotify-green' />
+          Top Genres
+        </h2>
+        <div className='text-spotify-gray-100 text-left pl-8 mb-2'>
+          No hay información disponible sobre los géneros.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='bg-spotify-gray-300 bg-opacity-30 p-4 rounded-lg border-2 border-spotify-gray-200'>

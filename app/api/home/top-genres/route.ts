@@ -43,16 +43,26 @@ export async function GET(req: NextRequest) {
 
     const artists: Artist[] = response.data.items;
 
+    console.log("Top artists:", artists.length);
+
     // Create a map to count the occurrences of each genre
     const genreCount: Record<string, number> = {};
 
     // Iterate over artists and their genres, respecting the rules of importance
     artists.forEach((artist, artistIndex) => {
+      console.log(`Artist ${artistIndex + 1}: ${artist.name}, Genres: ${artist.genres}`);
+
+      if (artist.genres.length === 0) {
+        console.warn(`Artist ${artist.name} has no genres associated.`);
+      }
+
       artist.genres.forEach((genre, genreIndex) => {
         const weight = (artistIndex + 1) * 100 + genreIndex; // Weighted by artist and genre position
         genreCount[genre] = (genreCount[genre] || 0) + weight;
       });
     });
+
+    console.log("Genre count:", genreCount);
 
     // Sort genres by their count in descending order
     const sortedGenres = Object.entries(genreCount)

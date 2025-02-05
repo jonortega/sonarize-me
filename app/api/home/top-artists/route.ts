@@ -32,7 +32,6 @@ export async function GET(req: NextRequest) {
   }
 
   const access_token = authorizationHeader.split(" ")[1];
-  console.log("Received access token:", access_token);
 
   if (!access_token) {
     console.error("No access token provided in cookies");
@@ -55,8 +54,6 @@ export async function GET(req: NextRequest) {
     });
 
     const data = response.data;
-
-    console.log("Obtained data from Spotify:", data);
 
     // Filtrar los datos relevantes para el frontend
     const filteredData = data.items.map((artist: Artist, index: number) => ({
