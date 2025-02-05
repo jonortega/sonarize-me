@@ -179,7 +179,7 @@ export default function LaBitacora() {
           },
         },
         grid: {
-          color: "#121212",
+          display: false,
         },
       },
       y: {
