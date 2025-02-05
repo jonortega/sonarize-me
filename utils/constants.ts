@@ -4,4 +4,6 @@ export const SPOTIFY_SCOPES = [
   "user-read-email",
   "user-read-recently-played",
   "user-library-read",
+  "playlist-modify-private",
+  "ugc-image-upload",
 ].join(" ");

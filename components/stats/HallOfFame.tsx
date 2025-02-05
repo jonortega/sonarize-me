@@ -4,9 +4,53 @@ import Image from "next/image";
 import { Album, HallOfFameData } from "@/lib/types";
 import { useFetch } from "@/lib/useFetch";
 import Loading from "@/components/Loading";
+import { useRef, useState } from "react";
+import html2canvas from "html2canvas";
 
 export default function HallOfFame() {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [isCreating, setIsCreating] = useState(false);
+
   const { data, loading, error } = useFetch<HallOfFameData>("/api/stats/hall-of-fame");
+
+  const handleCreatePlaylist = async () => {
+    console.log("Creando playlist...");
+
+    try {
+      setIsCreating(true);
+
+      console.log("Ha entrado en el try.");
+
+      console.log("gridRef.current:", gridRef.current);
+
+      // Capture the grid as an image
+      if (!gridRef.current) return;
+      const canvas = await html2canvas(gridRef.current);
+      const imageBase64 = canvas.toDataURL("image/jpeg").split(",")[1]; // Remove data:image/jpeg;base64, prefix
+
+      console.log("imageBase64", imageBase64.slice(0, 100));
+
+      const response = await fetch("/api/stats/hall-of-fame", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ coverImage: imageBase64 }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al crear la playlist");
+      }
+
+      alert("¡Playlist creada con éxito!");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("No se pudo crear la playlist. Por favor, inténtalo de nuevo.");
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const handleAlbumClick = (album: Album) => {
     // This function can be implemented in the future to handle click events
@@ -26,8 +70,8 @@ export default function HallOfFame() {
   }
 
   return (
-    <div>
-      <div className='grid grid-cols-4 gap-0 mx-auto' style={{ width: "75%", height: "auto" }}>
+    <div className='bg-spotify-dark p-8 rounded-lg shadow-lg'>
+      <div ref={gridRef} className='grid grid-cols-4 gap-0 mx-auto' style={{ width: "75%", height: "auto" }}>
         {data.albums.map((album, index) => (
           <div
             key={index}
@@ -50,6 +94,34 @@ export default function HallOfFame() {
             </div>
           </div>
         ))}
+      </div>
+      <div className='mt-8 flex justify-center'>
+        <button
+          onClick={handleCreatePlaylist}
+          disabled={isCreating}
+          className='bg-spotify-green hover:bg-spotify-green-light text-black font-bold py-3 px-8 rounded-full transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:bg-spotify-green'
+        >
+          {isCreating ? (
+            <span className='flex items-center'>
+              <svg
+                className='animate-spin -ml-1 mr-3 h-5 w-5 text-black'
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+              >
+                <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+                <path
+                  className='opacity-75'
+                  fill='currentColor'
+                  d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                ></path>
+              </svg>
+              Creando playlist...
+            </span>
+          ) : (
+            'Crear playlist "Hall Of Fame"'
+          )}
+        </button>
       </div>
     </div>
   );
