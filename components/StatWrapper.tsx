@@ -31,7 +31,7 @@ export default function StatWrapper({ activeStat, isOpen, onClose }: StatWrapper
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className='w-[95vw] max-w-4xl min-h-[60vh] max-h-[80vh] p-6'>
+      <DialogContent className='w-[95vw] max-w-4xl min-h-[60vh] max-h-screen overflow-y-auto p-6 flex flex-col'>
         <DialogHeader>
           <DialogTitle className='text-2xl font-bold text-spotify-green'>
             {activeStat
@@ -42,12 +42,10 @@ export default function StatWrapper({ activeStat, isOpen, onClose }: StatWrapper
               : "Estadística"}
           </DialogTitle>
         </DialogHeader>
-        <div className='flex-1 overflow-y-auto py-4'>
-          <div className='w-full h-full min-h-[400px] flex items-center justify-center'>
-            <div className='w-full max-w-3xl mx-auto'>{getStatComponent(activeStat)}</div>
-          </div>
+        <div className='flex-1 flex items-center justify-center py-4'>
+          <div className='w-full max-w-3xl mx-auto'>{getStatComponent(activeStat)}</div>
         </div>
-        <div className='mt-4 text-right'>
+        <div className='mt-auto text-right'>
           <button
             onClick={onClose}
             className='px-4 py-2 bg-spotify-gray-100 text-black font-semibold rounded-lg hover:bg-spotify-green/90'

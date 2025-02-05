@@ -15,7 +15,7 @@ export const DialogContent = React.forwardRef<
     {/* Contenido del modal */}
     <DialogPrimitive.Content
       ref={ref}
-      className={`fixed left-[50%] top-[50%] w-full max-w-lg transform -translate-x-1/2 -translate-y-1/2 rounded-xl bg-spotify-black text-spotify-gray-100 p-6 shadow-lg border border-spotify-gray-200 ${className}`}
+      className={`fixed left-[50%] top-[50%] w-full max-w-4xl transform -translate-x-1/2 -translate-y-1/2 rounded-xl bg-spotify-black text-spotify-gray-100 p-6 shadow-lg border border-spotify-gray-200 ${className}`}
       {...props}
     >
       {children}
