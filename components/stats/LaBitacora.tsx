@@ -35,7 +35,7 @@ type TimeData = {
   [key: string]: number;
 };
 
-const timeScales = ["year", "month", "day"];
+const timeScales = ["año", "mes", "día"];
 
 export default function LaBitacora() {
   const [data, setData] = useState<TimeData>({});
@@ -78,6 +78,33 @@ export default function LaBitacora() {
     }
   };
 
+  const formatLabels = (key: string) => {
+    if (currentScale === 1) {
+      // Nivel de mes: mostrar el nombre del mes
+      const monthNames = [
+        "enero",
+        "febrero",
+        "marzo",
+        "abril",
+        "mayo",
+        "junio",
+        "julio",
+        "agosto",
+        "septiembre",
+        "octubre",
+        "noviembre",
+        "diciembre",
+      ];
+      const [, month] = key.split("-");
+      return monthNames[parseInt(month, 10) - 1];
+    } else if (currentScale === 2) {
+      // Nivel de día: mostrar solo el número del día
+      const [, , day] = key.split("-");
+      return parseInt(day, 10).toString(); // Remueve ceros iniciales
+    }
+    return key; // Nivel de año: no cambiar nada
+  };
+
   const handleBarClick = (event: ChartEvent, elements: ActiveElement[]) => {
     if (elements.length > 0) {
       const index = elements[0].index;
@@ -117,6 +144,8 @@ export default function LaBitacora() {
     }
   };
 
+  const capitalizeFirstLetter = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
   const sortedKeys = Object.keys(data).sort((a, b) => {
     // Ordena según el formato (año, año-mes, año-mes-día)
     return a.localeCompare(b, undefined, { numeric: true });
@@ -152,7 +181,39 @@ export default function LaBitacora() {
       },
       title: {
         display: true,
-        text: `Tracks Saved by ${timeScales[currentScale].charAt(0).toUpperCase() + timeScales[currentScale].slice(1)}`,
+        text: (() => {
+          if (currentScale === 0) {
+            return "Canciones Guardadas por Año";
+          } else if (currentScale === 1) {
+            const year = history[0];
+            return `Canciones Guardadas en el Año ${year}`;
+          } else if (currentScale === 2) {
+            const [year, fullMonth] = history;
+            const month = fullMonth.split("-")[1];
+
+            console.log("Dentro del title text => Month:", month);
+
+            const monthNames = [
+              "enero",
+              "febrero",
+              "marzo",
+              "abril",
+              "mayo",
+              "junio",
+              "julio",
+              "agosto",
+              "septiembre",
+              "octubre",
+              "noviembre",
+              "diciembre",
+            ];
+            const monthName =
+              month && parseInt(month, 10) >= 1 && parseInt(month, 10) <= 12
+                ? monthNames[parseInt(month, 10) - 1]
+                : "mes desconocido";
+            return `Canciones Guardadas en ${capitalizeFirstLetter(monthName)} de ${year}`;
+          }
+        })(),
         color: "rgba(255, 255, 255, 0.9)",
         font: {
           size: 18,
@@ -177,6 +238,7 @@ export default function LaBitacora() {
           font: {
             size: 12,
           },
+          callback: (value: unknown, index: number) => formatLabels(sortedKeys[index]), // Formatea los labels
         },
         grid: {
           display: false,
@@ -211,7 +273,7 @@ export default function LaBitacora() {
               className='flex items-center text-spotify-green hover:underline transition-colors duration-200'
             >
               <ArrowLeft className='mr-2' size={20} />
-              Back to {timeScales[currentScale - 1]}s
+              Volver a {capitalizeFirstLetter(timeScales[currentScale - 1])}
             </button>
           )}
           <div className='flex-grow h-[400px]'>
