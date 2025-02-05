@@ -149,8 +149,9 @@ export default function HallOfFame() {
         ref={gridRef}
         className='grid grid-cols-4 gap-0 mx-auto'
         style={{
-          width: "600px",
-          height: "600px",
+          width: "75%", // Elimina las dimensiones fijas
+          maxWidth: "90vw", // Limita el ancho máximo
+          aspectRatio: "1 / 1", // Mantiene la proporción 1:1
           overflow: "hidden",
         }}
       >

@@ -31,7 +31,7 @@ export default function StatWrapper({ activeStat, isOpen, onClose }: StatWrapper
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className='w-[95vw] max-w-4xl min-h-[60vh] max-h-screen overflow-y-auto p-6 flex flex-col'>
+      <DialogContent className='w-[95vw] max-w-4xl min-h-[60vh] max-h-[90vh] overflow-y-auto p-6 flex flex-col'>
         <DialogHeader>
           <DialogTitle className='text-2xl font-bold text-spotify-green'>
             {activeStat
