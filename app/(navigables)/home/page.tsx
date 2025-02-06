@@ -16,13 +16,13 @@ export const metadata: Metadata = {
 };
 
 interface HomeProps {
-  searchParams: {
-    time_range?: string;
-  };
+  searchParams: Record<string, string | string[] | undefined>;
 }
 
 export default function Home({ searchParams }: HomeProps) {
-  const timeRange = searchParams.time_range || "short_term";
+  const timeRange = Array.isArray(searchParams.time_range)
+    ? searchParams.time_range[0] // Tomar solo el primer valor si es un array
+    : searchParams.time_range || "short_term";
 
   return (
     <main className='min-h-screen relative'>
