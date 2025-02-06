@@ -49,7 +49,7 @@ export default function StatWrapper({ activeStat, isOpen, onClose }: StatWrapper
           </DialogTitle>
         </DialogHeader>
         <div className='flex-1 flex items-center justify-center py-4'>
-          <div className='w-full mx-auto border border-red-500'>{getStatComponent(activeStat)}</div>
+          <div className='w-full mx-auto'>{getStatComponent(activeStat)}</div>
         </div>
         <div className='mt-auto text-right'>
           <button
