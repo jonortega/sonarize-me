@@ -3,13 +3,15 @@ import Image from "next/image";
 import { Users } from "lucide-react";
 import { Artist } from "@/lib/types";
 
+const DOMAIN_URL = process.env.DOMAIN_URL;
+
 async function fetchTopArtists(timeRange: string): Promise<Artist[]> {
   try {
     const cookieStore = await cookies();
     const access_token = cookieStore.get("access_token")?.value;
     if (!access_token) throw new Error("No access token");
 
-    const response = await fetch(`http://localhost:3000/api/home/top-artists?time_range=${timeRange}`, {
+    const response = await fetch(`${DOMAIN_URL}/api/home/top-artists?time_range=${timeRange}`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 

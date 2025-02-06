@@ -3,13 +3,15 @@ import Image from "next/image";
 import { UserIcon } from "lucide-react";
 import { User } from "@/lib/types";
 
+const DOMAIN_URL = process.env.DOMAIN_URL;
+
 async function fetchUserProfile(): Promise<User | null> {
   try {
     const cookieStore = await cookies();
     const access_token = cookieStore.get("access_token")?.value;
     if (!access_token) throw new Error("No access token");
 
-    const response = await fetch("http://localhost:3000/api/home/user-profile", {
+    const response = await fetch(`${DOMAIN_URL}/api/home/user-profile`, {
       headers: { Authorization: `Bearer ${access_token}` },
     });
 

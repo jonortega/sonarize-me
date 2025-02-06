@@ -1,6 +1,8 @@
 import Navbar from "@/components/Navbar";
 import { cookies } from "next/headers";
 
+const DOMAIN_URL = process.env.DOMAIN_URL;
+
 async function fetchUserProfile() {
   try {
     // Obtener las cookies del servidor para acceder al access_token
@@ -14,7 +16,7 @@ async function fetchUserProfile() {
     }
 
     // * HAY SUSTITUIR LA URL BASE POR LA QUE SEA EN PRODUCCIÓN
-    const response = await fetch("http://localhost:3000/api/home/user-profile", {
+    const response = await fetch(`${DOMAIN_URL}/api/home/user-profile`, {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
