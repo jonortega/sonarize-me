@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   description: "Bienvenido a tu Home de Spotify.",
 };
 
-export default function Home({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
+export default function Home({ searchParams = {} }: { searchParams?: Record<string, string | undefined> }) {
   const timeRange = searchParams.time_range || "short_term";
 
   return (
