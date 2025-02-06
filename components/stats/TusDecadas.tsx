@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Stage, Layer, Image, Text, Line } from "react-konva";
 import useImage from "use-image";
 import { useFetch } from "@/lib/useFetch";
@@ -28,8 +28,25 @@ export default function TusDecadas() {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [cursorStyle, setCursorStyle] = useState("grab");
+  const [stageWidth, setStageWidth] = useState<number>(1280);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const ALBUM_SIZE = 50;
+
+  useEffect(() => {
+    const updateStageWidth = () => {
+      if (containerRef.current) {
+        setStageWidth(containerRef.current.clientWidth);
+      }
+    };
+
+    updateStageWidth();
+    window.addEventListener("resize", updateStageWidth);
+
+    return () => {
+      window.removeEventListener("resize", updateStageWidth);
+    };
+  }, []);
 
   if (loading) return <div>Cargando...</div>;
   if (error) return <div>Error al cargar los datos: {error.toString()}</div>;
@@ -78,89 +95,90 @@ export default function TusDecadas() {
   };
 
   return (
-    <div className='w-full bg-[#121212] p-6 rounded-lg shadow-lg'>
-      <div className='relative bg-[#181818] rounded-lg overflow-hidden'>
-        <Stage
-          width={800}
-          height={600}
-          draggable
-          scaleX={scale}
-          scaleY={scale}
-          x={position.x}
-          y={position.y}
-          onWheel={handleWheel}
-          onMouseDown={() => setCursorStyle("grabbing")} // Cambia a "grabbing"
-          onMouseUp={() => setCursorStyle("grab")} // Vuelve a "grab"
-          onMouseLeave={() => setCursorStyle("grab")} // Asegúrate de que el cursor vuelva a "grab" al salir
-          style={{
-            cursor: cursorStyle, // Usa el estado del cursor
-          }}
-        >
-          {/* Capa para las portadas de álbumes */}
-          <Layer>
-            {tracksByYear &&
-              years.map((year, yearIndex) => {
-                const tracks = tracksByYear[year] || [];
-                return tracks.map((track, trackIndex) => (
-                  <AlbumCover
-                    key={track.id}
-                    url={track.albumPicUrl}
-                    x={yearIndex * ALBUM_SIZE} // Calcula la posición en el eje X
-                    y={600 - (trackIndex + 1) * ALBUM_SIZE} // Calcula desde abajo hacia arriba
-                    size={ALBUM_SIZE}
-                  />
-                ));
-              })}
-          </Layer>
-          {/* Capa para los labels de décadas y marcas divisorias */}
-          <Layer>
-            {decades.map(({ decade, startIndex }) => {
-              const labelX = startIndex * ALBUM_SIZE + (ALBUM_SIZE * 10) / 2; // Centrar en la década
-              const lineX = startIndex * ALBUM_SIZE; // Línea divisoria al inicio de la década
-
-              return (
-                <React.Fragment key={decade}>
-                  {/* Label de la década */}
-                  <Text
-                    text={decade.toString()}
-                    x={labelX - 55}
-                    y={ALBUM_SIZE * 12 + 25} // Ajustar debajo de las portadas
-                    fontSize={50}
-                    fill='white'
-                    align='center'
-                    textAlign='center'
-                  />
-                  {/* Marca divisoria */}
-                  <Line
-                    points={[lineX, ALBUM_SIZE * 12, lineX, ALBUM_SIZE * 12 + 50]} // Desde la base hacia abajo
-                    stroke='white'
-                    strokeWidth={2}
-                  />
-                </React.Fragment>
-              );
+    <div
+      ref={containerRef} // Asociar el ref al contenedor
+      className='relative bg-spotify-black rounded-lg overflow-hidden w-full h-full'
+    >
+      <Stage
+        width={stageWidth}
+        height={600}
+        draggable
+        scaleX={scale}
+        scaleY={scale}
+        x={position.x}
+        y={position.y}
+        onWheel={handleWheel}
+        onMouseDown={() => setCursorStyle("grabbing")} // Cambia a "grabbing"
+        onMouseUp={() => setCursorStyle("grab")} // Vuelve a "grab"
+        onMouseLeave={() => setCursorStyle("grab")} // Asegúrate de que el cursor vuelva a "grab" al salir
+        style={{
+          cursor: cursorStyle, // Usa el estado del cursor
+        }}
+      >
+        {/* Capa para las portadas de álbumes */}
+        <Layer>
+          {tracksByYear &&
+            years.map((year, yearIndex) => {
+              const tracks = tracksByYear[year] || [];
+              return tracks.map((track, trackIndex) => (
+                <AlbumCover
+                  key={track.id}
+                  url={track.albumPicUrl}
+                  x={yearIndex * ALBUM_SIZE} // Calcula la posición en el eje X
+                  y={600 - (trackIndex + 1) * ALBUM_SIZE} // Calcula desde abajo hacia arriba
+                  size={ALBUM_SIZE}
+                />
+              ));
             })}
+        </Layer>
+        {/* Capa para los labels de décadas y marcas divisorias */}
+        <Layer>
+          {decades.map(({ decade, startIndex }) => {
+            const labelX = startIndex * ALBUM_SIZE + (ALBUM_SIZE * 10) / 2; // Centrar en la década
+            const lineX = startIndex * ALBUM_SIZE; // Línea divisoria al inicio de la década
 
-            {/* Línea adicional al final */}
-            <Line
-              points={[
-                years.length * ALBUM_SIZE, // Posición al final de las columnas
-                ALBUM_SIZE * 12, // Base de las portadas
-                years.length * ALBUM_SIZE, // Misma posición X
-                ALBUM_SIZE * 12 + 50, // Extensión hacia abajo
-              ]}
-              stroke='white'
-              strokeWidth={2}
-            />
+            return (
+              <React.Fragment key={decade}>
+                {/* Label de la década */}
+                <Text
+                  text={decade.toString()}
+                  x={labelX - 55}
+                  y={ALBUM_SIZE * 12 + 25} // Ajustar debajo de las portadas
+                  fontSize={50}
+                  fill='white'
+                  align='center'
+                  textAlign='center'
+                />
+                {/* Marca divisoria */}
+                <Line
+                  points={[lineX, ALBUM_SIZE * 12, lineX, ALBUM_SIZE * 12 + 50]} // Desde la base hacia abajo
+                  stroke='white'
+                  strokeWidth={2}
+                />
+              </React.Fragment>
+            );
+          })}
 
-            {/* Línea de base */}
-            <Line
-              points={[0, ALBUM_SIZE * 12 + 1, years.length * ALBUM_SIZE, ALBUM_SIZE * 12 + 1]} // De un extremo al otro
-              stroke='white'
-              strokeWidth={2}
-            />
-          </Layer>
-        </Stage>
-      </div>
+          {/* Línea adicional al final */}
+          <Line
+            points={[
+              years.length * ALBUM_SIZE, // Posición al final de las columnas
+              ALBUM_SIZE * 12, // Base de las portadas
+              years.length * ALBUM_SIZE, // Misma posición X
+              ALBUM_SIZE * 12 + 50, // Extensión hacia abajo
+            ]}
+            stroke='white'
+            strokeWidth={2}
+          />
+
+          {/* Línea de base */}
+          <Line
+            points={[0, ALBUM_SIZE * 12 + 1, years.length * ALBUM_SIZE, ALBUM_SIZE * 12 + 1]} // De un extremo al otro
+            stroke='white'
+            strokeWidth={2}
+          />
+        </Layer>
+      </Stage>
     </div>
   );
 }

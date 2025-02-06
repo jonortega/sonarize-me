@@ -31,7 +31,13 @@ export default function StatWrapper({ activeStat, isOpen, onClose }: StatWrapper
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className='w-[95vw] max-w-4xl min-h-[60vh] max-h-[90vh] overflow-y-auto p-6 flex flex-col'>
+      <DialogContent
+        className={`${
+          activeStat === "tus-decadas"
+            ? "w-[90vw] max-w-7xl" // Anchura mayor para "Tus Décadas"
+            : "w-[95vw] max-w-4xl" // Configuración por defecto
+        } min-h-[60vh] max-h-[90vh] overflow-y-auto p-8 flex flex-col`}
+      >
         <DialogHeader>
           <DialogTitle className='text-2xl font-bold text-spotify-green'>
             {activeStat
@@ -43,7 +49,7 @@ export default function StatWrapper({ activeStat, isOpen, onClose }: StatWrapper
           </DialogTitle>
         </DialogHeader>
         <div className='flex-1 flex items-center justify-center py-4'>
-          <div className='w-full max-w-3xl mx-auto'>{getStatComponent(activeStat)}</div>
+          <div className='w-full mx-auto border border-red-500'>{getStatComponent(activeStat)}</div>
         </div>
         <div className='mt-auto text-right'>
           <button
