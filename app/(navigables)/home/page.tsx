@@ -15,14 +15,16 @@ export const metadata: Metadata = {
   description: "Bienvenido a tu Home de Spotify.",
 };
 
-interface HomeProps {
-  searchParams: Record<string, string | string[] | undefined>;
-}
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const resolvedSearchParams = await searchParams;
 
-export default function Home({ searchParams }: HomeProps) {
-  const timeRange = Array.isArray(searchParams.time_range)
-    ? searchParams.time_range[0] // Tomar solo el primer valor si es un array
-    : searchParams.time_range || "short_term";
+  const timeRange = Array.isArray(resolvedSearchParams.time_range)
+    ? resolvedSearchParams.time_range[0]
+    : resolvedSearchParams.time_range || "short_term";
 
   return (
     <main className='min-h-screen relative'>
