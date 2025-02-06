@@ -20,14 +20,14 @@ const stats: StatItem[] = [
     iconName: "Award",
     className: "md:col-span-2 lg:col-span-2 lg:row-span-2",
   },
+  { id: "tus-decadas", title: "Tus Décadas", iconName: "Rewind", className: "md:col-span-1 lg:col-span-2" },
   {
     id: "huella-del-dia",
     title: "Huella Del Día",
     iconName: "Fingerprint",
-    className: "md:col-span-1 lg:col-span-2",
   },
   { id: "estaciones-musicales", title: "Estaciones Musicales", iconName: "SunSnow" },
-  { id: "tus-decadas", title: "Tus Décadas", iconName: "Rewind" },
+
   {
     id: "la-bitacora",
     title: "La Bitácora",
