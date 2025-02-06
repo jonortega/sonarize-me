@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Stage, Layer, Image, Text } from "react-konva";
+import { Stage, Layer, Image, Text, Line } from "react-konva";
 import useImage from "use-image";
 import { useFetch } from "@/lib/useFetch";
+import React from "react";
 
 export interface TrackData {
   id: string;
@@ -27,20 +28,29 @@ export default function TusDecadas() {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [cursorStyle, setCursorStyle] = useState("grab");
-  // const [isZoomed, setIsZoomed] = useState(false);
 
   const ALBUM_SIZE = 50;
-  const PADDING = ALBUM_SIZE / 6;
 
   if (loading) return <div>Cargando...</div>;
   if (error) return <div>Error al cargar los datos: {error.toString()}</div>;
 
+  // Obtener los años ordenados
   const years = tracksByYear
     ? Object.keys(tracksByYear)
         .map((year) => Number(year))
         .sort((a, b) => a - b)
     : [];
 
+  // **NUEVO**: Calcular las décadas y sus posiciones
+  const decades = years.reduce((acc: { decade: number; startIndex: number }[], year, index) => {
+    const decade = Math.floor(year / 10) * 10; // Redondear hacia la década más cercana
+    if (!acc.find((d) => d.decade === decade)) {
+      acc.push({ decade, startIndex: index }); // Almacenar la década y su índice de inicio
+    }
+    return acc;
+  }, []);
+
+  // Evento para hacer zoom con la rueda del ratón
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleWheel = (e: any) => {
     e.evt.preventDefault();
@@ -67,12 +77,6 @@ export default function TusDecadas() {
     setPosition(newPos);
   };
 
-  // const handleClick = () => {
-  //   setIsZoomed(!isZoomed);
-  //   setScale(isZoomed ? 1 : 3);
-  //   setPosition({ x: 0, y: 0 });
-  // };
-
   return (
     <div className='w-full bg-[#121212] p-6 rounded-lg shadow-lg'>
       <div className='relative bg-[#181818] rounded-lg overflow-hidden'>
@@ -91,11 +95,8 @@ export default function TusDecadas() {
           style={{
             cursor: cursorStyle, // Usa el estado del cursor
           }}
-          // onClick={handleClick}
-          // style={{
-          //   cursor: isZoomed ? "zoom-out" : "zoom-in",
-          // }}
         >
+          {/* Capa para las portadas de álbumes */}
           <Layer>
             {tracksByYear &&
               years.map((year, yearIndex) => {
@@ -111,18 +112,52 @@ export default function TusDecadas() {
                 ));
               })}
           </Layer>
-          {/* Eje X */}
+          {/* Capa para los labels de décadas y marcas divisorias */}
           <Layer>
-            {years.map((year, index) => (
-              <Text
-                key={year}
-                text={year.toString()}
-                x={index * ALBUM_SIZE + PADDING}
-                y={ALBUM_SIZE * 12 + 10}
-                fontSize={14}
-                fill='white'
-              />
-            ))}
+            {decades.map(({ decade, startIndex }) => {
+              const labelX = startIndex * ALBUM_SIZE + (ALBUM_SIZE * 10) / 2; // Centrar en la década
+              const lineX = startIndex * ALBUM_SIZE; // Línea divisoria al inicio de la década
+
+              return (
+                <React.Fragment key={decade}>
+                  {/* Label de la década */}
+                  <Text
+                    text={decade.toString()}
+                    x={labelX - 55}
+                    y={ALBUM_SIZE * 12 + 25} // Ajustar debajo de las portadas
+                    fontSize={50}
+                    fill='white'
+                    align='center'
+                    textAlign='center'
+                  />
+                  {/* Marca divisoria */}
+                  <Line
+                    points={[lineX, ALBUM_SIZE * 12, lineX, ALBUM_SIZE * 12 + 50]} // Desde la base hacia abajo
+                    stroke='white'
+                    strokeWidth={2}
+                  />
+                </React.Fragment>
+              );
+            })}
+
+            {/* Línea adicional al final */}
+            <Line
+              points={[
+                years.length * ALBUM_SIZE, // Posición al final de las columnas
+                ALBUM_SIZE * 12, // Base de las portadas
+                years.length * ALBUM_SIZE, // Misma posición X
+                ALBUM_SIZE * 12 + 50, // Extensión hacia abajo
+              ]}
+              stroke='white'
+              strokeWidth={2}
+            />
+
+            {/* Línea de base */}
+            <Line
+              points={[0, ALBUM_SIZE * 12 + 1, years.length * ALBUM_SIZE, ALBUM_SIZE * 12 + 1]} // De un extremo al otro
+              stroke='white'
+              strokeWidth={2}
+            />
           </Layer>
         </Stage>
       </div>
