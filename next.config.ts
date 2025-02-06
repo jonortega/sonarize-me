@@ -32,14 +32,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals.push({
-        konva: "konva",
-      });
-    }
-    return config;
-  },
+  // webpack: (config, { isServer }) => {
+  //   if (isServer) {
+  //     config.externals.push({
+  //       konva: "konva",
+  //     });
+  //   }
+  //   return config;
+  // },
 };
 
 export default nextConfig;

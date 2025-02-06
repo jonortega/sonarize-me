@@ -26,7 +26,8 @@ export default function TusDecadas() {
 
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isZoomed, setIsZoomed] = useState(false);
+  const [cursorStyle, setCursorStyle] = useState("grab");
+  // const [isZoomed, setIsZoomed] = useState(false);
 
   const ALBUM_SIZE = 50;
   const PADDING = ALBUM_SIZE / 6;
@@ -44,7 +45,7 @@ export default function TusDecadas() {
   const handleWheel = (e: any) => {
     e.evt.preventDefault();
 
-    const scaleBy = 1.1;
+    const scaleBy = 1.2;
     const stage = e.target.getStage();
     if (!stage) return;
 
@@ -66,11 +67,11 @@ export default function TusDecadas() {
     setPosition(newPos);
   };
 
-  const handleClick = () => {
-    setIsZoomed(!isZoomed);
-    setScale(isZoomed ? 1 : 3);
-    setPosition({ x: 0, y: 0 });
-  };
+  // const handleClick = () => {
+  //   setIsZoomed(!isZoomed);
+  //   setScale(isZoomed ? 1 : 3);
+  //   setPosition({ x: 0, y: 0 });
+  // };
 
   return (
     <div className='w-full bg-[#121212] p-6 rounded-lg shadow-lg'>
@@ -84,10 +85,16 @@ export default function TusDecadas() {
           x={position.x}
           y={position.y}
           onWheel={handleWheel}
-          onClick={handleClick}
+          onMouseDown={() => setCursorStyle("grabbing")} // Cambia a "grabbing"
+          onMouseUp={() => setCursorStyle("grab")} // Vuelve a "grab"
+          onMouseLeave={() => setCursorStyle("grab")} // Asegúrate de que el cursor vuelva a "grab" al salir
           style={{
-            cursor: isZoomed ? "zoom-out" : "zoom-in",
+            cursor: cursorStyle, // Usa el estado del cursor
           }}
+          // onClick={handleClick}
+          // style={{
+          //   cursor: isZoomed ? "zoom-out" : "zoom-in",
+          // }}
         >
           <Layer>
             {tracksByYear &&
