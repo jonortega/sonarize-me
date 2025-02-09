@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { User } from "@/lib/types";
@@ -12,9 +12,28 @@ interface UserActionPanelProps {
 
 export default function UserActionPanel({ user }: UserActionPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const togglePanel = () => setIsOpen(!isOpen);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   const handleLogout = async () => {
     try {
@@ -32,7 +51,7 @@ export default function UserActionPanel({ user }: UserActionPanelProps) {
   };
 
   return (
-    <div className='relative'>
+    <div className='relative' ref={panelRef}>
       <button
         onClick={togglePanel}
         className={`rounded-full overflow-hidden focus:outline-none ${isOpen ? "ring-2 ring-spotify-green" : ""}`}
@@ -47,14 +66,14 @@ export default function UserActionPanel({ user }: UserActionPanelProps) {
       </button>
       {isOpen && (
         <div className='absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-spotify-black border border-gray-700 z-10'>
+          {/* Texto de usuario */}
+          <div className='py-2 px-4 border-b border-gray-600 text-left'>
+            <p className='text-xs text-spotify-gray-100 font-medium'>Cuenta:</p>
+            <p className='text-sm text-spotify-white font-semibold truncate'>{user.name}</p>
+          </div>
+
+          {/* Botón de logout */}
           <div className='py-1'>
-            {/* <button
-              onClick={() => console.log("Settings clicked")}
-              className='block w-full text-left px-4 py-2 text-sm text-spotify-white hover:bg-gray-800'
-            >
-              <Settings className='inline-block mr-2' size={16} />
-              Settings
-            </button> */}
             <button
               onClick={handleLogout}
               className='block w-full text-left px-4 py-2 text-sm text-spotify-white hover:bg-gray-800'

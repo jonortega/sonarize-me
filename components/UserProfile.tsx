@@ -13,6 +13,8 @@ async function fetchUserProfile(): Promise<User | null> {
 
     const response = await fetch(`${DOMAIN_URL}/api/home/user-profile`, {
       headers: { Authorization: `Bearer ${access_token}` },
+      cache: "force-cache", // Usa el cache de Next.js para evitar múltiples llamadas
+      next: { revalidate: 3600 }, // Refresca los datos cada hora
     });
 
     if (!response.ok) throw new Error("Failed to fetch user profile");

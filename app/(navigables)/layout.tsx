@@ -15,11 +15,12 @@ async function fetchUserProfile() {
       return { error: "No access token" };
     }
 
-    // * HAY SUSTITUIR LA URL BASE POR LA QUE SEA EN PRODUCCIÓN
     const response = await fetch(`${DOMAIN_URL}/api/home/user-profile`, {
       headers: {
         Authorization: `Bearer ${access_token}`,
       },
+      cache: "force-cache", // Usa caché para evitar múltiples peticiones
+      next: { revalidate: 3600 }, // Revalida cada hora
     });
 
     if (!response.ok) {

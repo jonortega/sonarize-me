@@ -5,6 +5,8 @@ import { Stage, Layer, Image, Text, Line } from "react-konva";
 import useImage from "use-image";
 import { useFetch } from "@/lib/useFetch";
 import React from "react";
+import Loading from "@/components/Loading";
+import NoFavorites from "@/components/NoFavorites";
 
 export interface TrackData {
   id: string;
@@ -48,8 +50,9 @@ export default function TusDecadas() {
     };
   }, []);
 
-  if (loading) return <div>Cargando...</div>;
+  if (loading) return <Loading />;
   if (error) return <div>Error al cargar los datos: {error.toString()}</div>;
+  if (!tracksByYear || Object.keys(tracksByYear).length === 0) return <NoFavorites />;
 
   // Obtener los años ordenados
   const years = tracksByYear
