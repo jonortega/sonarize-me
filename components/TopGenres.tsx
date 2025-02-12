@@ -1,31 +1,13 @@
 import { cookies } from "next/headers";
 import { Hash } from "lucide-react";
 import { Genre } from "@/lib/types";
-
-const DOMAIN_URL = process.env.DOMAIN_URL;
-
-async function fetchTopGenres(timeRange: string): Promise<Genre[]> {
-  try {
-    const cookieStore = await cookies();
-    const access_token = cookieStore.get("access_token")?.value;
-    if (!access_token) throw new Error("No access token");
-
-    const response = await fetch(`${DOMAIN_URL}/api/home/top-genres?time_range=${timeRange}`, {
-      headers: { Authorization: `Bearer ${access_token}` },
-    });
-
-    if (!response.ok) throw new Error("Failed to fetch top genres");
-
-    return response.json();
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
+import { fetchTopGenres } from "@/lib/fetchTopGenres";
 
 export default async function TopGenres({ timeRange = "short_term" }: { timeRange?: string }) {
-  const genres = await fetchTopGenres(timeRange);
-  console.log("Top Genres", genres);
+  const cookieStore = cookies();
+  const access_token = (await cookieStore).get("access_token")?.value || "";
+
+  const genres: Genre[] = await fetchTopGenres(timeRange, access_token);
 
   // Manejo de casos donde no hay géneros
   if (genres.length === 0) {
