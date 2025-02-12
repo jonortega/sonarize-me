@@ -14,10 +14,10 @@ export default function Footer() {
             <p className='text-sm'>Spotify Stats 2025</p>
           </div>
           <div className='flex space-x-4'>
-            <Link href='#' className='text-white hover:text-spotify-green'>
+            <Link href='#' aria-label='GitHub' className='text-white hover:text-spotify-green'>
               <Github size={24} />
             </Link>
-            <Link href='#' className='text-white hover:text-spotify-green'>
+            <Link href='#' aria-label='LinkedIn' className='text-white hover:text-spotify-green'>
               <Linkedin size={24} />
             </Link>
           </div>
