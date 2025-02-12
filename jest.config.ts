@@ -19,11 +19,14 @@ const config: Config = {
   moduleNameMapper: {
     // "^@/(.*)$": "<rootDir>/$1",
     "^@/lib/(.*)$": "<rootDir>/lib/$1",
-    "^@/components/(.*)$": "<rootDir>/components/$1", // ✅ Ahora apunta a `components/`
-    "^@/components/ui/(.*)$": "<rootDir>/components/ui/$1", // ✅ Apunta a la carpeta `ui`
-    "^@/components/stats/(.*)$": "<rootDir>/components/stats/$1", // ✅ Para componentes en `stats`
-    "^@/components/skeletons/(.*)$": "<rootDir>/components/skeletons/$1", // ✅ Para `skeletons`
+    "^@/components/(.*)$": "<rootDir>/components/$1",
+    "^@/components/ui/(.*)$": "<rootDir>/components/ui/$1",
+    "^@/components/stats/(.*)$": "<rootDir>/components/stats/$1",
+    "^@/components/skeletons/(.*)$": "<rootDir>/components/skeletons/$1",
   },
+
+  // Ignore test files in the following folders
+  testPathIgnorePatterns: ["/node_modules/", "/__tests__/disabled/"],
 
   // Jest's base configuration
   preset: "ts-jest", // Para transformar TypeScript
