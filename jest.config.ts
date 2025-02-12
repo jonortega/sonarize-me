@@ -18,6 +18,7 @@ const config: Config = {
   // A map for module names
   moduleNameMapper: {
     // "^@/(.*)$": "<rootDir>/$1",
+    "^@/lib/(.*)$": "<rootDir>/lib/$1",
     "^@/components/(.*)$": "<rootDir>/components/$1", // ✅ Ahora apunta a `components/`
     "^@/components/ui/(.*)$": "<rootDir>/components/ui/$1", // ✅ Apunta a la carpeta `ui`
     "^@/components/stats/(.*)$": "<rootDir>/components/stats/$1", // ✅ Para componentes en `stats`
