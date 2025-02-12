@@ -1,30 +1,14 @@
 import { cookies } from "next/headers";
 import Image from "next/image";
 import { Music } from "lucide-react";
+import { fetchTopTracks } from "@/lib/fetchTopTracks";
 import { Track } from "@/lib/types";
 
-const DOMAIN_URL = process.env.DOMAIN_URL;
-
-async function fetchTopTracks(timeRange: string): Promise<Track[]> {
-  try {
-    const cookieStore = await cookies();
-    const access_token = cookieStore.get("access_token")?.value;
-    if (!access_token) throw new Error("No access token");
-
-    const response = await fetch(`${DOMAIN_URL}/api/home/top-tracks?time_range=${timeRange}`, {
-      headers: { Authorization: `Bearer ${access_token}` },
-    });
-
-    if (!response.ok) throw new Error("Failed to fetch top tracks");
-    return response.json();
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
-
 export default async function TopTracks({ timeRange = "short_term" }: { timeRange?: string }) {
-  const tracks = await fetchTopTracks(timeRange);
+  const cookieStore = cookies();
+  const access_token = (await cookieStore).get("access_token")?.value || "";
+
+  const tracks: Track[] = await fetchTopTracks(timeRange, access_token);
 
   return (
     <div className='bg-spotify-gray-300 p-4 rounded-lg border-2 border-spotify-gray-200 h-full'>
