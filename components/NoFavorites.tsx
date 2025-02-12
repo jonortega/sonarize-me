@@ -6,7 +6,7 @@ const NoFavorites = () => {
       <div className='flex items-center space-x-8 max-w-xl'>
         {/* Icono más grande */}
         <div className='flex items-center justify-center h-full'>
-          <AlertTriangle className='text-spotify-red flex-shrink-0' size={110} />
+          <AlertTriangle data-testid='warning-icon' className='text-spotify-red flex-shrink-0' size={110} />
         </div>
         {/* Textos principales */}
         <div className='flex flex-col justify-center text-left'>
