@@ -32,6 +32,7 @@ const config: Config = {
   preset: "ts-jest", // Para transformar TypeScript
 
   // Configure or set up the testing environment before each test
+  setupFiles: ["jest-canvas-mock"],
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
 
   // The test environment that will be used for testing

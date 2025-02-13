@@ -102,6 +102,9 @@ importers:
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@20.17.10)(ts-node@10.9.2(@types/node@20.17.10)(typescript@5.7.2))
+      jest-canvas-mock:
+        specifier: ^2.5.2
+        version: 2.5.2
       jest-environment-jsdom:
         specifier: ^29.7.0
         version: 29.7.0(canvas@3.1.0)
@@ -1461,6 +1464,9 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
 
+  cssfontparser@1.2.1:
+    resolution: {integrity: sha512-6tun4LoZnj7VN6YeegOVb67KBX/7JJsqvj+pv3ZA7F878/eN33AbGa5b/S/wXxS/tcp8nc40xRUrsPlxIyNUPg==}
+
   cssom@0.3.8:
     resolution: {integrity: sha512-b0tGHbfegbhPJpxpiBPU2sCkigAqtM9O121le6bbOlgyV+NyGyCmVfJ6QW9eRjz8CpNfWEOYBIMIGRYkLwsIYg==}
 
@@ -2392,6 +2398,9 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  jest-canvas-mock@2.5.2:
+    resolution: {integrity: sha512-vgnpPupjOL6+L5oJXzxTxFrlGEIbHdZqFU+LFNdtLxZ3lRDCl17FlTMM7IatoRQkrcyOTMlDinjUguqmQ6bR2A==}
+
   jest-changed-files@29.7.0:
     resolution: {integrity: sha512-fEArFiwf1BpQ+4bXSprcDc3/x4HSzL4al2tozwVpDFpsxALjLYdyiIK4e5Vz66GQJIbXJ82+35PtysofptNX2w==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -2717,6 +2726,9 @@ packages:
 
   mkdirp-classic@0.5.3:
     resolution: {integrity: sha512-gKLcREMhtuZRwRAfqP3RFW+TK4JqApVBtOIftVgjuABpAtpxhPGaDcfvbhNvD0B8iD1oUr/txX35NjcaY6Ns/A==}
+
+  moo-color@1.0.3:
+    resolution: {integrity: sha512-i/+ZKXMDf6aqYtBhuOcej71YSlbjT3wCO/4H1j8rPvxDJEifdwgg5MaFyu6iYAT8GBZJg2z0dkgK4YMzvURALQ==}
 
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
@@ -5213,6 +5225,8 @@ snapshots:
 
   cssesc@3.0.0: {}
 
+  cssfontparser@1.2.1: {}
+
   cssom@0.3.8: {}
 
   cssom@0.5.0: {}
@@ -6301,6 +6315,11 @@ snapshots:
       filelist: 1.0.4
       minimatch: 3.1.2
 
+  jest-canvas-mock@2.5.2:
+    dependencies:
+      cssfontparser: 1.2.1
+      moo-color: 1.0.3
+
   jest-changed-files@29.7.0:
     dependencies:
       execa: 5.1.1
@@ -6803,6 +6822,10 @@ snapshots:
   minipass@7.1.2: {}
 
   mkdirp-classic@0.5.3: {}
+
+  moo-color@1.0.3:
+    dependencies:
+      color-name: 1.1.4
 
   ms@2.1.3: {}
 
