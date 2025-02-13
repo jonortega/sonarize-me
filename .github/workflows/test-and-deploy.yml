@@ -62,6 +62,9 @@ jobs:
         with:
           version: 10
 
+      - name: Ensure pnpm is in PATH
+        run: pnpm setup
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
