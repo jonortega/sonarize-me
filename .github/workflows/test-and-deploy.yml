@@ -25,28 +25,20 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20.9.0
-          cache: "pnpm"
+          cache: "npm"
 
       - name: Install dependencies
-        run: pnpm install --ignore-scripts
-
-      - name: Rebuild node-canvas
-        run: pnpm rebuild canvas
+        run: npm ci
 
       - name: Build Next.js app
-        run: pnpm build
+        run: npm run build
 
       - name: Run tests
-        run: pnpm test
+        run: npm test
 
   deploy:
     name: Deploy to Vercel
@@ -57,19 +49,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20.9.0
-          cache: "pnpm"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Install Vercel CLI
-        run: pnpm dlx vercel@latest pull --yes --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel@latest pull --yes --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy to Vercel (Production)
-        run: pnpm dlx vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
