@@ -14,9 +14,6 @@ importers:
       axios:
         specifier: ^1.7.9
         version: 1.7.9
-      canvas:
-        specifier: ^3.1.0
-        version: 3.1.0
       chart.js:
         specifier: ^4.4.7
         version: 4.4.7
@@ -90,6 +87,9 @@ importers:
       '@types/react-dom':
         specifier: ^19
         version: 19.0.2(@types/react@19.0.2)
+      canvas:
+        specifier: ^3.1.0
+        version: 3.1.0
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7

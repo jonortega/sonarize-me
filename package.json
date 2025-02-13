@@ -13,7 +13,6 @@
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.5",
     "axios": "^1.7.9",
-    "canvas": "^3.1.0",
     "chart.js": "^4.4.7",
     "class-variance-authority": "^0.7.1",
     "d3": "^7.9.0",
@@ -40,6 +39,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "canvas": "^3.1.0",
     "dotenv": "^16.4.7",
     "eslint": "^9",
     "eslint-config-next": "15.1.2",
