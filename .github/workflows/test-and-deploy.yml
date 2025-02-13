@@ -23,9 +23,7 @@ jobs:
       - name: Install system dependencies for canvas
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
-            libgtk2.0-dev libgtk-3-dev libnotify-dev libgdk-pixbuf2.0-dev libpixman-1-dev libpangocairo-1.0-0 \
-            libx11-dev libxext-dev libxrender-dev libxi-dev libxrandr-dev pkg-config nasm
+          sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -35,20 +33,14 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 20.9.0
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --ignore-scripts
-
-      - name: Rebuild node-canvas
-        run: pnpm rebuild canvas
+        run: pnpm install --build-from-source
 
       - name: Build Next.js app
         run: pnpm build
-
-      - name: Start Next.js in the background
-        run: pnpm start &
 
       - name: Run tests
         run: pnpm test
@@ -70,7 +62,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20.9.0
           cache: "pnpm"
 
       - name: Install Vercel CLI
