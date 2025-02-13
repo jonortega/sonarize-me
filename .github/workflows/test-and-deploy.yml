@@ -1,0 +1,51 @@
+name: Test and Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - testing
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    env:
+      SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+      SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+      SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
+      NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+      DOMAIN_URL: http://localhost:3000 # Usado en los tests de integración
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Start Next.js in the background
+        run: pnpm start &
+
+      - name: Run tests
+        run: pnpm test
+
+  deploy:
+    name: Deploy to Vercel
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: pnpm dlx vercel@latest pull --yes --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel (Production)
+        run: pnpm dlx vercel --prod --token=${{ secrets.VERCEL_TOKEN }}

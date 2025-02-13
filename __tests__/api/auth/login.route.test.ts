@@ -3,10 +3,14 @@
  */
 
 import { config } from "dotenv";
+
+// Cargar primero `.env.local` si existe
+config({ path: ".env.local" });
+// Si `.env.local` no está presente, carga `.env.test` como fallback
 config({ path: ".env.test" });
 
-import { testApiHandler } from "next-test-api-route-handler"; // 🔹 Debe ser el primer import
-import * as appHandler from "@/app/api/auth/login/route"; // 🔹 Importa el módulo completo
+import { testApiHandler } from "next-test-api-route-handler"; // Debe ser el primer import
+import * as appHandler from "@/app/api/auth/login/route"; // Importa el módulo completo
 
 describe("API /auth/login", () => {
   it("debe redirigir a la página de autenticación de Spotify con los parámetros correctos", async () => {
