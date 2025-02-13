@@ -55,13 +55,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.9.0
-          cache: "npm"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
 
       - name: Install Vercel CLI
-        run: npx vercel@latest pull --yes --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm dlx vercel@latest pull --yes --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy to Vercel (Production)
-        run: npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm dlx vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
