@@ -37,10 +37,10 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --ignore-scripts
 
-      - name: Rebuild node-canvas manually
-        run: cd node_modules/canvas && npx node-pre-gyp install --fallback-to-build --update-binary
+      - name: Rebuild node-canvas
+        run: pnpm rebuild canvas
 
       - name: Build Next.js app
         run: pnpm build
