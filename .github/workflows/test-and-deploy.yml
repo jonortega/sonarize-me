@@ -35,10 +35,13 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --ignore-scripts
 
       - name: Rebuild node-canvas
         run: pnpm rebuild canvas
+
+      - name: Build Next.js app
+        run: pnpm build
 
       - name: Start Next.js in the background
         run: pnpm start &
