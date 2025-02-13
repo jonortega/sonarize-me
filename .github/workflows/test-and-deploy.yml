@@ -31,7 +31,7 @@ jobs:
           node-version: 20.9.0
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Rebuild canvas
         run: npm rebuild canvas
