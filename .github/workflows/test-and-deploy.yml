@@ -37,7 +37,7 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --build-from-source
+        run: pnpm install
 
       - name: Build Next.js app
         run: pnpm build
