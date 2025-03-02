@@ -20,8 +20,12 @@ Utiliza **Next.js 15**, **React 19**, y la **Spotify Web API** para obtener dato
 
 ## Demo: **[tfg-app-spotify.vercel.app](https://tfg-app-spotify.vercel.app/)** 🔗
 
+> [!NOTE]  
+> Actualmente, el acceso a las estadísticas está **restringido** debido a que la aplicación se encuentra en modo de desarrollo.  
+> Para acceder, cada cuenta de Spotify debe ser autorizada **manualmente** por el propietario del proyecto.
+
 ## Funcionalidades
-✅ **Inicio de sesión con Spotify** mediante OAuth 2.0  
+
 ✅ **Visualización de estadísticas en gráficos interactivos**  
 
 ### 🎧 **Estadísticas Básicas**
@@ -38,11 +42,8 @@ Utiliza **Next.js 15**, **React 19**, y la **Spotify Web API** para obtener dato
 - 📜 **La Bitácora**: Registro completo de las fechas de guardado de las canciones en favoritos.  
 - 📡 **Índice de Interferencia**: Nivel de sincronía actual con tus gustos históricos.  
 
-### 🎛 **Estadísticas Interactivas**
-- 📊 **Gráficos dinámicos**: Filtra y explora tus datos en tiempo real.  
-- 📌 **Interfaz responsiva y optimizada** para distintos dispositivos.  
-
 ### 🔒 **Privacidad y Seguridad**
+✅ **Login con Spotify** mediante OAuth 2.0.  
 ✅ **Logout seguro**: Se eliminan todos los datos de sesión al cerrar sesión.  
 ✅ **Sin almacenamiento permanente**: La aplicación no guarda datos del usuario después de cerrar sesión.  
 
