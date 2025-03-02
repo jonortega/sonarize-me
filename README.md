@@ -16,25 +16,58 @@
 
 ---
 
-## 🎵 Descripción General
+## Descripción General
 **TFG-app-Spotify** es una aplicación web que permite a los usuarios visualizar estadísticas avanzadas y originales sobre su actividad en **Spotify**.  
 Utiliza **Next.js 15**, **React 19**, y la **Spotify Web API** para obtener datos en tiempo real, ofreciendo gráficos interactivos y una interfaz optimizada.
 
 ---
 
-## 🚀 Demo en Vivo
-🔗 **[Prueba la aplicación aquí](https://tfg-app-spotify.vercel.app/)**
-
+## Demo: **[Prueba la aplicación aquí](https://tfg-app-spotify.vercel.app/)** 🔗
+ 
 ---
 
-## ✨ Características Principales
+## Funcionalidades
 ✅ **Inicio de sesión con Spotify** mediante OAuth 2.0  
 ✅ **Visualización de estadísticas en gráficos interactivos**  
 ✅ ...
 
 ---
 
-## 🛠 Stack Tecnológico
+## Capturas de Pantalla
+
+### Login
+
+<p align="center">
+  <img src="public/images/login.png" alt="Pantalla de Login" width="600">
+</p>
+
+---
+
+### Home y Stats
+
+| Home (Stats Básicas)                                      | Stats (Stats Avanzadas)                                     |
+| --------------------------------------------------------- | ----------------------------------------------------------- |
+| <img src="public/images/home.png" alt="Home" width="400"> | <img src="public/images/stats.png" alt="Stats" width="500"> |
+
+---
+
+### Stats: Estadísticas Avanzadas
+
+| **Estaciones Musicales**                                                                  | **Hall of Fame**                                                          |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| <img src="public/images/estaciones_musicales.png" alt="Estaciones Musicales" width="400"> | <img src="public/images/hall_of_fame.png" alt="Hall of Fame" width="400"> |
+
+| **Huella del Día**                                                            | **Índice de Interferencia**                                                                     |
+| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| <img src="public/images/huella_del_dia.png" alt="Huella del Día" width="400"> | <img src="public/images/indice_de_interferencia.png" alt="Índice de Interferencia" width="400"> |
+
+| **La Bitácora**                                                                     | **Tus Décadas Out**                                                             |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| <img src="public/images/la_bitacora_año.png" alt="La Bitácora del Año" width="400"> | <img src="public/images/tus_decadas_out.png" alt="Tus Décadas Out" width="400"> |
+
+---
+
+## Stack Tecnológico
 
 | Tecnología          | Versión |
 | ------------------- | ------- |
@@ -48,43 +81,6 @@ Utiliza **Next.js 15**, **React 19**, y la **Spotify Web API** para obtener dato
 | **pnpm**            | -       |
 | **Vercel**          | -       |
 | **ESLint**          | -       |
-
----
-
-## 📸 Capturas de Pantalla
-
-### 🔐 **Pantalla de Inicio**
-Esta es la primera pantalla que verá el usuario al acceder a la aplicación.
-
-<p align="center">
-  <img src="public/images/login.png" alt="Pantalla de Login" width="600">
-</p>
-
----
-
-### 🏠 **Secciones principales**
-Las páginas principales de la aplicación incluyen el **Dashboard** y la **sección de Estadísticas**.
-
-| Home (Dashboard)                                          | Estadísticas                                                |
-| --------------------------------------------------------- | ----------------------------------------------------------- |
-| <img src="public/images/home.png" alt="Home" width="400"> | <img src="public/images/stats.png" alt="Stats" width="400"> |
-
----
-
-### 📊 **Estadísticas Avanzadas**
-Cada métrica avanzada permite un análisis detallado del comportamiento musical del usuario.
-
-| **Estaciones Musicales**                                                                  | **Hall of Fame**                                                          |
-| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| <img src="public/images/estaciones_musicales.png" alt="Estaciones Musicales" width="400"> | <img src="public/images/hall_of_fame.png" alt="Hall of Fame" width="400"> |
-
-| **Huella del Día**                                                            | **Índice de Interferencia**                                                                     |
-| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| <img src="public/images/huella_del_dia.png" alt="Huella del Día" width="400"> | <img src="public/images/indice_de_interferencia.png" alt="Índice de Interferencia" width="400"> |
-
-| **La Bitácora**                                                                     | **Tus Décadas Out**                                                             |
-| ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| <img src="public/images/la_bitacora_año.png" alt="La Bitácora del Año" width="400"> | <img src="public/images/tus_decadas_out.png" alt="Tus Décadas Out" width="400"> |
 
 ---
 
