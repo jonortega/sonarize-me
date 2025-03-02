@@ -14,17 +14,27 @@
 
 </div>
 
-## 📋 Índice
-0. [📋 Índice](#-índice)
-1. [🚀 Tecnologías utilizadas](#-tecnologías-utilizadas)
-2. [📂 Estructura del proyecto](#-estructura-del-proyecto)
-3. [🛠️ Configuración inicial](#️-configuración-inicial)
-4. [📊 Funcionalidades principales](#-funcionalidades-principales)
-5. [🧪 Pruebas](#-pruebas)
-6. [🚀 Despliegue](#-despliegue)
-7. [📚 Recursos](#-recursos)
+---
 
-## 🚀 Tecnologías utilizadas
+## 🎵 Descripción General
+**TFG-app-Spotify** es una aplicación web que permite a los usuarios visualizar estadísticas avanzadas y originales sobre su actividad en **Spotify**.  
+Utiliza **Next.js 15**, **React 19**, y la **Spotify Web API** para obtener datos en tiempo real, ofreciendo gráficos interactivos y una interfaz optimizada.
+
+---
+
+## 🚀 Demo en Vivo
+🔗 **[Prueba la aplicación aquí](https://tfg-app-spotify.vercel.app/)**
+
+---
+
+## ✨ Características Principales
+✅ **Inicio de sesión con Spotify** mediante OAuth 2.0  
+✅ **Visualización de estadísticas en gráficos interactivos**  
+✅ ...
+
+---
+
+## 🛠 Stack Tecnológico
 
 | Tecnología          | Versión |
 | ------------------- | ------- |
@@ -38,75 +48,59 @@
 | **pnpm**            | -       |
 | **Vercel**          | -       |
 | **ESLint**          | -       |
-| **K6**              | -       |
-| **Chart.js**        | -       |
 
-## 📂 Estructura del proyecto
-- **`app/`**: Contiene las páginas y rutas principales de la aplicación (usando el App Router).
-- **`components/`**: Componentes reutilizables de la interfaz.
-- **`public/`**: Archivos estáticos (favicon, imágenes, etc.).
-- **`__tests__/`**: Archivos para pruebas unitarias (usando Jest y Testing Library).
-- **`tailwind.config.js`**: Configuración de Tailwind CSS.
-- **`next.config.ts`**: Configuración de Next.js.
-- **`.env.local`**: Variables de entorno para desarrollo (claves API, etc.).
+---
 
-## 🛠️ Configuración inicial
-1. Clona este repositorio:
-```bash
-git clone https://github.com/jonortega/tfg-app-spotify.git
-cd tfg-app-spotify
-```
+## 📸 Capturas de Pantalla
 
-2. Instala las dependencias:
-```bash
-pnpm install
-```
+### 🔐 **Pantalla de Inicio**
+Esta es la primera pantalla que verá el usuario al acceder a la aplicación.
 
-3. Crea un archivo `.env.local` en la raíz con las siguientes variables:
-```bash
-SPOTIFY_CLIENT_ID=tu_cliente_id
-SPOTIFY_CLIENT_SECRET=tu_secreto
-...
-```
+<p align="center">
+  <img src="public/images/login.png" alt="Pantalla de Login" width="600">
+</p>
 
-4. Inicia el servidor de desarrollo:
-```bash
-pnpm run dev
-```
+---
 
-5. Abre [http://localhost:3000](http://localhost:3000) para ver la aplicación.
+### 🏠 **Secciones principales**
+Las páginas principales de la aplicación incluyen el **Dashboard** y la **sección de Estadísticas**.
 
-## 📊 Funcionalidades principales
-- **Inicio de sesión con Spotify**: Autenticación mediante OAuth 2.0.
-- **Dashboard interactivo**: Gráficos que muestran estadísticas como:
-  - Artistas más escuchados.
-  - Canción del mes.
-  - Horas de más escucha.
-- **Comparación de canciones**: Visualización de características como `danceability`, `energy`, etc.
-- **Tendencias de escucha**: Datos históricos de tus hábitos musicales.
+| Home (Dashboard)                                          | Estadísticas                                                |
+| --------------------------------------------------------- | ----------------------------------------------------------- |
+| <img src="public/images/home.png" alt="Home" width="400"> | <img src="public/images/stats.png" alt="Stats" width="400"> |
 
-## 🧪 Pruebas
-1. Ejecuta las pruebas unitarias:
-```bash
-pnpm run test
-```
+---
 
-2. Ejecuta las pruebas en modo watch:
-```bash
-pnpm run test -- --watch
-```
+### 📊 **Estadísticas Avanzadas**
+Cada métrica avanzada permite un análisis detallado del comportamiento musical del usuario.
 
-## 🚀 Despliegue
-El proyecto está alojado en **Vercel**. Cada push al branch principal (**main**) actualiza automáticamente la aplicación.
+| **Estaciones Musicales**                                                                  | **Hall of Fame**                                                          |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| <img src="public/images/estaciones_musicales.png" alt="Estaciones Musicales" width="400"> | <img src="public/images/hall_of_fame.png" alt="Hall of Fame" width="400"> |
 
-1. Configura las variables de entorno en el panel de Vercel:
-   - **SPOTIFY_CLIENT_ID**
-   - **SPOTIFY_CLIENT_SECRET**
-   - ...
+| **Huella del Día**                                                            | **Índice de Interferencia**                                                                     |
+| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| <img src="public/images/huella_del_dia.png" alt="Huella del Día" width="400"> | <img src="public/images/indice_de_interferencia.png" alt="Índice de Interferencia" width="400"> |
 
-2. La URL de producción será generada automáticamente por Vercel.
+| **La Bitácora**                                                                     | **Tus Décadas Out**                                                             |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| <img src="public/images/la_bitacora_año.png" alt="La Bitácora del Año" width="400"> | <img src="public/images/tus_decadas_out.png" alt="Tus Décadas Out" width="400"> |
 
-## 📚 Recursos
-- [Documentación de Next.js](https://nextjs.org/docs)
-- [Spotify Web API Reference](https://developer.spotify.com/documentation/web-api/)
-- [Tailwind CSS Docs](https://tailwindcss.com/docs)
+---
+
+## 🤝 Contribuir
+Si quieres mejorar el proyecto:
+
+1. **Haz un fork** del repo
+2. Crea una **nueva rama** (`feature/nueva-funcionalidad`)
+3. **Haz un PR** explicando los cambios
+
+---
+
+## 📩 Contacto
+Si tienes preguntas, puedes contactarme en:  
+💼 **[LinkedIn: Jon Ortega](https://linkedin.com/in/jonortega)**
+
+## 📜 Licencia
+Este proyecto está licenciado bajo la **MIT License**. Consulta el archivo [LICENSE](./LICENSE) para más detalles.
+
