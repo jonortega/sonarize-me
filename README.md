@@ -1,7 +1,8 @@
-<h1 align="center">TFG-app-Spotify</h1>
+<h1 align="center">Sonarize Me</h1>
 
 <p align="center">
-  Proyecto del Trabajo de Fin de Grado (TFG): Aplicación web para visualizar estadísticas personalizadas de Spotify usando Next.js. <a href="https://github.com/jonortega/TFG-memoria">Memoria del TFG</a>
+  Continuación del proyecto académico <a href="https://github.com/jonortega/tfg-app-spotify">jonortega/tfg-app-spotify</a>.  
+  Esta es la nueva versión oficial de la aplicación, enfocada en ofrecer estadísticas avanzadas y originales sobre tu actividad en Spotify, con vistas a estar lista para producción.
 </p>
 
 <div align="center">
@@ -15,14 +16,13 @@
 </div>
 
 ## Descripción General
-**TFG-app-Spotify** es una aplicación web que permite a los usuarios visualizar estadísticas avanzadas y originales sobre su actividad en **Spotify**.  
+**Sonarize Me** es una aplicación web que permite a los usuarios visualizar estadísticas avanzadas y originales sobre su actividad en **Spotify**.  
 Utiliza **Next.js 15**, **React 19**, y la **Spotify Web API** para obtener datos en tiempo real, ofreciendo gráficos interactivos y una interfaz optimizada.
 
-## Demo: **[tfg-app-spotify.vercel.app](https://tfg-app-spotify.vercel.app/)** 🔗
-
+## Demo
 > [!NOTE]  
-> Actualmente, el acceso a las estadísticas está **restringido** debido a que la aplicación se encuentra en modo de desarrollo.  
-> Para acceder, cada cuenta de Spotify debe ser autorizada **manualmente** por el propietario del proyecto.
+> Próximamente disponible online.  
+> Actualmente, no hay demo pública desplegada.
 
 ## Funcionalidades
 
@@ -38,7 +38,7 @@ Utiliza **Next.js 15**, **React 19**, y la **Spotify Web API** para obtener dato
 - 🏆 **Hall of Fame**: Canciones y artistas más escuchados en toda tu historia de Spotify.  
 - ⏳ **Huella del Día**: Distribución de minutos escuchados a lo largo del día.  
 - 📅 **Estaciones Musicales**: Artista y género favoritos por cada estación del año.
-- 🎶 **Tus Décadas**: Descubre de qué décadas proviene la mayor parte de tu música.  
+- 🎶 **Tus Décadas**: Décadas principales de tu música.  
 - 📜 **La Bitácora**: Registro completo de las fechas de guardado de las canciones en favoritos.  
 - 📡 **Índice de Interferencia**: Nivel de sincronía actual con tus gustos históricos.  
 
@@ -88,24 +88,12 @@ Utiliza **Next.js 15**, **React 19**, y la **Spotify Web API** para obtener dato
 | **Vercel**          | -       |
 | **ESLint**          | -       |
 
-## 🤝 Contribuir
-Si quieres mejorar el proyecto:
-
-1. **Haz un fork** del repo
-2. Crea una **nueva rama** (`feature/nueva-funcionalidad`)
-3. **Haz un PR** explicando los cambios
-
 ## 📩 Contacto
 Si tienes preguntas, puedes contactarme en:  
 💼 **[LinkedIn: Jon Ortega](https://www.linkedin.com/in/jon-ortega-g/)**
 
 ## 📜 Licencia y Uso
-Este proyecto está licenciado bajo **Creative Commons BY-NC 4.0**, lo que significa que cualquiera  
-puede usarlo y modificarlo siempre que **NO sea con fines comerciales**.
-
-⚠️ **Nota sobre la Licencia**  
-El propietario de este software **se reserva el derecho de modificar la licencia en el futuro**.  
-Esto significa que nuevas versiones del software podrían distribuirse bajo una licencia comercial  
-o con nuevas condiciones de uso.
+Este proyecto está licenciado bajo la **MIT License**, lo que significa que cualquiera  
+puede usarlo, modificarlo y distribuirlo, incluso con fines comerciales, siempre que se mantenga la nota de copyright original.
 
 Para más detalles, consulta el archivo [LICENSE](./LICENSE).
