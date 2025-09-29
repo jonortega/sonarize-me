@@ -39,57 +39,60 @@ describe("API /stats/estaciones-musicales", () => {
       new RequestCookies(new Headers({ Cookie: "access_token=mock_access_token" }))
     );
 
-    (axios.get as jest.MockedFunction<typeof axios.get>)
-      // Simula la API de Spotify para obtener tracks guardados
-      .mockResolvedValueOnce({
-        data: {
-          items: [
-            {
-              added_at: "2024-03-21T10:15:00Z", // Primavera
-              track: {
-                name: "Spring Song",
-                artists: [{ id: "artist1", name: "Artist Primavera" }],
-                album: { images: [{ url: "https://example.com/spring.jpg" }] },
+    (axios.get as jest.MockedFunction<typeof axios.get>).mockImplementation((url: string) => {
+      if (url.includes("/me/tracks")) {
+        return Promise.resolve({
+          data: {
+            items: [
+              {
+                added_at: "2024-03-21T10:15:00Z",
+                track: {
+                  name: "Spring Song",
+                  artists: [{ id: "artist1", name: "Artist Primavera" }],
+                  album: { images: [{ url: "https://example.com/spring.jpg" }] },
+                },
               },
-            },
-            {
-              added_at: "2024-06-21T14:30:00Z", // Verano
-              track: {
-                name: "Summer Song",
-                artists: [{ id: "artist2", name: "Artist Verano" }],
-                album: { images: [{ url: "https://example.com/summer.jpg" }] },
+              {
+                added_at: "2024-06-21T14:30:00Z",
+                track: {
+                  name: "Summer Song",
+                  artists: [{ id: "artist2", name: "Artist Verano" }],
+                  album: { images: [{ url: "https://example.com/summer.jpg" }] },
+                },
               },
-            },
-          ],
-          next: null,
-        },
-      })
-      // Simula la API de Spotify para obtener datos de los artistas
-      .mockResolvedValueOnce({
-        data: {
-          artists: [
-            {
-              id: "artist1",
-              name: "Artist Primavera",
-              genres: ["Rock"],
-              images: [{ url: "https://example.com/artist1.jpg" }],
-            },
-            {
-              id: "artist2",
-              name: "Artist Verano",
-              genres: ["Pop"],
-              images: [{ url: "https://example.com/artist2.jpg" }],
-            },
-          ],
-        },
-      });
+            ],
+            next: null,
+          },
+        });
+      }
+      if (url.includes("/artists?ids=")) {
+        return Promise.resolve({
+          data: {
+            artists: [
+              {
+                id: "artist1",
+                name: "Artist Primavera",
+                genres: ["Rock"],
+                images: [{ url: "https://example.com/artist1.jpg" }],
+              },
+              {
+                id: "artist2",
+                name: "Artist Verano",
+                genres: ["Pop"],
+                images: [{ url: "https://example.com/artist2.jpg" }],
+              },
+            ],
+          },
+        });
+      }
+      return Promise.reject(new Error(`Unexpected url: ${url}`));
+    });
 
     await testApiHandler({
       appHandler,
       test: async ({ fetch }) => {
         const res = await fetch();
         expect(res.status).toBe(200);
-
         const json = await res.json();
         expect(json).toMatchObject({
           primavera: {
@@ -110,56 +113,63 @@ describe("API /stats/estaciones-musicales", () => {
       new RequestCookies(new Headers({ Cookie: "access_token=mock_access_token" }))
     );
 
-    (axios.get as jest.MockedFunction<typeof axios.get>)
-      // Simula la API de Spotify con paginación
-      .mockResolvedValueOnce({
-        data: {
-          items: [
-            {
-              added_at: "2024-12-22T09:00:00Z", // Invierno
-              track: { name: "Winter Song", artists: [{ id: "artist3", name: "Artist Invierno" }] },
+    let page = 0;
+    (axios.get as jest.MockedFunction<typeof axios.get>).mockImplementation((url: string) => {
+      if (url.includes("/me/tracks")) {
+        page += 1;
+        if (page === 1) {
+          return Promise.resolve({
+            data: {
+              items: [
+                {
+                  added_at: "2024-12-22T09:00:00Z",
+                  track: { name: "Winter Song", artists: [{ id: "artist3", name: "Artist Invierno" }] },
+                },
+              ],
+              next: "https://api.spotify.com/v1/me/tracks?offset=50",
             },
-          ],
-          next: "https://api.spotify.com/v1/me/tracks?offset=50",
-        },
-      })
-      .mockResolvedValueOnce({
-        data: {
-          items: [
-            {
-              added_at: "2024-09-24T11:30:00Z", // Otoño
-              track: { name: "Autumn Song", artists: [{ id: "artist4", name: "Artist Otoño" }] },
-            },
-          ],
-          next: null,
-        },
-      })
-      // Simula la API de Spotify para obtener datos de los artistas
-      .mockResolvedValueOnce({
-        data: {
-          artists: [
-            {
-              id: "artist3",
-              name: "Artist Invierno",
-              genres: ["Jazz"],
-              images: [{ url: "https://example.com/artist3.jpg" }],
-            },
-            {
-              id: "artist4",
-              name: "Artist Otoño",
-              genres: ["Blues"],
-              images: [{ url: "https://example.com/artist4.jpg" }],
-            },
-          ],
-        },
-      });
+          });
+        }
+        return Promise.resolve({
+          data: {
+            items: [
+              {
+                added_at: "2024-09-24T11:30:00Z",
+                track: { name: "Autumn Song", artists: [{ id: "artist4", name: "Artist Otoño" }] },
+              },
+            ],
+            next: null,
+          },
+        });
+      }
+      if (url.includes("/artists?ids=")) {
+        return Promise.resolve({
+          data: {
+            artists: [
+              {
+                id: "artist3",
+                name: "Artist Invierno",
+                genres: ["Jazz"],
+                images: [{ url: "https://example.com/artist3.jpg" }],
+              },
+              {
+                id: "artist4",
+                name: "Artist Otoño",
+                genres: ["Blues"],
+                images: [{ url: "https://example.com/artist4.jpg" }],
+              },
+            ],
+          },
+        });
+      }
+      return Promise.reject(new Error(`Unexpected url: ${url}`));
+    });
 
     await testApiHandler({
       appHandler,
       test: async ({ fetch }) => {
         const res = await fetch();
         expect(res.status).toBe(200);
-
         const json = await res.json();
         expect(json.invierno).toMatchObject({
           artist: { name: "Artist Invierno", artistPicUrl: "https://example.com/artist3.jpg" },
