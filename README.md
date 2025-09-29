@@ -19,10 +19,8 @@
 **Sonarize Me** es una aplicación web que permite a los usuarios visualizar estadísticas avanzadas y originales sobre su actividad en **Spotify**.  
 Utiliza **Next.js 15**, **React 19**, y la **Spotify Web API** para obtener datos en tiempo real, ofreciendo gráficos interactivos y una interfaz optimizada.
 
-## Demo
-> [!NOTE]  
-> Próximamente disponible online.  
-> Actualmente, no hay demo pública desplegada.
+## Demo: 🔗 [https://sonarize-me.vercel.app/](https://sonarize-me.vercel.app/)
+
 
 ## Funcionalidades
 
