@@ -1,4 +1,4 @@
-name: Test and Deploy
+name: Deploy to Vercel
 
 on:
   push:
@@ -41,7 +41,6 @@ jobs:
 
   #     - name: Run tests
   #       run: npm test
-
   deploy:
     name: Deploy to Vercel
     needs: test
