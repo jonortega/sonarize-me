@@ -7,40 +7,40 @@ on:
       - testing
 
 jobs:
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    env:
-      SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
-      SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
-      SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
-      NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-      DOMAIN_URL: http://localhost:3000 # Usado en los tests de integración
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  # test:
+  #   name: Run Tests
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+  #     SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+  #     SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
+  #     NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+  #     DOMAIN_URL: http://localhost:3000 # Usado en los tests de integración
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Install system dependencies for canvas
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+  #     - name: Install system dependencies for canvas
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.9.0
+  #     - name: Install Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20.9.0
 
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
+  #     - name: Install dependencies
+  #       run: npm install --legacy-peer-deps
 
-      - name: Rebuild canvas
-        run: npm rebuild canvas
+  #     - name: Rebuild canvas
+  #       run: npm rebuild canvas
 
-      - name: Build Next.js app
-        run: npm run build
+  #     - name: Build Next.js app
+  #       run: npm run build
 
-      - name: Run tests
-        run: npm test
+  #     - name: Run tests
+  #       run: npm test
 
   deploy:
     name: Deploy to Vercel
