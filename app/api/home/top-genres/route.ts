@@ -11,7 +11,25 @@ interface Artist {
   genres: string[];
 }
 
+// Datos mock para el modo demo
+const MOCK_TOP_GENRES = [
+  { id: 1, name: "pop" },
+  { id: 2, name: "hip hop" },
+  { id: 3, name: "dance pop" },
+  { id: 4, name: "r&b" },
+  { id: 5, name: "indie rock" },
+];
+
 export async function GET(req: NextRequest) {
+  // Verificar si estamos en modo demo
+  const demo_mode = req.cookies.get("demo_mode");
+
+  if (demo_mode?.value === "true") {
+    console.log("Modo demo: Devolviendo datos mock de top genres");
+    return NextResponse.json(MOCK_TOP_GENRES);
+  }
+
+  // Flujo normal con API de Spotify
   const authorizationHeader = req.headers.get("authorization");
 
   if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
