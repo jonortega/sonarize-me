@@ -37,7 +37,7 @@ export default async function Home({
             <UserProfile />
           </Suspense>
           {/* Agrupamos TimeRangeSelector con los Tops */}
-          {/* <div className='flex justify-center mt-8'>
+          <div className='flex justify-center mt-8'>
             <TimeRangeSelector />
           </div>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -52,13 +52,13 @@ export default async function Home({
                 <TopGenres timeRange={timeRange} />
               </Suspense>
             </div>
-          </div> */}
+          </div>
         </div>
       </section>
       <section className='bg-[#0A0A0A]'>
-        {/* <div className='max-w-5xl mx-auto px-4 md:px-8 py-12'>
+        <div className='max-w-5xl mx-auto px-4 md:px-8 py-12'>
           <RecentlyPlayed />
-        </div> */}
+        </div>
       </section>
     </main>
   );

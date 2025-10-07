@@ -13,7 +13,50 @@ interface Track {
   };
 }
 
+// Datos mock para el modo demo
+const MOCK_TOP_TRACKS = [
+  {
+    id: 1,
+    name: "Blinding Lights",
+    artist: "The Weeknd",
+    albumArtUrl: "https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36",
+  },
+  {
+    id: 2,
+    name: "As It Was",
+    artist: "Harry Styles",
+    albumArtUrl: "https://i.scdn.co/image/ab67616d0000b273b46f74097655d7f353caab14",
+  },
+  {
+    id: 3,
+    name: "Anti-Hero",
+    artist: "Taylor Swift",
+    albumArtUrl: "https://i.scdn.co/image/ab67616d0000b273e0b60c608586d88252b8fbc0",
+  },
+  {
+    id: 4,
+    name: "Flowers",
+    artist: "Miley Cyrus",
+    albumArtUrl: "https://picsum.photos/seed/flowers-cover/600/600",
+  },
+  {
+    id: 5,
+    name: "Calm Down",
+    artist: "Rema",
+    albumArtUrl: "https://picsum.photos/seed/calm-down-cover/600/600",
+  },
+];
+
 export async function GET(req: NextRequest) {
+  // Verificar si estamos en modo demo
+  const demo_mode = req.cookies.get("demo_mode");
+
+  if (demo_mode?.value === "true") {
+    console.log("Modo demo: Devolviendo datos mock de top tracks");
+    return NextResponse.json(MOCK_TOP_TRACKS);
+  }
+
+  // Flujo normal con API de Spotify
   const authorizationHeader = req.headers.get("authorization");
 
   if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
