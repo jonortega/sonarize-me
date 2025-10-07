@@ -17,12 +17,20 @@ export default function LoginPage() {
             </span>
           </h1>
         </div>
-        <a
-          href='/api/auth/login'
-          className='group relative inline-flex items-center justify-center px-8 py-3 bg-[#1db954] text-spotify-gray-300 text-base sm:text-lg font-semibold rounded-full overflow-hidden transition-all duration-300 hover:bg-[#1ed760] hover:scale-105 hover:shadow-[0_0_20px_rgba(29,185,84,0.3)]'
-        >
-          <span className='relative z-10'>Sign In</span>
-        </a>
+        <div className='flex flex-col sm:flex-row gap-4'>
+          <a
+            href='/api/auth/login'
+            className='group relative inline-flex items-center justify-center px-8 py-3 bg-[#1db954] text-spotify-gray-300 text-base sm:text-lg font-semibold rounded-full overflow-hidden transition-all duration-300 hover:bg-[#1ed760] hover:scale-105 hover:shadow-[0_0_20px_rgba(29,185,84,0.3)]'
+          >
+            <span className='relative z-10'>Sign In</span>
+          </a>
+          <a
+            href='/api/auth/demo'
+            className='group relative inline-flex items-center justify-center px-8 py-3 bg-transparent border-2 border-[#1db954] text-[#1db954] text-base sm:text-lg font-semibold rounded-full overflow-hidden transition-all duration-300 hover:bg-[#1db954] hover:bg-opacity-10 hover:scale-105 hover:shadow-[0_0_20px_rgba(29,185,84,0.2)]'
+          >
+            <span className='relative z-10'>Try Demo</span>
+          </a>
+        </div>
       </div>
     </main>
   );
