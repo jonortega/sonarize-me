@@ -3,10 +3,32 @@ import axios from "axios";
 
 const SPOTIFY_PROFILE_URL = "https://api.spotify.com/v1/me";
 
+// Datos mock para el modo demo
+const MOCK_USER_PROFILE = {
+  name: "Demo User",
+  email: "demo@spotify-stats.com",
+  imageUrl: "https://i.pravatar.cc/300?img=33", // Avatar placeholder
+};
+
 export async function GET(req: NextRequest) {
+  console.log("=== USER PROFILE ENDPOINT CALLED ===");
+  // ! NO RECIBE COOKIES DESDE EL CLIENTE
+  console.log("Cookies:", req.cookies.getAll());
+
+  // IMPORTANTE: Verificar demo_mode ANTES de verificar el authorization header
+  const demo_mode = req.cookies.get("demo_mode");
+  console.log("Demo mode cookie:", demo_mode);
+
+  if (demo_mode?.value === "true") {
+    console.log("Modo demo: Devolviendo datos mock del perfil de usuario");
+    return NextResponse.json(MOCK_USER_PROFILE);
+  }
+
+  // Flujo normal con API de Spotify - solo si NO es modo demo
   const authorizationHeader = req.headers.get("authorization");
 
   if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
+    console.log("No access token provided");
     return NextResponse.json({ error: "No access token provided" }, { status: 401 });
   }
 
