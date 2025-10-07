@@ -6,13 +6,12 @@ const SPOTIFY_PROFILE_URL = "https://api.spotify.com/v1/me";
 // Datos mock para el modo demo
 const MOCK_USER_PROFILE = {
   name: "Demo User",
-  email: "demo@spotify-stats.com",
-  imageUrl: "https://i.pravatar.cc/300?img=33", // Avatar placeholder
+  email: "demo@sonarize.me",
+  imageUrl: "https://i.pravatar.cc/300?img=62", // Avatar placeholder
 };
 
 export async function GET(req: NextRequest) {
   console.log("=== USER PROFILE ENDPOINT CALLED ===");
-  // ! NO RECIBE COOKIES DESDE EL CLIENTE
   console.log("Cookies:", req.cookies.getAll());
 
   // IMPORTANTE: Verificar demo_mode ANTES de verificar el authorization header
