@@ -1,64 +1,55 @@
-import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
+import { cookies } from "next/headers";
 
-const SPOTIFY_PROFILE_URL = "https://api.spotify.com/v1/me";
+const DOMAIN_URL = process.env.DOMAIN_URL;
 
-// Datos mock para el modo demo
-const MOCK_USER_PROFILE = {
-  name: "Demo User",
-  email: "demo@spotify-stats.com",
-  imageUrl: "https://i.pravatar.cc/300?img=33", // Avatar placeholder
-};
-
-export async function GET(req: NextRequest) {
-  console.log("=== USER PROFILE ENDPOINT CALLED ===");
-  console.log("Cookies:", req.cookies.getAll());
-
-  // IMPORTANTE: Verificar demo_mode ANTES de verificar el authorization header
-  const demo_mode = req.cookies.get("demo_mode");
-  console.log("Demo mode cookie:", demo_mode);
-
-  if (demo_mode?.value === "true") {
-    console.log("Modo demo: Devolviendo datos mock del perfil de usuario");
-    return NextResponse.json(MOCK_USER_PROFILE);
-  }
-
-  // Flujo normal con API de Spotify - solo si NO es modo demo
-  const authorizationHeader = req.headers.get("authorization");
-
-  if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
-    console.log("No access token provided");
-    return NextResponse.json({ error: "No access token provided" }, { status: 401 });
-  }
-
-  const access_token = authorizationHeader.split(" ")[1];
-
+export async function fetchUserProfile() {
   try {
-    // Realizar la solicitud a la API de Spotify
-    const response = await axios.get(SPOTIFY_PROFILE_URL, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
+    // Obtener las cookies del servidor
+    const cookieStore = await cookies();
+    const access_token = cookieStore.get("access_token")?.value;
+    const demo_mode = cookieStore.get("demo_mode")?.value;
+
+    console.log("Access token:", access_token);
+    console.log("Demo mode:", demo_mode);
+
+    // Si no hay access_token ni estamos en demo, error
+    if (!access_token && demo_mode !== "true") {
+      return { error: "No access token" };
+    }
+
+    // Preparar headers
+    const headers: HeadersInit = {};
+
+    // Enviar access_token como Authorization header (igual que antes)
+    if (access_token) {
+      headers.Authorization = `Bearer ${access_token}`;
+    }
+
+    // Enviar demo_mode como header personalizado (NO como Cookie)
+    if (demo_mode === "true") {
+      headers["X-Demo-Mode"] = "true";
+    }
+
+    const response = await fetch(`${DOMAIN_URL}/api/home/user-profile`, {
+      headers,
+      cache: "force-cache", // Usa caché para evitar múltiples peticiones
+      next: { revalidate: 3600 }, // Revalida cada hora
     });
 
-    const data = response.data;
+    if (!response.ok) {
+      throw new Error("Failed to fetch user profile");
+    }
 
-    // Filtrar los datos relevantes para el frontend
-    const userProfile = {
-      name: data.display_name || "Unknown",
-      email: data.email || "No email provided",
-      imageUrl: data.images?.[0]?.url || "",
-    };
+    const userProfile = await response.json();
+    console.log("\nUser Profile:", userProfile);
 
-    console.log("User Profile:", userProfile);
-
-    return NextResponse.json(userProfile);
+    return userProfile;
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Error fetching user profile:", error.message);
     } else {
       console.error("Unknown error fetching user profile:", error);
     }
-    return NextResponse.json({ error: "Failed to fetch user profile" }, { status: 500 });
+    return { error: "Failed to fetch user profile" };
   }
 }
