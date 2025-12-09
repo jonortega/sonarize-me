@@ -8,8 +8,15 @@ import { renovarAccessToken } from "@/lib/spotify";
 // ! Se puede solucionar con un cache de tokens en el servidor.
 // ! Es un punto a mejorar en el futuro.
 export async function middleware(req: NextRequest) {
+  const demo_mode = req.cookies.get("demo_mode");
   const access_token = req.cookies.get("access_token");
   const refresh_token = req.cookies.get("refresh_token");
+
+  // Caso 0: Si estamos en modo demo, dejamos pasar directamente
+  if (demo_mode?.value === "true") {
+    console.log("Modo demo detectado, permitiendo acceso...");
+    return NextResponse.next();
+  }
 
   // Caso 1: Si no hay ni access_token ni refresh_token, redirigimos al login
   if (!access_token && !refresh_token) {

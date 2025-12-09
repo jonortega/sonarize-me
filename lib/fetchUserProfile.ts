@@ -4,20 +4,34 @@ const DOMAIN_URL = process.env.DOMAIN_URL;
 
 export async function fetchUserProfile() {
   try {
-    // Obtener las cookies del servidor para acceder al access_token
+    // Obtener las cookies del servidor
     const cookieStore = await cookies();
     const access_token = cookieStore.get("access_token")?.value;
+    const demo_mode = cookieStore.get("demo_mode")?.value;
 
     console.log("Access token:", access_token);
+    console.log("Demo mode:", demo_mode);
 
-    if (!access_token) {
+    // Si no hay access_token ni estamos en demo, error
+    if (!access_token && demo_mode !== "true") {
       return { error: "No access token" };
     }
 
+    // Preparar headers
+    const headers: HeadersInit = {};
+
+    // Enviar access_token como Authorization header (igual que antes)
+    if (access_token) {
+      headers.Authorization = `Bearer ${access_token}`;
+    }
+
+    // Enviar demo_mode como header personalizado (NO como Cookie)
+    if (demo_mode === "true") {
+      headers["X-Demo-Mode"] = "true";
+    }
+
     const response = await fetch(`${DOMAIN_URL}/api/home/user-profile`, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
+      headers,
       cache: "force-cache", // Usa caché para evitar múltiples peticiones
       next: { revalidate: 3600 }, // Revalida cada hora
     });
